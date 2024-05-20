@@ -19,9 +19,74 @@
 
     {% endblock content %}
     <script>
+        function saveAccessToken(token) {
+            localStorage.setItem('access_token', token);
+        }
+
+        function saveRefreshToken(token) {
+            localStorage.setItem('refresh_token', token);
+        }
+
+        function getAccessToken() {
+            return localStorage.getItem('access_token');
+        }
+
+        function getRefreshToken() {
+            return localStorage.getItem('refresh_token');
+        }
+
         function removeTokens() {
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
+        }
+
+        function requestNewAccessToken() {
+            const refreshToken = getRefreshToken();
+            if (refreshToken) {
+                return axios.post('/api/token/refresh/', { refresh: refreshToken })
+                    .then(response => {
+                        const newAccessToken = response.data.access;
+                        saveAccessToken(newAccessToken);
+                        return newAccessToken;
+                    })
+                    .catch(error => {
+                        console.error('Failed to refresh access token:', error);
+                        removeTokens();
+                        window.location.href = '{% url "login" %}';
+                    });
+            } else {
+                console.error('No refresh token available.');
+                window.location.href = '{% url "login" %}';
+            }
+        }
+
+        function makeAuthenticatedRequest(url, method = 'get', data = null) {
+            const accessToken = getAccessToken();
+            return axios({
+                method: method,
+                url: url,
+                data: data,
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            })
+            .catch(error => {
+                if (error.response && error.response.status === 401) {
+                    return requestNewAccessToken().then(newAccessToken => {
+                        return axios({
+                            method: method,
+                            url: url,
+                            data: data,
+                            headers: {
+                                'Authorization': `Bearer ${newAccessToken}`
+                            }
+                        });
+                    });
+                } else {
+                    console.error('API request error:', error);
+                    throw error;
+                }
+            });
         }
 
         function logout() {
@@ -57,4 +122,5 @@
             }
         });
     </script>
+</body>
 </html>
