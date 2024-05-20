@@ -12,6 +12,9 @@
     
     <label for="email">이메일:</label>
     <input type="email" id="email" name="email" required>
+
+    <label for="nickname">닉네임:</label>
+    <input type="nickname" id="nickname" name="nickname" required>
     
     <label for="image">프로필 사진:</label>
     <input type="file" id="image" name="image">
@@ -28,6 +31,7 @@
             formData.append('username', document.getElementById('username').value);
             formData.append('password', document.getElementById('password').value);
             formData.append('email', document.getElementById('email').value);
+            formData.append('nickname', document.getElementById('nickname').value);
 
             const imageInput = document.getElementById('image');
             if (imageInput.files.length > 0) {

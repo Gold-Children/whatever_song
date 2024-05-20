@@ -11,6 +11,7 @@ class SignupSerializer(serializers.ModelSerializer):
             username=validated_data["username"],
             password=validated_data["password"],
             email=validated_data["email"],
+            nickname=validated_data["nickname"],
             image=validated_data.get("image", None),
         )
         user.set_password(validated_data["password"])
@@ -23,5 +24,6 @@ class SignupSerializer(serializers.ModelSerializer):
             "username",
             "password",
             "email",
+            "nickname",
             "image",
         ]
