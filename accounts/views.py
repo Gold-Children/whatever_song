@@ -30,7 +30,7 @@ class ProfileUpdateView(APIView):
             # 사용자명(ID)
             new_username = serializer.validated_data.get('username')
             if new_username and User.objects.exclude(pk=user.pk).filter(username=new_username).exists():
-                return Response({"error": "이미 존재하는 사용자명입니다."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "이미 존재하는 이름입니다."}, status=status.HTTP_400_BAD_REQUEST)
             
             # 닉네임
             new_nickname = serializer.validated_data.get('nickname')
@@ -50,11 +50,10 @@ class ProfileImageView(APIView):
 
     def put(self, request, username):
         user = get_object_or_404(User, username=username)
-
-        
         if request.user != user:
             return Response({"error": "권한 읍서요"}, status=status.HTTP_403_FORBIDDEN)
-
+        
+        # 이미지 수정
         serializer = SignupSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             with transaction.atomic():
@@ -67,4 +66,37 @@ class ProfileImageView(APIView):
 
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+class PasswordChangeView(APIView):
+    permission_classes = [IsAuthenticated]
+    # 패스워드 변경
+    def put(self, request, username):
+        user = get_object_or_404(User, username=username)
+        if request.user != user:
+            return Response({"error": "권한이 없음."}, status=status.HTTP_403_FORBIDDEN)
+        current_password = request.data.get('current_password')
+        new_password = request.data.get('new_password')
+
+        if not user.check_password(current_password):
+            return Response({"error": "현재 비밀번호가 올바르지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 새로운 비밀번호를 해싱
+        hashed_password = make_password(new_password)
+
+        # 해싱된 비밀번호를 저장
+        user.set_password(hashed_password)
+        user.save()
+
+        return Response({"message": "비밀번호가 변경되었..."}, status=status.HTTP_200_OK)
+class ProfiledeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, user_id):
+        user = get_object_or_404(User, pk=user_id)
+
+        if request.user != user:
+            return Response({"error": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
+
+        user.delete()
+        return Response({"message": "회원 탈퇴 성공하셨습니다"}, status=status.HTTP_204_NO_CONTENT)
+    
