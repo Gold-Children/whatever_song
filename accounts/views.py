@@ -65,7 +65,7 @@ def test(request):
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
-    # 프로필 구경
+    # 프로필 보기
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
         serializer = SignupSerializer(user)
@@ -123,7 +123,14 @@ class ProfileUpdateView(APIView):
                 )
 
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                    "message": "프로필 수정 및 토큰 재발급이 완료되었습니다.",
+                    "access": str(refresh.access_token),
+                    "refresh": str(refresh),
+                    },
+                status=status.HTTP_200_OK,)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
