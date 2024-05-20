@@ -48,7 +48,3 @@ def logout(request):
         )
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
-def test(request):
-    return render(request, "accounts/test.html")
