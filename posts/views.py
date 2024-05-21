@@ -34,3 +34,16 @@ class PostlistView(TemplateView):
 
 class PostcreateView(TemplateView):
     template_name = "posts/create.html"
+
+class PostDetailAPIView(APIView):
+    
+    def get_object(self, post_id):
+        return get_object_or_404(Post, pk=post_id)
+    
+    def get(self, request, post_id):
+        post = self.get_object(post_id)
+        serializer = PostSerializer(post)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class PostDetailView(TemplateView):
+    template_name = "posts/detail.html"
