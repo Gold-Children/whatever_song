@@ -65,12 +65,18 @@ def test(request):
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
-    # 프로필 구경
-    def get(self, request, username):
-        user = get_object_or_404(User, username=username)
+    def get(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
         serializer = SignupSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class ProfilePageView(TemplateView):
+    template_name = "accounts/profile.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_id'] = kwargs["pk"]
+        return context
 
 class ProfileUpdateView(APIView):
     permission_classes = [IsAuthenticated]

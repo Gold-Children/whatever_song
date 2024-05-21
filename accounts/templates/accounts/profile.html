@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>User Profile</h1>
+    <div id="profile">
+        <p><strong>Username:</strong> <span id="username"></span></p>
+        <p><strong>Email:</strong> <span id="email"></span></p>
+        <p><strong>Nickname:</strong> <span id="nickname"></span></p>
+        <p><strong>Profile Image:</strong></p>
+        <img id="profile-image" src="" alt="Profile Image" width="150">
+    </div>
+    <div id="error-message" style="color: red;"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userId = '{{ user_id }}';  // 템플릿 태그를 사용해 현재 로그인한 유저의 ID를 가져옴
+            console.log(userId)
+            function loadProfile() {
+                const token = localStorage.getItem('access_token');  // 저장된 토큰 가져오기
+                if (!token) {
+                    console.error('No access token found');
+                    return;
+                }
+                axios.get(`/api/accounts/api/profile/${userId}/`,{
+                    headers: {
+                        'Authorization': `Bearer ${token}`  // 인증 토큰을 헤더에 추가
+                    }
+                })
+                    .then(response => {
+                        const data = response.data;
+                        document.getElementById('username').textContent = data.username;
+                        document.getElementById('email').textContent = data.email;
+                        document.getElementById('nickname').textContent = data.nickname;
+                    })
+                    .catch(error => {
+                        console.error('Failed to load profile:', error);
+                    });
+            }
+            loadProfile();
+        });
+    </script>
+{% endblock content %}
