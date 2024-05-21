@@ -45,5 +45,21 @@ class PostDetailAPIView(APIView):
         serializer = PostSerializer(post)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def put(self, request, post_id):
+        post = self.get_object(post_id)
+        serializer = PostSerializer(
+            post, data=request.data, partial=True) 
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+    
+    def delete(self, request, post_id):
+        post = self.get_object(post_id)
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 class PostDetailView(TemplateView):
     template_name = "posts/detail.html"
+
+class PostUpdateView(TemplateView):
+    template_name = "posts/update.html"
