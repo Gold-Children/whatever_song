@@ -65,24 +65,27 @@ def test(request):
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
+    # 프로필 보기
     def get(self, request, pk):
         user = get_object_or_404(User, pk=pk)
         serializer = SignupSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class ProfilePageView(TemplateView):
     template_name = "accounts/profile.html"
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user_id'] = kwargs["pk"]
         return context
 
+
 class ProfileUpdateView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def put(self, request, username):
-        user = get_object_or_404(User, username=username)
+    def put(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
 
         if request.user != user:
             return Response(
@@ -129,15 +132,22 @@ class ProfileUpdateView(APIView):
                 )
 
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                    "message": "프로필 수정 및 토큰 재발급이 완료되었습니다.",
+                    "access": str(refresh.access_token),
+                    "refresh": str(refresh),
+                    },
+                status=status.HTTP_200_OK,)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProfileImageView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def put(self, request, username):
-        user = get_object_or_404(User, username=username)
+    def put(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
         if request.user != user:
             return Response({"error": "권한 읍서요"}, status=status.HTTP_403_FORBIDDEN)
 
@@ -161,8 +171,8 @@ class PasswordChangeView(APIView):
     permission_classes = [IsAuthenticated]
 
     # 패스워드 변경
-    def put(self, request, username):
-        user = get_object_or_404(User, username=username)
+    def put(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
         if request.user != user:
             return Response({"error": "권한이 없음."}, status=status.HTTP_403_FORBIDDEN)
         current_password = request.data.get("current_password")
