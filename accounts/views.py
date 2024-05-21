@@ -66,17 +66,26 @@ class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     # 프로필 보기
-    def get(self, request, username):
-        user = get_object_or_404(User, username=username)
+    def get(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
         serializer = SignupSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ProfilePageView(TemplateView):
+    template_name = "accounts/profile.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_id'] = kwargs["pk"] # 현재 로그인한 사용자의 ID를 컨텍스트에 추가
+        return context
 
 
 class ProfileUpdateView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def put(self, request, username):
-        user = get_object_or_404(User, username=username)
+    def put(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
 
         if request.user != user:
             return Response(
@@ -137,8 +146,8 @@ class ProfileUpdateView(APIView):
 class ProfileImageView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def put(self, request, username):
-        user = get_object_or_404(User, username=username)
+    def put(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
         if request.user != user:
             return Response({"error": "권한 읍서요"}, status=status.HTTP_403_FORBIDDEN)
 
@@ -162,8 +171,8 @@ class PasswordChangeView(APIView):
     permission_classes = [IsAuthenticated]
 
     # 패스워드 변경
-    def put(self, request, username):
-        user = get_object_or_404(User, username=username)
+    def put(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
         if request.user != user:
             return Response({"error": "권한이 없음."}, status=status.HTTP_403_FORBIDDEN)
         current_password = request.data.get("current_password")
