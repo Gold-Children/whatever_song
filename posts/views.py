@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from .models import Post
+from .models import Post, Comment
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
-from .serializers import PostSerializer
+from .serializers import PostSerializer, CommentSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import render, redirect, get_object_or_404
@@ -45,5 +45,30 @@ class PostDetailAPIView(APIView):
         serializer = PostSerializer(post)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def put(self, request, post_id):
+        post = self.get_object(post_id)
+        serializer = PostSerializer(
+            post, data=request.data, partial=True) 
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+    
+    def delete(self, request, post_id):
+        post = self.get_object(post_id)
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    #댓글 작성
+    def post(self, request, post_id):
+        post = self.get_object(post_id)
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(post=post)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
 class PostDetailView(TemplateView):
     template_name = "posts/detail.html"
+
+class PostUpdateView(TemplateView):
+    template_name = "posts/update.html"
