@@ -14,6 +14,4 @@ urlpatterns = [
     path('profile/image/<int:pk>/', views.ProfileImageView.as_view(), name='profile_image_update'),
     path('profile/<int:pk>/change-password/', views.PasswordChangeView.as_view(), name='change-password'),
     path('profile/delete-account/<int:user_id>/', views.ProfiledeleteView.as_view(), name='delete-account'),
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
