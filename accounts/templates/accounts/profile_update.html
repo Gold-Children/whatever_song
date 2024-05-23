@@ -38,7 +38,7 @@
 
             const userId = "{{ user_id }}"; // Django 템플릿에서 제공한 user_id
             const csrfToken = "{{ csrf_token }}"; // Django 템플릿에서 제공한 CSRF 토큰
-            const accessToken = localStorage.getItem('access_token'); // 로컬 스토리지에서 Access Token 가져오기
+            const accessToken = localStorage.getItem('access'); // 로컬 스토리지에서 Access Token 가져오기
 
             const formData = new FormData();
             formData.append('username', document.getElementById('username').value);
@@ -75,7 +75,7 @@
 
             const userId = "{{ user_id }}"; // Django 템플릿에서 제공한 user_id
             const csrfToken = "{{ csrf_token }}"; // Django 템플릿에서 제공한 CSRF 토큰
-            const accessToken = localStorage.getItem('access_token'); // 로컬 스토리지에서 Access Token 가져오기
+            const accessToken = localStorage.getItem('access'); // 로컬 스토리지에서 Access Token 가져오기
 
             const data = {
                 current_password: document.getElementById('current_password').value,
