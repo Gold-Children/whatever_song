@@ -1,11 +1,18 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'accounts/css/profile.css' %}">
+
+
 <div id="profile-container">
-    <h1>Profile</h1>
-    <p><strong>Username:</strong> <span id="username"></span></p>
-    <p><strong>Email:</strong> <span id="email"></span></p>
-    <p><strong>NickName:</strong> <span id="nickname"></span></p>
+    <div class="profile-image">
+        <img id="profile-picture" alt="Profile Picture">
+    </div>
+    <p><strong></strong> <span id="nickname"></span></p>
+    <p class="hidden"><strong>Username:</strong> <span id="username"></span></p>
+    <p class="hidden"><strong>Email:</strong> <span id="email"></span></p>
+    <a href="/api/accounts/profile/{{user_id}}/edit/" id="edit-profile-button">프로필 수정</a>
 </div>
 
 <script>
@@ -28,6 +35,9 @@
                     document.getElementById('username').textContent = data.username;
                     document.getElementById('email').textContent = data.email;
                     document.getElementById('nickname').textContent = data.nickname;
+                    if (data.image) {
+                        document.getElementById('profile-picture').src = data.image;
+                    }
                 })
                 .catch(error => {
                     console.error('Failed to load profile:', error);

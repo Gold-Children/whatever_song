@@ -1,0 +1,73 @@
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right,#4861da, #8f64c6, #d859aa);
+    background-size: cover;
+    font:1em "맑은 고딕",Georgia,sans-serif;
+}
+
+#profile-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    text-align: center;  /* 가운데 정렬 */
+}
+
+.profile-image {
+    margin-bottom: 10px;
+    text-align: center; /* 이미지 컨테이너 가운데 정렬 */
+}
+
+.profile-image img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: inline-block; /* 이미지 블록 정렬 */
+    background-color: white;
+}
+
+/* 선택 상자 스타일 */
+.select-box {
+    position: relative;
+    display: inline-block;
+    width: 200px; /* 선택 상자의 너비 */
+    margin: 10px;
+}
+
+/* 선택 상자 라벨 스타일 */
+.select-label {
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* 선택 상자 드롭다운 스타일 */
+.select-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none; /* 기본적으로 숨김 */
+}
+
+/* 선택 상자 옵션 스타일 */
+.select-option {
+    padding: 10px;
+    cursor: pointer;
+}
+
+/* 선택 상자 옵션 호버 스타일 */
+.select-option:hover {
+    background-color: #f5f5f5;
+}
+
+/* 선택 상자 활성화 스타일 */
+.select-box.active .select-dropdown {
+    display: block; /* 선택 상자가 활성화되면 드롭다운을 표시 */
+}
