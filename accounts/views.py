@@ -6,7 +6,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.views.generic import TemplateView
-from django.contrib.auth import get_user_model, authenticate, update_session_auth_hash, logout
+from django.contrib.auth import (
+    get_user_model,
+    authenticate,
+    update_session_auth_hash,
+    logout,
+)
 from django.shortcuts import render
 from django.http import JsonResponse
 from .serializers import SignupSerializer
@@ -57,8 +62,9 @@ def logout(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+
 def test(request):
-    return render(request, 'accounts/test.html')
+    return render(request, "accounts/test.html")
 
 
 # Create your views here.
@@ -74,20 +80,22 @@ class ProfileView(APIView):
 
 class ProfilePageView(TemplateView):
     template_name = "accounts/profile.html"
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['user_id'] = kwargs["pk"] # 현재 로그인한 사용자의 ID를 컨텍스트에 추가
+        context["user_id"] = kwargs["pk"]  # 현재 로그인한 사용자의 ID를 컨텍스트에 추가
         return context
+
 
 class ProfileUpdatePageView(TemplateView):
     template_name = "accounts/profile_update.html"
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['user_id'] = kwargs.get("pk")
-        context['csrf_token'] = self.request.META.get('CSRF_COOKIE')
+        context["user_id"] = kwargs.get("pk")
+        context["csrf_token"] = self.request.META.get("CSRF_COOKIE")
         return context
+
 
 class ProfileUpdateView(APIView):
     permission_classes = [IsAuthenticated]
@@ -141,12 +149,14 @@ class ProfileUpdateView(APIView):
             serializer.save()
 
             refresh = RefreshToken.for_user(user)
-            return Response({
+            return Response(
+                {
                     "message": "프로필 수정 및 토큰 재발급이 완료되었습니다.",
                     "access": str(refresh.access_token),
                     "refresh": str(refresh),
-                    },
-                status=status.HTTP_200_OK,)
+                },
+                status=status.HTTP_200_OK,
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -182,7 +192,7 @@ class PasswordChangeView(APIView):
         user = get_object_or_404(User, pk=pk)
         if request.user != user:
             return Response({"error": "권한이 없음."}, status=status.HTTP_403_FORBIDDEN)
-        
+
         current_password = request.data.get("current_password")
         new_password = request.data.get("new_password")
 
@@ -200,7 +210,8 @@ class PasswordChangeView(APIView):
         update_session_auth_hash(request, user)
 
         return Response(
-            {"message": "비밀번호가 성공적으로 변경되었습니다."}, status=status.HTTP_200_OK
+            {"message": "비밀번호가 성공적으로 변경되었습니다."},
+            status=status.HTTP_200_OK,
         )
 
 
@@ -210,7 +221,7 @@ class ProfiledeleteView(APIView):
     # 회원 탈출
     def delete(self, request, pk):
         user = get_object_or_404(User, pk=pk)
-        
+
         if request.user != user:
             return Response(
                 {"error": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN
@@ -218,7 +229,7 @@ class ProfiledeleteView(APIView):
 
         logout(request._request)
         user.delete()
-        
+
         return Response(
             {"message": "회원 탈퇴 성공하셨습니다"}, status=status.HTTP_204_NO_CONTENT
         )
