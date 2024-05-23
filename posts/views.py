@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from .models import Post, Comment
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
@@ -34,6 +35,7 @@ class PostlistView(TemplateView):
 
 class PostcreateView(TemplateView):
     template_name = "posts/create.html"
+
 
 class PostDetailAPIView(APIView):
     
@@ -72,6 +74,7 @@ class PostDetailView(TemplateView):
 
 class PostUpdateView(TemplateView):
     template_name = "posts/update.html"
+
 
 class CommentAPIView(APIView):
 
