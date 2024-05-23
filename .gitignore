@@ -5,11 +5,13 @@
 # custom
 .python-version
 config.py
+static/css/playlist.css
+
 
 
 ### Django ###
 *.log
-*.pot
+*.pot    
 *.pyc
 __pycache__/
 local_settings.py

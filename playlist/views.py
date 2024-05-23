@@ -103,3 +103,8 @@ class PlaylistZzimAPIView(APIView):
         playlist.save()
         serializer = PlaylistSerializer(playlist)
         return Response({"message": message, "playlist": serializer.data}, status=status.HTTP_200_OK)
+    
+
+def test(request):
+    return render(request, 'playlist/playlist.html')
+
