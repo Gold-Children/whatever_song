@@ -1,10 +1,11 @@
 from rest_framework import status
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.views.generic import TemplateView
 from django.contrib.auth import (
     get_user_model,
@@ -25,42 +26,26 @@ from .models import User
 class SignUpView(CreateAPIView):
     model = get_user_model()
     serializer_class = SignupSerializer
+    permission_classes = [AllowAny]
 
 
 class SignUpPageView(TemplateView):
     template_name = "accounts/signup.html"
 
+class LoginPageView(TemplateView):
+    template_name = "accounts/login.html"
 
-def login(request):
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+class LogoutAPIView(APIView):
+    permission_classes = [AllowAny]
 
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            refresh = RefreshToken.for_user(user)
-            return JsonResponse(
-                {"access": str(refresh.access_token), "refresh": str(refresh)}
-            )
-        else:
-            return JsonResponse(
-                {"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-    return render(request, "accounts/login.html")
-
-
-@api_view(["POST"])
-def logout(request):
-    try:
-        refresh_token = request.data["refresh"]
-        token = RefreshToken(refresh_token)
-        token.blacklist()
-        return JsonResponse(
-            {"message": "Successfully logged out"}, status=status.HTTP_200_OK
-        )
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 def test(request):
@@ -201,8 +186,13 @@ class PasswordChangeView(APIView):
                 {"error": "현재 비밀번호가 올바르지 않습니다."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        # 새로운 비밀번호를 설정 (자동으로 해싱)
+        
+        if current_password == new_password:
+            return Response(
+                {"error": "이전 비밀번호와 같은 비밀번호로 설정할 수 없습니다."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        # 해싱된 비밀번호를 저장
         user.set_password(new_password)
         user.save()
 

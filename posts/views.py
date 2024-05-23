@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from .models import Post, Comment
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
@@ -34,6 +35,7 @@ class PostlistView(TemplateView):
 
 class PostcreateView(TemplateView):
     template_name = "posts/create.html"
+
 
 class PostDetailAPIView(APIView):
     
@@ -72,3 +74,22 @@ class PostDetailView(TemplateView):
 
 class PostUpdateView(TemplateView):
     template_name = "posts/update.html"
+
+
+class CommentAPIView(APIView):
+
+    def get_object(self, comment_id):
+        return get_object_or_404(Comment, pk=comment_id)
+
+    def put(self, request, comment_id):
+        comment = self.get_object(comment_id)
+        serializer = CommentSerializer(
+            comment, data=request.data, partial=True) 
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+    
+    def delete(self, request, comment_id):
+        comment = self.get_object(comment_id)
+        comment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
