@@ -1,8 +1,22 @@
+@font-face {
+    font-family: 'SCoreDream-400';
+    font-weight: 400; 
+    font-style: normal; 
+    src: url(https://cdn.jsdelivr.net/gh/webfontworld/SCoreDream/SCoreDream4.woff2) format('woff2');
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'SCoreDream-300';
+    font-weight: 300; 
+    font-style: normal; 
+    src: url(https://cdn.jsdelivr.net/gh/webfontworld/SCoreDream/SCoreDream4.woff2) format('woff2');
+    font-display: swap;
+}
+
 body {
-    font-family: Arial, sans-serif;
     background: linear-gradient(to right,#4861da, #8f64c6, #d859aa);
     background-size: cover;
-    font:1em "맑은 고딕",Georgia,sans-serif;
 }
 
 #profile-container {
@@ -10,6 +24,18 @@ body {
     margin: 50px auto;
     padding: 20px;
     text-align: center;  /* 가운데 정렬 */
+    font-family: 'SCoreDream-400';
+}
+
+#nickname {
+    font-family: 'SCoreDream-400';
+    color: #ffffff;
+    font-size: 22px;
+}
+#edit-profile-button {
+    text-decoration: none;
+    font-family: 'SCoreDream-400';
+    color: #ffffff;
 }
 
 .profile-image {
@@ -26,48 +52,53 @@ body {
     background-color: white;
 }
 
-/* 선택 상자 스타일 */
-.select-box {
+.menu {
+    display: flex;
+    justify-content: center;
+    background: transparent;
+    padding: 5px 0;
+    font-family: 'SCoreDream-300';
+}
+
+.menu a {
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px 70px;
     position: relative;
-    display: inline-block;
-    width: 200px; /* 선택 상자의 너비 */
-    margin: 10px;
 }
 
-/* 선택 상자 라벨 스타일 */
-.select-label {
+.menu a.active::after {
+    font-family: 'SCoreDream-300';
+    content: "";
     display: block;
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-/* 선택 상자 드롭다운 스타일 */
-.select-dropdown {
+    width: 50%;  /* 밑줄의 너비를 50%로 설정하여 중앙에 정렬 */
+    height: 2px;
+    background-color: #ffffff;
     position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    display: none; /* 기본적으로 숨김 */
+    bottom: -2px;  /* 밑줄을 텍스트 바로 아래에 위치시킴 */
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-/* 선택 상자 옵션 스타일 */
-.select-option {
-    padding: 10px;
-    cursor: pointer;
+
+.menu a:hover {
+    color: #ffffff;
 }
 
-/* 선택 상자 옵션 호버 스타일 */
-.select-option:hover {
-    background-color: #f5f5f5;
+.menu a:hover::after {
+    width: 50%;
 }
 
-/* 선택 상자 활성화 스타일 */
-.select-box.active .select-dropdown {
-    display: block; /* 선택 상자가 활성화되면 드롭다운을 표시 */
+.menu a::after {
+    content: "";
+    display: block;
+    width: 0;
+    height: 2px;
+    background-color: #ffffff;
+    transition: width 0.3s;
 }
+
+.menu a.active::after {
+    width: 50%;
+}
+
