@@ -18,17 +18,17 @@
 <body>
     <nav>
             <div class="home">
-                <a href="community">Home</a>
+                <a href="/api/accounts/main/">Home</a>
             </div>
             <div class="service">
                 <a href="community">Coach service</a>
-                <a href="community">Playlist</a>
+                <a href="/api/playlist/">Playlist</a>
                 <a href="community">Community</a>
             </div>
             <div class="accounts">
                 <a id="login-logout-link" href="{% url 'login' %}">Login</a>
                 {% if user.is_authenticated %}
-                <a href="{% url 'profile' %}">Profile</a>
+                <a href="{% url 'profile' pk=user.pk %}">Profile</a>
                 <a href="{% url 'logout' %}" id="logout-link">Logout</a>
             {% else %}
                 <a href="{% url 'signup' %}">Signup</a>
