@@ -7,7 +7,7 @@
 }
 
 body {
-    background: linear-gradient(to right, #4861da, #8f64c6, #d859aa);
+    background-image: linear-gradient(to right, #4861da, #8f64c6, #d859aa);
     background-size: cover;
 }
 
@@ -67,13 +67,22 @@ body {
     border-radius: 50%;
 }
 
+#change-password-form {
+    font-size: 13px;
+}
+
 label {
-    display: block;
+    display: inline-block;
+    width: 80px; /* 이름(label)의 너비 조절 */
     margin-bottom: 15px;
 }
 
-input[type="text"], input[type="email"], input[type="password"] {
-    width: 100%;
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 80%; /* 입력창의 너비를 조절하여 이름과 입력창이 한 줄에 표시되도록 함 */
+    /* (100% - 30%) - 2% = 68% */
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #b9b9b9;
@@ -82,21 +91,37 @@ input[type="text"], input[type="email"], input[type="password"] {
     box-sizing: border-box; /* 입력 요소에 내용과 패딩을 포함하도록 함 */
     border-radius: 5px;
     height: 50px;
+    color: #ffffff;
+    outline: rgb(182, 182, 182);
 }
 
 button {
-    padding: 10px;
+    padding: 12px;
     background-color: rgb(255,255,255,0.1);
     color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    right: 100px;
 }
 
 button:hover {
     background-color: rgb(255,255,255,0.2);
     transform: rotate(360deg);
     transition: all 1.65s;
+}
+
+
+#change-password-form button {
+    display: block;
+    margin: 0 auto;
+}
+
+#update-profile-form button{
+    display: block;
+    margin: 0 auto;
+}
+
+#change-password-form {
+    margin-top: 10px; /* 비밀번호 입력창 위 여백 추가 */
 }
