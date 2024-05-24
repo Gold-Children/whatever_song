@@ -1,7 +1,8 @@
 // 기본 플레이리스트 가져오기
 function fetchPlaylists() {
-    axios.get('http://127.0.0.1:8000/api/playlist/')
+    axios.get('/api/playlist/data/')
         .then(response => {
+            console.log(response.data); // API 응답 데이터 구조 확인
             displayPlaylist(response.data);
         })
         .catch(error => {
@@ -9,18 +10,17 @@ function fetchPlaylists() {
         });
 }
 
-
 // 검색 결과 가져오기
 function searchPlaylist(query) {
-    axios.get(`http://127.0.0.1:8000/api/playlist/search/?query=${query}`)
+    axios.get(`/api/playlist/search/?query=${query}`)
         .then(response => {
+            console.log(response.data); // API 응답 데이터 구조 확인
             displayPlaylist(response.data);
         })
         .catch(error => {
             console.error('Error fetching search results:', error);
         });
 }
-
 
 // 플레이리스트 표시
 function displayPlaylist(playlists) {
@@ -35,29 +35,30 @@ function displayPlaylist(playlists) {
         const imageUrl = playlist.image_url || 'https://via.placeholder.com/150';
         
         item.innerHTML = `
-            <img src="${imageUrl}" alt="${playlist.name}">
-            <div class="playlist-info">
-                <h2>${playlist.name}</h2>
-                <a href="${playlist.link}" target="_blank">듣기</a>
-            </div>
+            <a href="${playlist.link}" target="_blank">
+                <img src="${imageUrl}" alt="${playlist.name}">
+                <div class="playlist-info">
+                    <h2>${playlist.name}</h2>
+            </a>
         `;
         container.appendChild(item);
     });
 }
 
-
 // 페이지 로드 시 기본 플레이리스트를 가져옴
 document.addEventListener('DOMContentLoaded', function() {
     fetchPlaylists();
 
-    // 검색 버튼 클릭 이벤트
-    const searchButton = document.getElementById('search-btn');
-    searchButton.addEventListener('click', function() {
-        const query = document.getElementById('search-input').value;
-        if (query) {
-            searchPlaylist(query);
-        } else {
-            fetchPlaylists(); // 검색어가 없으면 기본 플레이리스트를 다시 가져옴
+    // 검색 
+    const searchInput = document.getElementById('search-input');
+    searchInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            const query = searchInput.value;
+            if (query) {
+                searchPlaylist(query);
+            } else {
+                fetchPlaylists(); // 검색어가 없으면 기본 플레이리스트를 다시 가져옴
+            }
         }
     });
 });
