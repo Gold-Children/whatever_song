@@ -2,85 +2,35 @@
 
 {% block content %}
 <h2> Login </h2>
-<form id="login-form" method="POST">
-    {% csrf_token %}
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username"><br><br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password"><br><br>
+<form id="login-form" method="post">
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
     <button type="submit">Login</button>
 </form>
-
 <script>
-    function saveAccessToken(token) {
-        localStorage.setItem('access_token', token);
-    }
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
 
-    function saveRefreshToken(token) {
-        localStorage.setItem('refresh_token', token);
-    }
+        // CSRF 토큰을 가져옵니다.
+        const csrfToken = getCsrfToken();
 
-    function getAccessToken() {
-        return localStorage.getItem('access_token');
-    }
-
-    function getRefreshToken() {
-        return localStorage.getItem('refresh_token')
-    }
-
-    function requestNewAccessToken() {
-        const refreshToken = getRefreshToken();
-        if (refreshToken) {
-            axios.post('/api/token/refresh/', { refresh: refreshToken })
-                .then(response => {
-                    const newAccessToken = response.data.access;
-                    saveAccessToken(newAccessToken);
-                })
-                .catech(error => {
-                    console.error('Failed to refresh access token:', error);
-                });
-        } else {
-            console.error('No refresh token available.');
-        }
-    }
-
-    document.getElementById('login-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const formData = new FormData(this);
-        axios.post('{% url "login" %}', formData)
-            .then(function(response) {
-                const accessToken = response.data.access;
-                const refreshToken = response.data.refresh;
-                saveAccessToken(accessToken)
-                saveRefreshToken(refreshToken)
-                window.location.href = '{% url "test" %}';
-            })
-            .catch(function(error) {
-                console.error('Login error:', error);
-            });
-    });
-
-    function makeAuthenticatedRequest() {
-        const accessToken = getAccessToken();
-        axios.get('{% url "test" %}', {
+        axios.post('{% url "token_obtain" %}', {
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
+        }, {
             headers: {
-                'Authorization': 'Bearer ${accessToken}'
+                'X-CSRFToken': csrfToken
             }
         })
-        .then(function(response) {
-            console.log('Protected data:', response.data);
+        .then(response => {
+            localStorage.setItem('access', response.data.access);
+            localStorage.setItem('refresh', response.data.refresh);
+            alert('로그인 성공!');
+            window.location.href = '{% url "test" %}'
         })
-        .catch(function(error) {
-            if (error.response.status === 401) {
-                requestNewAccessToken();
-            } else {
-                console.error('API request error:', error);
-            }
+        .catch(error => {
+            console.error('로그인 실패.', error);
         });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        makeAuthenticatedRequest();
     });
 </script>
 {% endblock content %}

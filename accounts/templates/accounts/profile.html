@@ -13,7 +13,7 @@
         const userId = '{{ user_id }}';  // 템플릿 태그를 사용해 현재 로그인한 유저의 ID를 가져옴
         console.log(userId)
         function loadProfile() {
-            const token = localStorage.getItem('access_token');  // 저장된 토큰 가져오기
+            const token = localStorage.getItem('access');  // 저장된 토큰 가져오기
             if (!token) {
                 console.error('No access token found');
                 return;

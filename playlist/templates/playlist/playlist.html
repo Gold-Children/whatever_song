@@ -1,72 +1,21 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block head %}
-    <link rel="stylesheet" href="/static/css/playlist.css">
+    <link rel="stylesheet" href="{% static 'css/playlist.css' %}">
 {% endblock head %}
 
 {% block content %}
 <h1>플레이리스트</h1>
 
 <div class="search">
-    <input type="text" placeholder="어떤 플리를 원하나요?">
+    <input type="text" id="search-input" placeholder="어떤 플리를 원하나요?">
+    <button id="search-btn">검색</button>
 </div>
 
-<div class="playlist-container">
-    <div class="playlist-item">
-        <img src="" alt="노래">
-        <div class="playlist-info">
-            <h2>한리다주</h2>
-        </div>
-    </div>
-
-    <div class="playlist-item">
-        <img src="" alt="노래2">
-        <div class="playlist-info">
-            <h2>우앵</h2>
-        </div>
-    </div>
-
-    <div class="playlist-item">
-        <img src="" alt="노래3">
-        <div class="playlist-info">
-            <h2>티문</h2>
-        </div>
-    </div>
-
-    <div class="playlist-item">
-        <img src="" alt="노래4">
-        <div class="playlist-info">
-            <h2>모에박</h2>
-        </div>
-    </div>
-
-    <div class="playlist-item">
-        <img src="" alt="노래5">
-        <div class="playlist-info">
-            <h2>더이상</h2>
-        </div>
-    </div>
-
-    <div class="playlist-item">
-        <img src="" alt="노래6">
-        <div class="playlist-info">
-            <h2>적을게</h2>
-        </div>
-    </div>
-
-    <div class="playlist-item">
-        <img src="" alt="노래7">
-        <div class="playlist-info">
-            <h2>없어</h2>
-        </div>
-    </div>
-
-    <div class="playlist-item">
-        <img src="" alt="노래8">
-        <div class="playlist-info">
-            <h2>마지막칸</h2>
-        </div>
-    </div>
+<div class="playlist-container" id="playlist-container">
 </div>
 
+<!-- JavaScript 파일 로드 -->
+<script src="{% static 'js/playlist.js' %}"></script>
 {% endblock content %}
