@@ -1,9 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="{% static "css/base.css" %}">
 
     {% block head %} {% endblock head %}
     
@@ -15,12 +17,21 @@
 </head>
 <body>
     <nav>
-        <ul>
-            <li><a href="{% url 'signup' %}">Signup</a></li>
-            <li><a id="login-logout-link" href="{% url 'login' %}">Login</a></li>
-        </ul>
+            <div class="home">
+                <a href="community">Home</a>
+            </div>
+            <div class="service">
+                <a href="community">Coach service</a>
+                <a href="community">Playlist</a>
+                <a href="community">Community</a>
+            </div>
+            <div class="accounts">
+                <a id="login-logout-link" href="{% url 'login' %}">Login</a>
+                <a href="{% url 'signup' %}">Signup</a>
+            </div>
     </nav>
-    <input type="hidden" id="csrf-token" value="{% csrf_token %}">
+    <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
+    
     {% block content %}
 
     {% endblock content %}
