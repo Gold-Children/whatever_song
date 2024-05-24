@@ -1,39 +1,53 @@
 /* playlist.css */
 
-body {
-    background-color : #121212;
-    color : white;
+@font-face {
+    font-family: 'SCoreDream-500';
+    font-weight: 500;
+    font-style: normal;
+    src: url(https://cdn.jsdelivr.net/gh/webfontworld/SCoreDream/SCoreDream5.woff2) format('woff2'),
 }
 
-h1 {
-    text-align : center;
-    margin-top : 20px;
+.search-container {
+    max-width: 900px;
+    margin: 0 auto 20px auto; 
+    padding: 0 10px; 
 }
 
-.search {
-    text-align : center;
-    margin-bottom : 20px;
-}
-
-.search input {
-    width : 20%;
+.search-container input {
+    font-family: 'SCoreDream-500';
+    color: #fff;
+    width : 28%;
     height : 25px;
-    font-size : 18px;
+    font-size : 14px;
     padding : 5px;
     border-radius : 5px;
     border : 1px solid #ccc;
+    background-color:rgba(255, 255, 255, 0.075);
+}
+
+input::-webkit-input-placeholder {
+    color:#fff;
+}
+input::-moz-placeholder {
+    color:#fff;
+}
+input::-ms-input-placeholder {
+    color:#fff;
 }
 
 .playlist-container {
+    font-family: 'SCoreDream-500';
     display : flex;
     flex-wrap : wrap;
-    justify-content : center; 
+    justify-content : flex-start; 
     max-width : 900px;
     margin : 0 auto;
     gap : 20px;
 }
 
 .playlist-item {
+    font-family: 'SCoreDream-500';
+    color : #fff;
     border-radius : 10px;
     overflow : hidden;
     width : calc(25% - 20px);
@@ -52,9 +66,4 @@ h1 {
 .playlist-info h2 {
     font-size : 18px;
     margin : 10px 0 5px;
-}
-
-.playlist-info p {
-    font-size : 14px;
-    color : #b3b3b3;
 }
