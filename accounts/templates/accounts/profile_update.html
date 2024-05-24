@@ -1,38 +1,54 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block content %}
+
+<link rel="stylesheet" href="{% static 'accounts/css/profile_update.css' %}">
+
 <div class="form-container">
-    <h1>Update Profile</h1>
     <form id="update-profile-form">
-        <label for="username">아이디:</label>
-        <input type="text" id="username" name="username" autocomplete="username" required><br>
+        <label for="image" class="image-label">
+            <input type="file" id="image" name="image">
+            <img id="image-preview" alt="Preview Image">
+        </label><br>
+
+        <label for="username">이름</label>
+        <input type="text" id="username" name="username" autocomplete="username" required placeholder="새 아이디"><br>
         
-        <label for="nickname">닉네임:</label>
-        <input type="text" id="nickname" name="nickname" autocomplete="nickname" required><br>
+        <label for="nickname">닉네임</label>
+        <input type="text" id="nickname" name="nickname" autocomplete="nickname" required placeholder="새 닉네임"><br>
         
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" autocomplete="email" required><br>
-        
-        <label for="image">Profile Image:</label>
-        <input type="file" id="image" name="image"><br>
+        <label for="email">이메일</label>
+        <input type="email" id="email" name="email" autocomplete="email" required placeholder="사용 중인 이메일"><br>
         
         <button type="submit">프로필 수정</button>
     </form>
 
-    <h1>비밀번호 변경</h1>
     <form id="change-password-form">
-        <label for="current_password">현재 비밀번호:</label>
+        <label for="current_password">현재 비밀번호</label>
         <input type="password" id="current_password" name="current_password" required><br>
         
-        <label for="new_password">새 비밀번호:</label>
+        <label for="new_password">새 비밀번호</label>
         <input type="password" id="new_password" name="new_password" required><br>
         
         <button type="submit">비밀번호 변경</button>
     </form>
 
-    <h1>회원 탈퇴</h1>
-    <button id="delete-account-button">회원 탈출</button>
 
     <script>
+        document.getElementById('image').addEventListener('change', function(event) {
+            const input = event.target;
+            const reader = new FileReader();
+            
+            reader.onload = function() {
+                const preview = document.getElementById('image-preview');
+                preview.src = reader.result; // 파일의 내용을 미리보기 이미지로 설정
+                preview.style.display = 'block'; // 미리보기 이미지를 보이도록 설정
+            }
+            
+            reader.readAsDataURL(input.files[0]); // 파일을 읽어오기
+        });
+
         document.getElementById('update-profile-form').addEventListener('submit', function(event) {
             event.preventDefault();
 
