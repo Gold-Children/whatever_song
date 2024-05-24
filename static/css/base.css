@@ -9,6 +9,7 @@ body {
     background: linear-gradient(to right,#4861DA, #8F64C6, #D859AA);
     background-size: cover;
 }
+
 nav{
     font-family: 'S-CoreDream-3Light';
     font-size: 17px;
@@ -18,8 +19,18 @@ nav{
     justify-content: space-between;
 }
 
+.home{
+    width: 15%;
+}
+
 .service a{
     padding: 0px 10px;
+}
+
+.accounts{
+    display: flex;
+    justify-content: flex-end;
+    width: 15%;
 }
 
 .accounts a{
