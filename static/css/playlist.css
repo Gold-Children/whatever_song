@@ -1,0 +1,60 @@
+/* playlist.css */
+
+body {
+    background-color : #121212;
+    color : white;
+}
+
+h1 {
+    text-align : center;
+    margin-top : 20px;
+}
+
+.search {
+    text-align : center;
+    margin-bottom : 20px;
+}
+
+.search input {
+    width : 20%;
+    height : 25px;
+    font-size : 18px;
+    padding : 5px;
+    border-radius : 5px;
+    border : 1px solid #ccc;
+}
+
+.playlist-container {
+    display : flex;
+    flex-wrap : wrap;
+    justify-content : center; 
+    max-width : 900px;
+    margin : 0 auto;
+    gap : 20px;
+}
+
+.playlist-item {
+    border-radius : 10px;
+    overflow : hidden;
+    width : calc(25% - 20px);
+    text-align : center;
+}
+
+.playlist-item img {
+    width : 100%;
+    height : auto;
+}
+
+.playlist-info {
+    padding : 10px;
+}
+
+.playlist-info h2 {
+    font-size : 18px;
+    margin : 10px 0 5px;
+}
+
+.playlist-info p {
+    font-size : 14px;
+    color : #b3b3b3;
+}
