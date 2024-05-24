@@ -48,8 +48,8 @@ class LogoutAPIView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-def test(request):
-    return render(request, "accounts/test.html")
+def main(request):
+    return render(request, "accounts/main.html")
 
 
 # Create your views here.
