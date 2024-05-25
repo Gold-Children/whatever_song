@@ -1,0 +1,96 @@
+/* coach.css */
+
+@font-face {
+    font-family: 'SCoreDream-500';
+    font-weight: 500;
+    font-style: normal;
+    src: url(https://cdn.jsdelivr.net/gh/webfontworld/SCoreDream/SCoreDream5.woff2) format('woff2'),
+}
+
+.coach-container {
+    text-align: center;
+}
+
+h1 {
+    font-family: 'SCoreDream-500';
+    color: #fff;
+    font-size: 48px;
+    margin-bottom: 40px;
+}
+
+.input-container {
+    font-family: 'SCoreDream-500';
+    color: #fff;
+    max-width: 600px;
+    margin: 80px auto 20px auto;
+    padding: 0 10px;
+}
+
+input::-webkit-input-placeholder {
+    font-family: 'SCoreDream-500';
+    font-size: 16px; 
+    opacity: 0.5; 
+    padding: 5px; 
+    color: #fff; 
+}
+input::-moz-placeholder {
+    font-family: 'SCoreDream-500';
+    font-size: 16px; 
+    opacity: 0.5; 
+    padding: 5px; 
+    color: #fff; 
+}
+input::-ms-input-placeholder {
+    font-family: 'SCoreDream-500';
+    font-size: 16px; 
+    opacity: 0.5; 
+    padding: 5px; 
+    color: #fff; 
+}
+
+.input-container h2 {
+    font-size: 25px;
+    margin-bottom: 10px;
+}
+
+input {
+    background-color:transparent;
+    text-align: center;
+    color: #fff;
+    width: 80%;
+    height: 55px;
+    font-size: 23px;
+    padding: 5px 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.input-group {
+    display: center;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 80%;
+    margin: 0 auto 20px;
+}
+
+.button-container {
+    margin-top: 10px;
+    align-self: flex-end;
+    margin-left: 60%;
+}
+
+.hing {
+    background-color:transparent;
+    font-family: 'SCoreDream-500';
+    color: #fff;
+    width: 95px;
+    height: 42px;
+    font-size: 15px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    cursor: pointer;
+}
