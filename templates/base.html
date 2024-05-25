@@ -25,10 +25,11 @@
             </div>
     </nav>
     <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
-    
-    {% block content %}
-
-    {% endblock content %}
+    <div class="containor">
+        {% block content %}
+        
+        {% endblock content %}
+    </div>
     <script>
         // CSRF 토큰을 가져오는 전역 함수
         function getCsrfToken() {
