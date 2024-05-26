@@ -1,15 +1,33 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block content %}
-<h2>회원가입</h2>
-<form id="signup-form" method="post">
-    <input type="text" id="username" placeholder="Username" required>
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="password" id="password" placeholder="Password" required>
-    <input type="text" id="nickname" placeholder="Nickname" required>
-    <input type="file" id="image">
-    <button type="submit">회원가입</button>
-</form>
+<link rel="stylesheet" href="{% static 'accounts/css/signup.css' %}">
+<div class="signup-form">
+    <p>Signup</p>
+    <form id="signup-form" method="post">
+        <div class="test">
+            <span class="signup-text">아이디</span><input type="text" id="username" placeholder="아이디를 입력해주세요" required><br>
+        </div>
+        <div class="test">
+            <span class="signup-text">닉네임</span><input type="text" id="nickname" placeholder="닉네임을 입력해주세요" required><br>
+        </div>
+        <div class="test">
+            <span class="signup-text">비밀번호</span><input type="password" id="password" placeholder="비밀번호를 입력해주세요" required><br>
+        </div>
+        <div class="test">
+            <span class="signup-text">이메일</span><input type="email" id="email" placeholder="이메일을 입력해주세요" required><br>
+        </div>
+        <div class="signup-image-line">
+            <span class="signup-text">사진</span>
+            <span id="file-name">선택된 파일 없음</span>
+            <label for="file-input" class="file-choice-btn">파일 선택</label>
+            <input type="file" id="file-input" style="display:none;"><br>
+        </div>
+        <div class="signup-btn-line">
+            <button type="submit">Signup</button>
+        </div>
+    </form>
+</div>
 <script>
     document.getElementById('signup-form').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -40,6 +58,11 @@
         .catch(error => {
             console.error('회원가입에 실패했습니다.', error);
         });
+    });
+
+    document.getElementById('file-input').addEventListener('change', function() {
+        const fileName = this.files[0] ? this.files[0].name : '선택된 파일 없음';
+        document.getElementById('file-name').textContent = fileName;
     });
 </script>
 {% endblock content %}
