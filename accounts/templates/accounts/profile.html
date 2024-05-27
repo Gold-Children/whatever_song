@@ -62,7 +62,11 @@
                 this.classList.add('active');
             });
         });
+        document.getElementById('home-button').addEventListener('click', function() {
+            window.location.href = '/api/accounts/api/main/';  // 메인 페이지로 이동
+        });
     });
+    
     
 </script>
 {% endblock content %}

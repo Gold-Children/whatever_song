@@ -49,17 +49,24 @@ function getCsrfToken() {
 function checkLoginStatus() {
     const accessToken = localStorage.getItem('access');
     const loginLogoutLink = document.getElementById('login-logout-link');
+    const signupProfileLink = document.getElementById('signup-profile-link');
     if (accessToken) {
         loginLogoutLink.textContent = 'Logout';
+        loginLogoutLink.style.cursor = 'pointer';
         loginLogoutLink.addEventListener('click', function(e) {
             e.preventDefault();
             logout();
         });
-    } else {
+        const userId = localStorage.getItem('user_id')
+        signupProfileLink.textContent ='Profile';
+        signupProfileLink.href = `/api/accounts/profile/${userId}/`;
+}
+    else {
         loginLogoutLink.textContent = 'Login';
         loginLogoutLink.href = '/api/accounts/login/';
-    }
-}
+        signupProfileLink.textContent = 'Signup';
+        signupProfileLink.href = 'api/accounts/signup/';
+}}
 
 function logout() {
     const refreshToken = localStorage.getItem('refresh');

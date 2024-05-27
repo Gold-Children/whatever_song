@@ -1,4 +1,6 @@
+from typing import Any, Dict
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
 
 
@@ -28,3 +30,16 @@ class SignupSerializer(serializers.ModelSerializer):
             "nickname",
             "image",
         ]
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token["user_id"] = user.id
+        return token
+    
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data["user_id"] = self.user.id
+        return data
