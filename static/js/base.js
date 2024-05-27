@@ -1,15 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const accessToken = localStorage.getItem('access');
     const refreshToken = localStorage.getItem('refresh');
-    
-    if (!accessToken || !refreshToken) {
-        // 토큰이 없으면 로그인 페이지로 리디렉션
-        if (window.location.pathname !== '/api/accounts/login/') {
-            window.location.href = '/api/accounts/login/';
-        }
-        return;
-    }
-    
+
     axios.defaults.baseURL = 'http://127.0.0.1:8000/';
     axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
 
@@ -80,8 +72,8 @@ function logout() {
     .then(response => {
         localStorage.removeItem('access');
         localStorage.removeItem('refresh');
-        alert('로그아웃 성공!');
         window.location.href = '/api/accounts/login/';
+        alert('로그아웃 성공!');
     })
     .catch(error => {
         console.error('로그아웃 실패.', error);
