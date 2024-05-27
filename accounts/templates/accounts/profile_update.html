@@ -74,6 +74,7 @@
             })
             .then(function(response) {
                 alert('프로필 변경에 성공하셨습니다!');
+                window.location.href = `/api/accounts/profile/${userId}/`
                 console.log(response.data);
             })
             .catch(function(error) {
@@ -107,6 +108,7 @@
             })
             .then(function(response) {
                 alert('비밀번호 변경을 성공하셨습니다!');
+                window.location.href = '{% url "main" %}'
                 console.log(response.data);
             })
             .catch(function(error) {
@@ -133,8 +135,8 @@
                 })
                 .then(function(response) {
                     alert('탈출 성공하셨습니다!');
+                    window.location.href = '{% url "main" %}'
                     console.log(response.data);
-                    // 로그아웃 또는 페이지 리디렉션 처리
                 })
                 .catch(function(error) {
                     console.error('There was an error!', error);
