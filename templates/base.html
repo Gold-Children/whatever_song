@@ -5,15 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <!-- Axios CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="{% static "css/base.css" %}">
 
     {% block head %} {% endblock head %}
-    
-    {% load static %}
-    <script src="{% static 'js/playlist.js' %}"></script>
 
-    <!-- Axios CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="{% static 'js/playlist.js' %}"></script>
+    <script src="{% static 'js/base.js' %}"></script>
+
 </head>
 <body>
     <nav>
@@ -41,51 +41,5 @@
         
         {% endblock content %}
     </div>
-    <script>
-        // CSRF 토큰을 가져오는 전역 함수
-        function getCsrfToken() {
-            return document.getElementById('csrf-token').value;
-        }
-
-        function checkLoginStatus() {
-            const accessToken = localStorage.getItem('access');
-            const loginLogoutLink = document.getElementById('login-logout-link');
-            
-            if (accessToken) {
-                loginLogoutLink.textContent = 'Logout';
-                loginLogoutLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    logout();
-                });
-            } else {
-                loginLogoutLink.textContent = 'Login';
-                loginLogoutLink.href = '{% url "login" %}';
-            }
-        }
-
-        function logout() {
-            const refreshToken = localStorage.getItem('refresh');
-            const csrfToken = getCsrfToken();
-
-            axios.post('{% url "logout" %}', { refresh: refreshToken }, {
-                headers: {
-                    'X-CSRFToken': csrfToken
-                }
-            })
-            .then(response => {
-                localStorage.removeItem('access');
-                localStorage.removeItem('refresh');
-                alert('로그아웃 성공!');
-                window.location.href = '{% url "login" %}';
-            })
-            .catch(error => {
-                console.error('로그아웃 실패.', error);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            checkLoginStatus();
-        });
-    </script>
 </body>
 </html>
