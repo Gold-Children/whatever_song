@@ -1,21 +1,47 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block content %}
-<h1 id="post-title"></h1>
-<p id="post-content"></p>
-<p id="post-author"></p>
-<p id="post-likes"></p>
-<p id="post-created"></p>
-<p id="post-updated"></p>
+<link rel="stylesheet" href="{% static "posts/css/detail.css" %}">
+<div class="post">
+    <h1 id="post-title">한 번 들으면 계속 생각나는 노래;;</h1>
+    <div class="author-create">
+        <p id="post-created">작성일 | 24.2.24 </p>
+        <p id="post-author">작성자 | 나는 승주</p>
+    </div>
+    <a href="" id="update-link">수정하기 | 편집됨</a>
+    <div class="post-img">
+        <img src="{% static "posts/css/potato.png" %}" alt="게시글 이미지">
+    </div>
+    <p id="post-content">
+        두 세번 들으면 바로 중독 됨;; 미니언즈 바나나송이랑 고래가 새우를 삼켜버렸다임 이거 듣다 보면 하루종일 고래가~ 새우를~ 이러고 있음ㅋㅋㅋㅋ;;
+        한창 듣고 현타올 때 쯤이면 내가 같이 올린 짤을 생각하기 바라... "정신차려라 감자녀석!!!!"
+    </p>
+    <div class="count">
+        <p id="post-likes">좋아요 224</p>
+        <p id="post-comment">댓글 224</p>
+    </div>
+    <form id="comment-form">
+        <textarea id="comment-content" rows="4" cols="50" placeholder="댓글을 작성해주세요"></textarea><br>
+        <button type="submit">완료</button>
+    </form>
+    
+    <div class="comment-list">
+        <div class="comment">
+            <img id="img" src="{% static "posts/css/우엥우엥.png" %}" alt="프사">
+            <div class="comment-content">
+                <p>nickname</p>
+                <p id="post-text">내용내용내용내용내용내용내용내용내용내용</p>
+                <p>작성일 | 24.2.24 </p> 
+            </div>
+            <div class="comment-button">
+                <button>수정 | 편집됨</button>
+                <button>삭제</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<h2>댓글</h2>
-<ul id="comments-list"></ul>
 
-<h2>댓글 추가</h2>
-<form id="comment-form">
-    <textarea id="comment-content" rows="4" cols="50" placeholder="여기에 댓글을 작성하세요..."></textarea><br>
-    <input type="submit" value="댓글 작성">
-</form>
 
 <script>
     const postId = /* post_id를 동적으로 설정 */;
