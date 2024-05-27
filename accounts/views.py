@@ -2,6 +2,7 @@ from rest_framework import status
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -19,7 +20,7 @@ from .serializers import SignupSerializer
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password
 from django.db import transaction
-from .serializers import SignupSerializer
+from .serializers import SignupSerializer, CustomTokenObtainPairSerializer
 from .models import User
 
 
@@ -31,6 +32,9 @@ class SignUpView(CreateAPIView):
 
 class SignUpPageView(TemplateView):
     template_name = "accounts/signup.html"
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 class LoginPageView(TemplateView):
     template_name = "accounts/login.html"
