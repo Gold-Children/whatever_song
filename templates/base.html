@@ -26,13 +26,8 @@
                 <a href="community">Community</a>
             </div>
             <div class="accounts">
-                <a id="login-logout-link" href="{% url 'login' %}">Login</a>
-                {% if user.is_authenticated %}
-                <a href="{% url 'profile' pk=user.pk %}">Profile</a>
-                <a href="{% url 'logout' %}" id="logout-link">Logout</a>
-            {% else %}
-                <a href="{% url 'signup' %}">Signup</a>
-            {% endif %}
+                <a id="login-logout-link"></a>
+                <a id="signup-profile-link"></a>
             </div>
     </nav>
     <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
