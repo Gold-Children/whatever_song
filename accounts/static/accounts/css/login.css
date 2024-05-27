@@ -83,6 +83,8 @@
 
 /* input칸 조절 */
 input { 
+    font-family: 'SCoreDream-400';
+    color: #fff;
     border:1px solid #fff;
     background-color:transparent;
     border-radius: 5px;
