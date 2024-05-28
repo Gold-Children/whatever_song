@@ -1,50 +1,62 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const accessToken = localStorage.getItem('access');
-    const refreshToken = localStorage.getItem('refresh');
-
-    axios.defaults.baseURL = 'http://127.0.0.1:8000/';
-    axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-
-    const refreshTokenFunction = async () => {
-        try {
-            const response = await axios.post('/api/accounts/api/token/refresh/', {
-                refresh: refreshToken
-            });
-            const newAccessToken = response.data.access;
-            axios.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
-            localStorage.setItem('access', newAccessToken);
-            return newAccessToken;
-        } catch (error) {
-            console.error('토큰을 새로고침할 수 없습니다.', error);
-            localStorage.removeItem('access');
-            localStorage.removeItem('refresh');
-            if (window.location.pathname !== '/api/accounts/login/') {
-                window.location.href = '/api/accounts/login/';
-            }
-        }
-    };
-
-    axios.interceptors.response.use(
-        response => response,
-        async error => {
-            const originalRequest = error.config;
-            if (error.response.status === 401 && !originalRequest._retry) {
-                originalRequest._retry = true;
-                const newAccessToken = await refreshTokenFunction();
-                axios.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
-                originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-                return axios(originalRequest);
-            }
-            return Promise.reject(error);
-        }
-    );
-
-});
-
-        // CSRF 토큰을 가져오는 전역 함수
+// CSRF 토큰을 가져오는 전역 함수
 function getCsrfToken() {
     return document.getElementById('csrf-token').value;
 }
+
+// JWT 토큰을 디코딩하는 함수
+function parseJwt(token) {
+    try {
+        return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+        return null;
+    }
+}
+
+// Access token을 새로고침하는 함수
+async function refreshAccessToken() {
+    const refreshToken = localStorage.getItem('refresh');
+    try {
+        const response = await axios.post('/api/accounts/api/token/refresh/', { refresh: refreshToken });
+        const newAccessToken = response.data.access;
+        localStorage.setItem('access', newAccessToken);
+        return newAccessToken;
+    } catch (error) {
+        console.error('Error refreshing token:', error);
+        // 필요한 경우 추가 처리 (예: 로그인 페이지로 리디렉션)
+        localStorage.removeItem('access');
+        localStorage.removeItem('refresh');
+        if (window.location.pathname !== '/api/accounts/login/') {
+            window.location.href = '/api/accounts/login/';
+        }
+        throw error;
+    }
+}
+
+// Axios 요청 인터셉터를 설정하여 자동으로 토큰을 갱신하는 함수
+axios.interceptors.request.use(
+    async config => {
+        // 특정 URL을 제외
+        const excludedUrls = ['/api/accounts/signup/', '/api/accounts/api/token/', '/api/accounts/login/', '/api/accounts/api/signup/', '/api/playlist/', '/api/playlist/data/', '/api/playlist/search/', '/api/playlist/zzim/<int:playlist_id>/'];
+        if (excludedUrls.some(url => config.url.includes(url))) {
+            return config;
+        }
+
+        let accessToken = localStorage.getItem('access');  // let으로 선언하여 재할당 가능
+        const tokenData = parseJwt(accessToken);
+        const now = Math.ceil(Date.now() / 1000);
+
+        // 토큰이 만료되었는지 확인
+        if (tokenData.exp < now) {
+            accessToken = await refreshAccessToken();  // 만료된 경우 새 토큰 발급
+        }
+
+        config.headers['Authorization'] = 'Bearer ' + accessToken;
+        return config;
+    },
+    error => {
+        return Promise.reject(error);
+    }
+);
 
 function checkLoginStatus() {
     const accessToken = localStorage.getItem('access');
@@ -57,16 +69,16 @@ function checkLoginStatus() {
             e.preventDefault();
             logout();
         });
-        const userId = localStorage.getItem('user_id')
-        signupProfileLink.textContent ='Profile';
+        const userId = localStorage.getItem('user_id');
+        signupProfileLink.textContent = 'Profile';
         signupProfileLink.href = `/api/accounts/profile/${userId}/`;
-}
-    else {
+    } else {
         loginLogoutLink.textContent = 'Login';
         loginLogoutLink.href = '/api/accounts/login/';
         signupProfileLink.textContent = 'Signup';
         signupProfileLink.href = '/api/accounts/signup/';
-}}
+    }
+}
 
 function logout() {
     const refreshToken = localStorage.getItem('refresh');

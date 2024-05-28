@@ -16,32 +16,5 @@
         </div>
     </form>
 </div>
-
-<script>
-    document.getElementById('login-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // CSRF 토큰을 가져옵니다.
-        const csrfToken = getCsrfToken();
-
-        axios.post('{% url "token_obtain" %}', {
-            username: document.getElementById('username').value,
-            password: document.getElementById('password').value
-        }, {
-            headers: {
-                'X-CSRFToken': csrfToken
-            }
-        })
-        .then(response => {
-            localStorage.setItem('access', response.data.access);
-            localStorage.setItem('refresh', response.data.refresh);
-            localStorage.setItem('user_id', response.data.user_id);
-            alert('로그인 성공!');
-            window.location.href = '{% url "main" %}'
-        })
-        .catch(error => {
-            console.error('로그인 실패.', error);
-        });
-    });
-</script>
+<script src="{% static 'accounts/js/login.js' %}"></script>
 {% endblock content %}
