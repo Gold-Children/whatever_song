@@ -117,6 +117,12 @@ p{
     margin: 0 50px 10px 50px
 }
 
+#post-like2{
+    position: absolute;
+}
+#post-like1{
+    position: relative;
+}
 
 /* 댓글 칸, 버튼 위치 조정 */
 #comment-form{

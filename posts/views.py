@@ -93,3 +93,16 @@ class CommentAPIView(APIView):
         comment = self.get_object(comment_id)
         comment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+class LikeAPIView(APIView):
+    def get_object(self, postID):
+        return get_object_or_404(Post, pk=postID)
+    
+    def post(self, request, postID):
+        post = self.get_object(postID)
+        if post.like_users.filter(pk=request.user.pk).exists():
+            post.like_users.remove(request.user)
+        else:
+            post.like_users.add(request.user)
+        return Response(status=status.HTTP_200_OK)
