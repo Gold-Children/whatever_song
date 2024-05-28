@@ -5,5 +5,5 @@ urlpatterns = [
     path("", views.PlaylistPageView.as_view(), name="playlist"),
     path("data/", views.PlaylistDataAPIView.as_view(), name="playlist-data"),
     path("search/", views.PlaylistSearchAPIView.as_view(), name="playlist-search"),
-    path("<int:playlist_id>/zzim/", views.PlaylistZzimAPIView.as_view(), name="playlist-zzim"),
+    path("zzim/<int:playlist_id>/", views.PlaylistZzimAPIView.as_view(), name="playlist-zzim"),
 ]

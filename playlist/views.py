@@ -8,6 +8,8 @@ from WhateverSong.config import CLIENT_ID, CLIENT_SECRET, TOKEN_URL
 from django.shortcuts import get_object_or_404
 from .models import Playlist
 from django.views.generic import TemplateView
+from rest_framework.permissions import IsAuthenticated
+
 
 # 토큰 발급
 def get_access_token():
@@ -89,10 +91,12 @@ class PlaylistSearchAPIView(APIView):
             playlists.append(playlist)
         return Response(playlists, status=200)
 
-# 찜 등록/제거, isauthenticated 없어서 유저 로그인 시스템이랑 결합시 추가해야함
+
 class PlaylistZzimAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    
     def post(self, request, playlist_id):
-        playlist = get_object_or_404(Playlist, id=playlist_id)
+        playlist = get_object_or_404(Playlist, playlist_id=playlist_id)
 
         if playlist.zzim.filter(id=request.user.id).exists():
             playlist.zzim.remove(request.user)
@@ -102,7 +106,7 @@ class PlaylistZzimAPIView(APIView):
             message = "찜 목록에 추가했습니다."
 
         playlist.save()
-        serializer = PlaylistSerializer(playlist)
+        serializer = PlaylistSerializer(playlist, context={'request':request})
         return Response(
             {"message": message, "playlist": serializer.data}, status=status.HTTP_200_OK
         )

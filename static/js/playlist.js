@@ -22,6 +22,7 @@ function searchPlaylist(query) {
         });
 }
 
+
 // 플레이리스트 표시
 function displayPlaylist(playlists) {
     const container = document.getElementById('playlist-container');
@@ -37,9 +38,14 @@ function displayPlaylist(playlists) {
         item.innerHTML = `
             <a href="${playlist.link}" target="_blank">
                 <img src="${imageUrl}" alt="${playlist.name}">
+                // 🥰찜기능 🫥찜안함
                 <div class="playlist-info">
                     <h2>${playlist.name}</h2>
+                </div>
             </a>
+            <button onclick="zzim('{playlist.playlist_id}')">
+                ${playlist.is_zzim ? '🥰' : '🫥'}
+            </button>
         `;
         container.appendChild(item);
     });
