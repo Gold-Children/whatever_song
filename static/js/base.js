@@ -65,7 +65,7 @@ function checkLoginStatus() {
         loginLogoutLink.textContent = 'Login';
         loginLogoutLink.href = '/api/accounts/login/';
         signupProfileLink.textContent = 'Signup';
-        signupProfileLink.href = 'api/accounts/signup/';
+        signupProfileLink.href = '/api/accounts/signup/';
 }}
 
 function logout() {
