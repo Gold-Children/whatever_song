@@ -16,7 +16,7 @@
             <span id="all-text">카테고리</span>
             <select name="post-category" id="post-category">
                 <option value="노래 추천">----</option>
-                <option value="노래 추천">노래추천</option>
+                <option value="노래 추천">노래 추천</option>
                 <option value="자유">자유</option>
             </select>
         </div>
@@ -37,10 +37,12 @@
         document.getElementById('create-form').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const userId = localStorage.getItem('user_id')
+            const userId = window.localStorage.getItem('user_id')
+            const userNickname = window.localStorage.getItem('user_nickname')
             const formData = new FormData();
             formData.append('title', document.getElementById('post-title').value);
             formData.append('author', userId);
+            formData.append('author_nickname', userNickname);
             formData.append('content', document.getElementById('post-content').value);
             formData.append('category', document.getElementById('post-category').value);
             formData.append('link', document.getElementById('post-url').value);
