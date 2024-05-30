@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{% static 'accounts/css/signup.css' %}">
 <div class="signup-form">
     <p>Signup</p>
-    <form id="signup-form" method="post">
+    <form id="signup-form" method="post" enctype="multipart/form-data">
         <div class="signup">
             <span class="signup-text">아이디</span><input type="text" id="username" placeholder="아이디를 입력해주세요" required><br>
         </div>
@@ -28,41 +28,5 @@
         </div>
     </form>
 </div>
-<script>
-    document.getElementById('signup-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const formData = new FormData();
-        formData.append('username', document.getElementById('username').value);
-        formData.append('email', document.getElementById('email').value);
-        formData.append('password', document.getElementById('password').value);
-        formData.append('nickname', document.getElementById('nickname').value);
-        
-        const imageInput = document.getElementById('image');
-            if (imageInput.files.length > 0) {
-                formData.append('image', imageInput.files[0]);
-            }
-
-        // CSRF 토큰을 가져옵니다.
-        const csrfToken = getCsrfToken();
-
-        axios.post('{% url 'api_signup' %}', formData, {
-            headers: {
-                'X-CSRFToken': csrfToken
-            }
-        })
-        .then(response => {
-            alert('회원가입을 성공했습니다!');
-            window.location.href = '{% url "login" %}'
-        })
-        .catch(error => {
-            console.error('회원가입에 실패했습니다.', error);
-        });
-    });
-
-    document.getElementById('file-input').addEventListener('change', function() {
-        const fileName = this.files[0] ? this.files[0].name : '선택된 파일 없음';
-        document.getElementById('file-name').textContent = fileName;
-    });
-</script>
+<script src="{% static 'accounts/js/signup.js' %}"></script>
 {% endblock content %}

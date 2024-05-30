@@ -45,7 +45,12 @@ class PostDetailAPIView(APIView):
     def get(self, request, post_id):
         post = self.get_object(post_id)
         serializer = PostSerializer(post)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = serializer.data
+        like = False
+        if request.user.id in data['like']:
+            like = True
+        data = {'data':data, 'like':like}
+        return Response(data, status=status.HTTP_200_OK)
 
     def put(self, request, post_id):
         post = self.get_object(post_id)
@@ -101,8 +106,8 @@ class LikeAPIView(APIView):
     
     def post(self, request, postID):
         post = self.get_object(postID)
-        if post.like_users.filter(pk=request.user.pk).exists():
-            post.like_users.remove(request.user)
+        if post.like.filter(pk=request.user.pk).exists():
+            post.like.remove(request.user)
         else:
-            post.like_users.add(request.user)
+            post.like.add(request.user)
         return Response(status=status.HTTP_200_OK)

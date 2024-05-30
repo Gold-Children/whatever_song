@@ -3,21 +3,25 @@
 {% block content %}
 <link rel="stylesheet" href="{% static "posts/css/detail.css" %}">
 <div class="post">
-    <h1 id="post-title">한 번 들으면 계속 생각나는 노래;;</h1>
+    <h1 id="post-title"></h1>
     <div class="author-create">
-        <p id="post-created">작성일 | 24.2.24 </p>
-        <p id="post-author">작성자 | 나는 승주</p>
+        <p id="post-created"></p>
+        <p id="post-author"></p>
     </div>
     <a href="" id="update-link">수정하기 | 편집됨</a>
     <div class="post-img">
-        <img src="{% static "posts/css/potato.png" %}" alt="게시글 이미지">
     </div>
     <p id="post-content">
-        두 세번 들으면 바로 중독 됨;; 미니언즈 바나나송이랑 고래가 새우를 삼켜버렸다임 이거 듣다 보면 하루종일 고래가~ 새우를~ 이러고 있음ㅋㅋㅋㅋ;;
-        한창 듣고 현타올 때 쯤이면 내가 같이 올린 짤을 생각하기 바라... "정신차려라 감자녀석!!!!"
     </p>
     <div class="count">
-        <p id="post-comment">댓글 224</p>
+        <p id='like-count'></p>        
+            <button id="unlike">
+                <div class="post-like2">😍</div>
+            </button>
+            <button id="like" class="like">
+                <div class="post-like1">😞</div>
+            </button>
+        <p id="post-comment"></p>
     </div>
     <form id="comment-form">
         <textarea id="comment-content" rows="4" cols="50" placeholder="댓글을 작성해주세요"></textarea><br>
@@ -26,11 +30,11 @@
     
     <div class="comment-list">
         <div class="comment">
-            <img id="img" src="{% static "posts/css/우엥우엥.png" %}" alt="프사">
+            <img id="img" alt="프사">
             <div class="comment-content">
-                <p>nickname</p>
-                <p id="post-text">내용내용내용내용내용내용내용내용내용내용</p>
-                <p>작성일 | 24.2.24 </p> 
+                <p id="comment-author"></p>
+                <p id="comment-text"></p>
+                <p id="comment-created"></p> 
             </div>
             <div class="comment-button">
                 <button>수정 | 편집됨</button>
@@ -43,22 +47,50 @@
 
 
 <script>
+    // URL 경로에서 postId를 추출하는 함수
+    function extractPostIdFromUrl() {
+        const path = window.location.pathname; // 현재 URL 경로를 가져옴
+        const segments = path.split('/'); // 경로를 '/'로 분할하여 배열로 만듦
+        return segments[segments.length - 2]; // 마지막에서 두 번째 요소가 postId임
+    }
+
+    // postId를 URL 경로에서 가져옴
+    const postId = extractPostIdFromUrl();
 
     document.addEventListener('DOMContentLoaded', async function() {
+        if (!postId) {
+            console.error('postId를 URL 경로에서 추출할 수 없습니다.');
+            return;
+        }
+
         try {
-            // 게시물 데이터를 불러오기
-            const response = await axios.get(`/api/posts/${postId}/`);
-            const post = response.data;
-            
+            // 게시물 데이터를 서버에서 가져옴
+            const response = await axios.get(`/api/posts/api/${postId}/`);
+            const post = response.data.data;
+            const like = response.data.like
+            console.log('post.like_count', post.like_count)
+            // HTML 요소에 게시물 데이터를 채움
             document.getElementById('post-title').innerText = post.title;
             document.getElementById('post-content').innerText = post.content;
-            document.getElementById('post-author').innerText = `작성자: ${post.user}`;
-            document.getElementById('post-likes').innerText = `좋아요: ${post.like}`;
+            document.getElementById('post-author').innerText = `작성자: ${post.author_nickname}`;
             document.getElementById('post-created').innerText = `작성일: ${post.created_at}`;
-            document.getElementById('post-updated').innerText = `수정일: ${post.updated_at}`;
-
+            document.getElementById('like-count').innerText = ` ${post.like_count}`;
+            
+            const unlikeButton = document.getElementById("unlike");
+            const likeButton = document.getElementById("like");
+            if (like) {
+                likeButton.style.visibility = "hidden";
+                unlikeButton.style.visibility = "visible";
+            } 
+            else {
+                likeButton.style.visibility = "visible";
+                unlikeButton.style.visibility = "hidden";
+            }
+            
+            // 댓글 목록을 처리함
             const commentsList = document.getElementById('comments-list');
             post.comments.forEach(comment => {
+                // 각 댓글 항목을 생성함
                 const commentItem = document.createElement('li');
                 commentItem.innerHTML = `
                     <p>${comment.content}</p>
@@ -66,50 +98,65 @@
                     <button onclick="editComment(${comment.id})">수정</button>
                     <button onclick="deleteComment(${comment.id})">삭제</button>
                 `;
+                // 댓글 항목을 댓글 리스트에 추가함
                 commentsList.appendChild(commentItem);
             });
         } catch (error) {
+            // 데이터를 가져오는 중 오류가 발생하면 오류를 콘솔에 출력함
             console.error('게시물 데이터를 가져오는 중 오류 발생:', error);
         }
+    });
+    
+    document.getElementById("like").addEventListener("click", function() {
+        const userId = window.localStorage.getItem('user_id');
+        if (!userId) {
+            window.location.href = '/api/accounts/login';
+        }
+        // CSRF 토큰을 가져옵니다.
+        const csrfToken = getCsrfToken(); 
 
-        // 댓글 작성 폼 제출 처리
-        document.getElementById('comment-form').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const content = document.getElementById('comment-content').value;
-
-            try {
-                await axios.post(`/api/posts/${postId}/comments/`, { content }, {
-                    headers: {
-                        'X-CSRFToken': csrfToken
-                    }
-                });
-                alert('댓글이 작성되었습니다.');
-                location.reload(); // 페이지 새로고침하여 댓글 목록 업데이트
-            } catch (error) {
-                console.error('댓글 작성 중 오류 발생:', error);
+        axios.post(`/api/posts/${postId}/like/`,{
+            postID : postId
+        },{
+            headers: {
+                'X-CSRFToken': csrfToken
+                
             }
+        })
+        .then(response => {
+            
+            window.location.href = `/api/posts/${postId}/`; 
+        })
+        .catch(error => {
+            console.log("error: ", error);
+            console.error('몰라용~', error);
         });
     });
 
-    async function editComment(commentId) {
-        // 댓글 수정 로직을 추가하세요
-        // 예: 수정할 내용을 입력받는 폼을 표시하고, axios.put을 사용하여 서버에 요청
-    }
-
-    async function deleteComment(commentId) {
-        if (confirm('이 댓글을 삭제하시겠습니까?')) {
-            try {
-                await axios.delete(`/api/comments/${commentId}/`, {
-                    headers: {
-                        'X-CSRFToken': csrfToken
-                    }
-                });
-                alert('댓글이 삭제되었습니다.');
-                location.reload(); // 페이지 새로고침하여 댓글 목록 업데이트
-            } catch (error) {
-                console.error('댓글 삭제 중 오류 발생:', error);
-            }
+    document.getElementById("unlike").addEventListener("click", function() {
+        const userId = window.localStorage.getItem('user_id');
+        if (!userId) {
+            window.location.href = '/api/accounts/login';
         }
-    }
+        // CSRF 토큰을 가져옵니다.
+        const csrfToken = getCsrfToken(); 
+
+        axios.post(`/api/posts/${postId}/like/`,{
+            postID : postId
+        },{
+            headers: {
+                'X-CSRFToken': csrfToken
+                
+            }
+        })
+        .then(response => {
+            
+            window.location.href = `/api/posts/${postId}/`;
+        })
+        .catch(error => {
+            console.log("error: ", error);
+            console.error('몰라용~', error);
+        });
+    });
 </script>
 {% endblock content %}
