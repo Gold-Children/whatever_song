@@ -1,4 +1,4 @@
-import requests, base64
+import requests, base64, urllib.parse
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,6 +8,8 @@ from WhateverSong.config import CLIENT_ID, CLIENT_SECRET, TOKEN_URL
 from django.shortcuts import get_object_or_404
 from .models import Playlist
 from django.views.generic import TemplateView
+from rest_framework.permissions import IsAuthenticated
+
 
 # 토큰 발급
 def get_access_token():
@@ -27,7 +29,7 @@ def get_access_token():
 class PlaylistDataAPIView(APIView):
     def get(self, request):
         access_token = get_access_token()
-
+        
         if not access_token:
             return Response({"error": "토큰이 유효하지 않습니다."}, status=400)
 
@@ -39,7 +41,7 @@ class PlaylistDataAPIView(APIView):
             "https://api.spotify.com/v1/browse/featured-playlists", headers=headers
         )
         spotify_data = spotify_api.json()
-
+        
         playlists = []
         for item in spotify_data.get("playlists", {}).get("items", []):
             playlist = {
@@ -48,6 +50,7 @@ class PlaylistDataAPIView(APIView):
                 "image_url": (
                     item["images"][0]["url"] if item["images"] else None
                 ),  # 플레이리스트 이미지 URL (있는 경우)
+                "id": item["id"],
             }
             playlists.append(playlist)
         return Response(playlists, status=200)
@@ -59,7 +62,7 @@ class PlaylistSearchAPIView(APIView):
 
         # 검색어가 없는 경우 오류 응답 반환
         if not search:
-            return Response({"error": "검색어를 입력해주세요."}, status=400)
+            return Response({"error": "검색어를 입력해주세요."}, status=status.HTTP_400_BAD_REQUEST)
 
         access_token = get_access_token()
         if not access_token:
@@ -84,28 +87,38 @@ class PlaylistSearchAPIView(APIView):
                 "image_url": (
                     item["images"][0]["url"] if item["images"] else None
                 ),  # 플레이리스트 이미지 URL (있는 경우)
+                "id": item["id"],
             }
             # 리스트에 플레이리스트 추가
             playlists.append(playlist)
-        return Response(playlists, status=200)
+        return Response(playlists, status=status.HTTP_200_OK)
 
-# 찜 등록/제거, isauthenticated 없어서 유저 로그인 시스템이랑 결합시 추가해야함
 class PlaylistZzimAPIView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, playlist_id):
-        playlist = get_object_or_404(Playlist, id=playlist_id)
-
-        if playlist.zzim.filter(id=request.user.id).exists():
-            playlist.zzim.remove(request.user)
-            message = "찜 목록에서 삭제했습니다."
+        user = request.user
+        playlist = Playlist.objects.filter(user=user, playlist_id=playlist_id) # 플레이리스트 유무 확인
+        # 플레이리스트가 존재하면 삭제
+        if playlist.exists():
+            playlist.delete()
+            return Response({'message':'찜하기가 취소 되었습니다.'}, status=200)
+        # 플레이리스트가 존재하지 않으면 추가
         else:
-            playlist.zzim.add(request.user)
-            message = "찜 목록에 추가했습니다."
+            new_playlist = Playlist.objects.create(user=user, playlist_id=playlist_id)
+            serializer = PlaylistSerializer(new_playlist)
+            return Response({'message':'찜하기가 추가 되었습니다.', 'playlist':serializer.data}, status=status.HTTP_200_OK)
+        
 
-        playlist.save()
-        serializer = PlaylistSerializer(playlist)
-        return Response(
-            {"message": message, "playlist": serializer.data}, status=status.HTTP_200_OK
-        )
+class UserZzimPlaylistsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        playlists = Playlist.objects.filter(user=user)
+        serializer = PlaylistSerializer(playlists, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class PlaylistPageView(TemplateView):
     template_name = "playlist/playlist.html"
