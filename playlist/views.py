@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from .models import Playlist
 from django.views.generic import TemplateView
 from rest_framework.permissions import IsAuthenticated
+from accounts.models import User
 
 
 # 토큰 발급
@@ -122,3 +123,36 @@ class UserZzimPlaylistsAPIView(APIView):
 
 class PlaylistPageView(TemplateView):
     template_name = "playlist/playlist.html"
+
+
+class UserProfileAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        user = get_object_or_404(User, pk=user_id)
+        access_token = get_access_token()
+        if not access_token:
+            return Response({"error": "토큰이 유효하지 않습니다."}, status=400)
+
+        # spotify api 호출 헤더
+        headers = {"Authorization": f"Bearer {access_token}"}
+
+        # spotify api 호출
+        spotify_api = requests.get(
+            "https://api.spotify.com/v1/browse/featured-playlists", headers=headers
+        )
+        spotify_data = spotify_api.json()
+
+        playlists = []
+        for item in spotify_data.get("playlists", {}).get("items", []):
+            if Playlist.objects.filter(user=user, playlist_id=item["id"]).exists():
+                playlist = {
+                    "name": item["name"],  # 플레이리스트 이름
+                    "link": item["external_urls"]["spotify"],  # 플레이리스트 링크
+                    "image_url": (
+                        item["images"][0]["url"] if item["images"] else None
+                    ),  # 플레이리스트 이미지 URL (있는 경우)
+                    "id": item["id"],
+                }        
+                playlists.append(playlist)
+        return Response(playlists, status=200)
