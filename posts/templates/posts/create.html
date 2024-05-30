@@ -16,7 +16,7 @@
             <span id="all-text">카테고리</span>
             <select name="post-category" id="post-category">
                 <option value="노래 추천">----</option>
-                <option value="노래 추천">노래추천</option>
+                <option value="노래 추천">노래 추천</option>
                 <option value="자유">자유</option>
             </select>
         </div>
@@ -32,43 +32,6 @@
         <button type="submit">등록</button>
     </form>
 </div>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('create-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const userId = localStorage.getItem('user_id')
-            const formData = new FormData();
-            formData.append('title', document.getElementById('post-title').value);
-            formData.append('author', userId);
-            formData.append('content', document.getElementById('post-content').value);
-            formData.append('category', document.getElementById('post-category').value);
-            formData.append('link', document.getElementById('post-url').value);
-
-            const imageInput = document.getElementById('file-input');
-            if (imageInput.files.length > 0) {
-                formData.append('image', imageInput.files[0]);
-            }
-
-        
-            // CSRF 토큰을 가져옵니다.
-            const csrfToken = getCsrfToken();
-        
-            axios.post('/api/posts/api/create/', formData, {
-                headers: {
-                    'X-CSRFToken': csrfToken
-                }
-            })
-            .then(response => {
-                alert('게시 성공!');
-                window.location.href = '/api/posts/list/'
-            })
-            .catch(error => {
-                console.log("error: ", error);
-                console.error('게시 실패.', error);
-            });
-        });
-    });
-</script>
+<script src="{% static 'posts/js/create.js' %}"></script>
 
 {% endblock content %}

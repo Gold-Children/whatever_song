@@ -4,6 +4,7 @@ from .models import Post, Comment
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from .serializers import PostSerializer, CommentSerializer
+from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import render, redirect, get_object_or_404
@@ -25,6 +26,7 @@ class PostAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
+        print(request.data)
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
