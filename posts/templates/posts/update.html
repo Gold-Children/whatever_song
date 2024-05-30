@@ -5,23 +5,15 @@
 
 <div class="update-form">
     <h1>수정하기</h1>
-    <form action="update-form">
+    <form id="update-form">
         <div class="post">
-            <span id="all-text">제목</span><input type="text" id="post-title" placeholder="제목를 입력해주세요" required><br>
+            <span id="all-text">제목</span><input type="text" id="post-title" required><br>
         </div>
         <div class="post">
-            <span id="all-text">내용</span><textarea id="post-content" rows="4" cols="50" placeholder="내용을 입력해주세요"></textarea><br>
+            <span id="all-text">내용</span><textarea id="post-content" rows="4" cols="50" ></textarea><br>
         </div>
         <div class="post">
-            <span id="all-text">카테고리</span>
-            <select name="post-category" id="post-category">
-                <option value="노래추천">----</option>
-                <option value="노래추천">노래추천</option>
-                <option value="자유">자유</option>
-            </select>
-        </div>
-        <div class="post">
-            <span id="all-text">노래링크</span><input type="url" id="" placeholder="노래 링크를 넣어주세요" required><br>
+            <span id="all-text">노래링크</span><input type="url" id="song-link" required><br>
         </div>
         <div class="post">
             <span id="all-text">사진</span>
@@ -34,7 +26,6 @@
 </div>
 
 
-<script>
-</script>
+<script src="{% static 'posts/js/update.js' %}"></script>
 
 {% endblock content %}
