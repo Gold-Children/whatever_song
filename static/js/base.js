@@ -25,6 +25,8 @@ async function refreshAccessToken() {
         // 필요한 경우 추가 처리 (예: 로그인 페이지로 리디렉션)
         localStorage.removeItem('access');
         localStorage.removeItem('refresh');
+        localStorage.removeItem('user_id');
+        localStorage.removeItem('user_nickname');
         if (window.location.pathname !== '/api/accounts/login/') {
             window.location.href = '/api/accounts/login/';
         }
@@ -36,7 +38,7 @@ async function refreshAccessToken() {
 axios.interceptors.request.use(
     async config => {
         // 특정 URL을 제외
-        const excludedUrls = ['/api/accounts/signup/', '/api/accounts/api/token/', '/api/accounts/login/', '/api/accounts/api/signup/', '/api/playlist/', '/api/playlist/data/', '/api/playlist/search/', '/api/playlist/zzim/<int:playlist_id>/', '/api/posts/list/', '/api/posts/api/<int:post_id>', '/api/posts/<int:post_id>'];
+        const excludedUrls = ['/api/accounts/signup/', '/api/accounts/api/token/', '/api/accounts/login/', '/api/accounts/logout/', '/api/accounts/api/signup/', '/api/playlist/', '/api/playlist/data/', '/api/playlist/search/', '/api/playlist/zzim/<int:playlist_id>/', '/api/posts/list/', '/api/posts/api/<int:post_id>', '/api/posts/<int:post_id>'];
         if (excludedUrls.some(url => config.url.includes(url))) {
             return config;
         }
@@ -91,6 +93,8 @@ function logout() {
     .then(response => {
         localStorage.removeItem('access');
         localStorage.removeItem('refresh');
+        localStorage.removeItem('user_id');
+        localStorage.removeItem('user_nickname');
         window.location.href = '/api/accounts/login/';
         alert('로그아웃 성공!');
     })
