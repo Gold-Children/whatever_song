@@ -14,14 +14,20 @@ from django.db.models import Count
 class PostAPIView(APIView):
 
     def get(self, request):
+        category = request.GET.get('category')
         sort = request.GET.get('sort', '-created_at')
-        posts = Post.objects.annotate(likes_count=Count('like'))
+        posts = Post.objects.all()
 
-        if sort == "-like": #좋아요순을 선택하면
+        if category:
+            posts = posts.filter(category=category)
+
+        posts = posts.annotate(likes_count=Count('like'))
+
+        if sort == "-like":
             posts = posts.order_by('-likes_count', '-created_at')
         else:
-            posts = posts.order_by(sort) #그냥 최신순 
-        
+            posts = posts.order_by(sort)
+
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -70,7 +76,9 @@ class PostDetailAPIView(APIView):
     #댓글 작성
     def post(self, request, post_id):
         post = self.get_object(post_id)
+        print("request.data: ", request.data)
         serializer = CommentSerializer(data=request.data)
+        print("serializer: ", serializer)
         if serializer.is_valid(raise_exception=True):
             serializer.save(post=post)
             return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -32,6 +32,7 @@ function displayPlaylist(playlists) {
                 <img src="${imageUrl}" alt="${playlist.name}">
                 <div class="playlist-info">
                     <h2>${playlist.name}</h2>
+
                 </div> 
             </a>
             <button class="zzim-button" data-id="${playlistId}">🙂</button>

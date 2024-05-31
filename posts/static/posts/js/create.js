@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             alert('게시 성공!');
-            window.location.href = '/api/posts/list/'
+            window.location.href = '/api/posts/list/';
         })
         .catch(error => {
             console.log("error: ", error);

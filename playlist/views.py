@@ -1,4 +1,5 @@
 import requests, base64, urllib.parse
+from django.core.cache import cache
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,28 +10,40 @@ from django.shortcuts import get_object_or_404
 from .models import Playlist
 from django.views.generic import TemplateView
 from rest_framework.permissions import IsAuthenticated
+from django.http import JsonResponse
 from accounts.models import User
 
 
 # 토큰 발급
 def get_access_token():
-    encoded = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode("utf-8"))
-    headers = {
-        'Authorization': f'Basic {encoded.decode("utf-8")}',
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-    data = {
-        "grant_type": "client_credentials",
-    }
-    response = requests.post(TOKEN_URL, headers=headers, data=data)
-    response_data = response.json()
-    return response_data.get("access_token")
+    # 'spotify_access_token' key값으로 value를 가져온다.
+    access_token = cache.get('spotify_access_token')    
+    if access_token is None:    # 캐시 안에 토큰이 존재하지 않으면 아래의 로직 진행
+        encoded = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode("utf-8"))
+        headers = {
+            'Authorization': f'Basic {encoded.decode("utf-8")}',
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        data = {
+            "grant_type": "client_credentials",
+        }
+        response = requests.post(TOKEN_URL, headers=headers, data=data)
+        response_data = response.json()
+
+        access_token = response_data.get('access_token')
+        expires_in = 30*60      # 30분을 초 단위로 변환
+
+        # 토큰을 캐시에 저장하고 30분 후에 만료
+        cache.set('spotify_access_token', access_token, timeout=expires_in)
+    return access_token 
+    # return JsonResponse({'access_token': access_token})
+
 
 # playlist 조회
 class PlaylistDataAPIView(APIView):
     def get(self, request):
         access_token = get_access_token()
-        
+
         if not access_token:
             return Response({"error": "토큰이 유효하지 않습니다."}, status=400)
 
@@ -60,10 +73,6 @@ class PlaylistDataAPIView(APIView):
 class PlaylistSearchAPIView(APIView):
     def get(self, request):
         search = request.query_params.get("query", None)
-
-        # 검색어가 없는 경우 오류 응답 반환
-        if not search:
-            return Response({"error": "검색어를 입력해주세요."}, status=status.HTTP_400_BAD_REQUEST)
 
         access_token = get_access_token()
         if not access_token:
