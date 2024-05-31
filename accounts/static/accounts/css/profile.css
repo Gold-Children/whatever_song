@@ -102,3 +102,44 @@ body {
     width: 50%;
 }
 
+
+
+/* 추가된 style */
+.playlist-container, .coach-container {
+    display: none; /* 처음에 모두 숨김 */
+}
+
+/* 플레이리스트 컨테이너 : 폰트 및 정렬 등 설정 */
+.playlist-container {
+    font-family: 'SCoreDream-500';
+    display : none;
+    flex-wrap : wrap;
+    justify-content : flex-start; 
+    max-width : 900px;
+    margin : 0 auto;
+    gap : 20px;
+}
+
+/* 플레이리스트 아이템 : 폰트 및 테두리, 너비, 정렬 설정 */
+/* 추가된 style */
+.playlist-item {
+    font-family: 'SCoreDream-500';
+    color : #fff;
+    border-radius : 10px;
+    overflow : hidden;
+    width : calc(25% - 20px);
+    text-align : center;
+    position: relative; 
+}
+/* 추가된 style */
+/* 찜버튼 위치 absolute라서 원하는 위치로 배치 가능 */
+.zzim-button {
+    position: absolute;
+    top: 200px;
+    right: 30px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+}

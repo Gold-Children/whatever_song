@@ -1,4 +1,4 @@
-import requests, base64
+import requests, base64, urllib.parse
 from django.core.cache import cache
 from django.shortcuts import render
 from rest_framework.views import APIView
@@ -43,6 +43,7 @@ def get_access_token():
 class PlaylistDataAPIView(APIView):
     def get(self, request):
         access_token = get_access_token()
+
         if not access_token:
             return Response({"error": "토큰이 유효하지 않습니다."}, status=400)
 
