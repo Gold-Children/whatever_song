@@ -6,34 +6,25 @@
 <div class="post-list">
     <div class="title-search">
         <p>Whatever Song Community</p>
-        <input type="text" id="search-input" placeholder="검색어를 입력해주세요">
+        <input type="text" id="searchInput" placeholder="검색어를 입력해주세요">
     </div>
     <div class="category-create">
         <div class="category">
-            <a href="">노래 추천</a>
-            <a href="">자유</a>
-            <a href="">좋아요순</a>
-            <a href="">최신순</a>
+            <select id="categorySelect">
+                <option value="">All</option>
+                <option value="노래 추천">노래 추천</option>
+                <option value="자유">자유</option>
+            </select>
+            <select id="sortSelect">
+                <option value="-created_at">최신순</option>
+                <option value="-like">좋아요순</option>
+            </select>        
         </div>
-        <a href="">작성하기</a>
+        <a href="/api/posts/create/">작성하기</a>
     </div>
     <div class="post">
-        <img src="{% static "posts/css/potato.png" %}" alt="게시글 이미지">
-        <div class="content">
-            <p id="post-title">한 번 들으면 계속 생각나는 노래;;</p>
-            <p id="post-content">두 세번 들으면 바로 중독 됨;; 미니언즈 바나나송이랑 고래가 새우를 삼켜버렸다임 이거 듣다 보면 하루종일 고래가~ 새우를~ 이러고 있음ㅋㅋㅋㅋ;;
-                </p>
-                <div class="author-create-like">
-                    <p id="post-author">나는 승주</p>
-                    <p id="post-created" >2024.2.24</p>
-                    <p id="post-like">좋아요 224</p>
-                </div>
-        </div>
+        <div class="content" id="postsList"></div>
     </div>
 </div>
-
-
-<script>
-</script>
-
+<script src="{% static 'posts/js/list.js' %}"></script>
 {% endblock content %}
