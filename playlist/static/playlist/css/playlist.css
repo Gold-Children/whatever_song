@@ -77,15 +77,21 @@ input::-ms-input-placeholder {
     margin : 10px 0 5px;
 }
 
-/* 추가된 style */
-/* 찜버튼 위치 absolute라서 원하는 위치로 배치 가능 */
-.zzim-button {
+
+.zzim-button{
+    font-family: 'SCoreDream-500';
+    color: #fff;
+    width : 25%;
+    height : 30px;
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    font-size : 17px;
+    padding : 5px;
+    border-radius : 5px;
+    border : 0px solid #cccccc00;
+    background-color:rgba(255, 255, 255, 0.075);
     position: absolute;
     top: 170px;
     right: 17px;
-    background-color: rgba(255, 255, 255, 0.7);
-    border: none;
-    border-radius: 50%;
-    padding: 10px;
-    cursor: pointer;
 }
