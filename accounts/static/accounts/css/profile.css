@@ -135,8 +135,8 @@ body {
 /* 찜버튼 위치 absolute라서 원하는 위치로 배치 가능 */
 .zzim-button {
     position: absolute;
-    top: 170px;
-    right: 50px;
+    top: 200px;
+    right: 30px;
     background-color: rgba(255, 255, 255, 0.7);
     border: none;
     border-radius: 50%;

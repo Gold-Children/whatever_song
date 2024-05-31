@@ -63,14 +63,11 @@ function displayPlaylist(playlists) {
         item.innerHTML = `
             <a href="${playlist.link}" target="_blank">
                 <img src="${imageUrl}" alt="${playlist.name}">
-                
-            </a>
-            <div>
-                <button class="zzim-button" data-id="${playlistId}">🙂</button>
-            </div>
-            <div class="playlist-info">
+                <div class="playlist-info">
                     <h2>${playlist.name}</h2>
-            </div>
+                </div> 
+            </a>
+            <button class="zzim-button" data-id="${playlistId}">🙂</button>
         `;
         container.appendChild(item);
     });
