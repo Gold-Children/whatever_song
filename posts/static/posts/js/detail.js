@@ -53,4 +53,22 @@ document.addEventListener('DOMContentLoaded', async function() {
         // 데이터를 가져오는 중 오류가 발생하면 오류를 콘솔에 출력함
         console.error('게시물 데이터를 가져오는 중 오류 발생:', error);
     }
+    const updateBtn = document.getElementById("update-link");
+
+    updateBtn.addEventListener("click", function(e) {
+    e.preventDefault();
+    updateBtn.href = `/api/posts/${postId}/update`;
+    })
 });
+
+function update(){
+    // const userId = localStorage.getItem('user_id');
+    // const udateBtn = document.getElementById('update-link');
+    // if (userId) {
+    //     updateBtn.addEventListener('click', function(e) {
+    //         e.preventDefault();
+    //         updateBtn.href = `/api/posts/${postId}//update/`;
+    //     });
+    // }
+    window.location.href = `/api/posts/${postId}/update/`;
+}
