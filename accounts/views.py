@@ -23,6 +23,7 @@ from django.db import transaction
 from .serializers import SignupSerializer, CustomTokenObtainPairSerializer
 from .models import User
 
+
 class SignUpView(CreateAPIView):
     model = get_user_model()
     serializer_class = SignupSerializer
