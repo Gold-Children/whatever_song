@@ -2,6 +2,7 @@
 
 from django.conf import settings
 from django.db import migrations, models
+import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
@@ -25,17 +26,12 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("link", models.URLField()),
+                ("playlist_id", models.CharField(max_length=255)),
                 (
-                    "save",
-                    models.ManyToManyField(
-                        related_name="playlist", to=settings.AUTH_USER_MODEL
-                    ),
-                ),
-                (
-                    "zzim",
-                    models.ManyToManyField(
-                        related_name="zzim_playlists", to=settings.AUTH_USER_MODEL
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
                     ),
                 ),
             ],
