@@ -1,0 +1,104 @@
+@font-face {
+    font-family: 'SCoreDream-400';
+    font-weight: 400; 
+    font-style: normal; 
+    src: url(https://cdn.jsdelivr.net/gh/webfontworld/SCoreDream/SCoreDream4.woff2) format('woff2');
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'SCoreDream-300';
+    font-weight: 300; 
+    font-style: normal; 
+    src: url(https://cdn.jsdelivr.net/gh/webfontworld/SCoreDream/SCoreDream4.woff2) format('woff2');
+    font-display: swap;
+}
+
+body {
+    background: linear-gradient(to right,#4861da, #8f64c6, #d859aa);
+    background-size: cover;
+}
+
+#profile-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    text-align: center;  /* 가운데 정렬 */
+    font-family: 'SCoreDream-400';
+}
+
+#nickname {
+    font-family: 'SCoreDream-400';
+    color: #ffffff;
+    font-size: 22px;
+}
+#edit-profile-button {
+    text-decoration: none;
+    font-family: 'SCoreDream-400';
+    color: #ffffff;
+}
+
+.profile-image {
+    margin-bottom: 10px;
+    text-align: center; /* 이미지 컨테이너 가운데 정렬 */
+}
+
+.profile-image img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: inline-block; /* 이미지 블록 정렬 */
+    background-color: white;
+}
+
+.menu {
+    display: flex;
+    justify-content: center;
+    background: transparent;
+    padding: 5px 0;
+    font-family: 'SCoreDream-300';
+}
+
+.menu a {
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px 70px;
+    position: relative;
+}
+
+.menu a.active::after {
+    font-family: 'SCoreDream-300';
+    content: "";
+    display: block;
+    width: 50%;  /* 밑줄의 너비를 50%로 설정하여 중앙에 정렬 */
+    height: 2px;
+    background-color: #ffffff;
+    position: absolute;
+    bottom: -2px;  /* 밑줄을 텍스트 바로 아래에 위치시킴 */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+
+.menu a:hover {
+    color: #ffffff;
+}
+
+.menu a:hover::after {
+    width: 50%;
+}
+
+.menu a::after {
+    content: "";
+    display: block;
+    width: 0;
+    height: 2px;
+    background-color: #ffffff;
+    transition: width 0.3s;
+}
+
+.menu a.active::after {
+    width: 50%;
+}
+

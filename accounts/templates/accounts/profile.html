@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'accounts/css/profile.css' %}">
+
+
+<div id="profile-container">
+    <div class="profile-image">
+        <img id="profile-picture" alt="Profile Picture">
+    </div>
+    <p><span id="nickname"></span></p>
+    <p class="hidden"><strong>Username:</strong> <span id="username"></span></p>
+    <p class="hidden"><strong>Email:</strong> <span id="email"></span></p>
+    <a href="/api/accounts/profile/{{user_id}}/edit/" id="edit-profile-button">프로필 수정</a>
+</div>
+
+<div class="menu">
+    <a href="#" class="active">내 게시글 목록</a>
+    <a href="#">찜한 게시글 목록</a>
+    <a href="#" id="zzim-playlist-link">찜한 노래 목록</a>
+    <a href="#">내가 받은 훈수</a>
+</div>
+<script src="{% static 'accounts/js/profile.js' %}"></script>
+
+
+<div id="zzim-playlist-container" class="playlist-container">
+</div>
+
+<script src="{% static 'accounts/js/profile.js' %}"></script>
+
+
+{% endblock content %}
