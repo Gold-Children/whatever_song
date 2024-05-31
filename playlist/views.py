@@ -1,4 +1,4 @@
-import requests, base64
+import requests, base64, urllib.parse
 from django.core.cache import cache
 from django.shortcuts import render
 from rest_framework.views import APIView
@@ -31,8 +31,9 @@ def get_access_token():
         response_data = response.json()
 
         access_token = response_data.get('access_token')
-        expires_in = 10
+        expires_in = 30*60      # 30분을 초 단위로 변환
 
+        # 토큰을 캐시에 저장하고 30분 후에 만료
         cache.set('spotify_access_token', access_token, timeout=expires_in)
     return access_token 
     # return JsonResponse({'access_token': access_token})
@@ -42,7 +43,7 @@ def get_access_token():
 class PlaylistDataAPIView(APIView):
     def get(self, request):
         access_token = get_access_token()
-        
+
         if not access_token:
             return Response({"error": "토큰이 유효하지 않습니다."}, status=400)
 

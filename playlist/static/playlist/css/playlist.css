@@ -56,6 +56,8 @@ input::-ms-input-placeholder {
     overflow : hidden;
     width : calc(25% - 20px);
     text-align : center;
+    /* 추가된 style */
+    position: relative; 
 }
 
 /* 플레이리스트 이미지 : 너비 및 높이 자동 설정 */
@@ -73,4 +75,23 @@ input::-ms-input-placeholder {
 .playlist-info h2 {
     font-size : 18px;
     margin : 10px 0 5px;
+}
+
+
+.zzim-button{
+    font-family: 'SCoreDream-500';
+    color: #fff;
+    width : 25%;
+    height : 30px;
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    font-size : 17px;
+    padding : 5px;
+    border-radius : 5px;
+    border : 0px solid #cccccc00;
+    background-color:rgba(255, 255, 255, 0.075);
+    position: absolute;
+    top: 170px;
+    right: 17px;
 }
