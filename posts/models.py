@@ -12,6 +12,7 @@ class Post(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="posts"
     )
+    author_nickname = models.CharField(max_length=50)
     link = models.URLField()
     image = models.ImageField(
         upload_to="posts/post_pic/%Y/%m/%d/", blank=True, null=True

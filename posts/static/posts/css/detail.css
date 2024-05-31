@@ -114,9 +114,36 @@ p{
     font-size: 18px;
     display: flex;
     justify-content: flex-start;
+    align-items: center;
     margin: 0 50px 10px 50px
 }
 
+#like-count{
+    font-family: 'SCoreDream-400';
+    margin-left: 35px;
+}
+
+#unlike{
+    font-family: 'SCoreDream-400';
+    font-size: 25px;
+    background-color: rgba(255, 255, 255, 0);
+    border-color: #ffffff00;
+    color: #fff;
+    margin: 0;
+    padding: 2px;
+    position: absolute;
+}
+
+#like{
+    font-family: 'SCoreDream-400';
+    font-size: 25px;
+    background-color: rgba(255, 255, 255, 0);
+    border-color: #ffffff00;
+    color: #fff;
+    margin: 0;
+    padding: 2px;
+    position: relative;
+}
 
 /* 댓글 칸, 버튼 위치 조정 */
 #comment-form{
