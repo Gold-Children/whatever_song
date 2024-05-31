@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         })
         .then(response => {
-
             window.location.href = '/api/accounts/login/';
         })
         .catch(error => {

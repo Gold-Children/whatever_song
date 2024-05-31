@@ -17,11 +17,11 @@ import uuid
 import librosa
 import matplotlib.pyplot as plt
 from spleeter.separator import Separator
-from django.core.files.temp import TemporaryFile
 import numpy as np
 import os
 import tensorflow as tf
 from pytube import YouTube
+import tempfile 
 
 class CoachPageView(TemplateView):
     template_name = "coach/coach.html"
@@ -168,12 +168,12 @@ class InputView(APIView):
             
             youtube_vocal_path = separate_vocals(youtube_audio_path, youtube_vocal_folder)
             
-            with TemporaryFile() as temp_file:
+            with tempfile.NamedTemporaryFile(delete=False) as temp_file:
                 for chunk in user_audio_file.chunks():
                     temp_file.write(chunk)
-                temp_file.seek(0)  # 임시 파일 포인터를 처음으로 이동
-
-                user_vocal_path = separate_vocals(temp_file.name, user_vocal_folder)
+                temp_file_path = temp_file.name  # 임시 파일 경로 저장
+            
+            user_vocal_path = separate_vocals(temp_file_path, user_vocal_folder)
             
             youtube_pitch, sr = extract_pitch(youtube_vocal_path, energy=energy)
             user_pitch, sr = extract_pitch(user_vocal_path, energy=energy)
@@ -208,6 +208,7 @@ class InputView(APIView):
             os.remove(youtube_audio_path)
             os.remove(youtube_vocal_path)
             os.remove(user_vocal_path)
+            os.remove(temp_file_path)  # 임시 파일 삭제
 
             return graph, high_pitch_score, low_pitch_score, pitch_score
 
