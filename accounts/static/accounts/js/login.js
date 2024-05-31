@@ -17,7 +17,6 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
         localStorage.setItem('refresh', response.data.refresh);
         localStorage.setItem('user_id', response.data.user_id);
         localStorage.setItem('user_nickname', response.data.user_nickname);
-        alert('로그인 성공!');
         window.location.href = '/api/accounts/main/'
     })
     .catch(error => {

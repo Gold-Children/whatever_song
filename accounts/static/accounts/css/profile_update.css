@@ -68,19 +68,32 @@ body {
 }
 
 #change-password-form {
-    font-size: 13px;
+    font-size: 15px;
 }
 
 label {
     display: inline-block;
-    width: 80px; /* 이름(label)의 너비 조절 */
+    width: 22%; /* 이름(label)의 너비 조절 */
     margin-bottom: 15px;
-}
+    font-size: 20px;
+
 
 
 input[type="text"],
 input[type="email"],
 input[type="password"] {
+
+    
+    font-family: 'SCoreDream-400';
+    color: #fff;
+    border:1px solid #fff;
+    background-color:transparent;
+    border-radius: 5px;
+    font-size: 20px;
+    margin: 10px 10px;
+    padding: 10px;
+    width: 70%;
+
     width: 80%; /* 입력창의 너비를 조절하여 이름과 입력창이 한 줄에 표시되도록 함 */
     /* (100% - 30%) - 2% = 68% */
     padding: 10px;
@@ -108,12 +121,15 @@ button {
 
 #change-password-form button {
     display: block;
-    margin: 0 auto;
+
+    margin: 20px auto;
+
 }
 
 #update-profile-form button{
     display: block;
-    margin: 0 auto;
+    margin: 20px auto;
+
 }
 
 #change-password-form {

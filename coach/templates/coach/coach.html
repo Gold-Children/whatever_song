@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'coach/css/coach.css' %}">
+{% endblock head %}
+
+{% block content %}
+
+<div class="coach-container">
+
+    <h1>Upload</h1>
+    
+    <div class="input-container">
+        <form id="inputForm" onsubmit="submitForm(event)">
+        <h2>원곡링크</h2>
+        <div class="input-group">
+            <input type="url" id="youtube_url" class="input-song" placeholder="원곡 링크를 넣어주세요">
+        </div>
+        
+        <h2>녹음파일</h2>
+        <div class="input-group">
+            <input type="file" id="input_file" class="input-song" placeholder="녹음 파일을 넣어주세요">
+            <div class="button-container">
+                <button type="submit" class='button'>작업하기</button>
+        </div>
+        </div>
+    </form>
+    </div>
+</div>
+
+<script src="{% static 'coach/js/coach.js' %}"></script>
+
+{% endblock content %}
+

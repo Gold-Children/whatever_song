@@ -115,7 +115,8 @@ p{
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    margin: 0 50px 10px 50px
+    margin: 0 50px 10px 50px;
+    position: relative;
 }
 
 #like-count{
@@ -142,7 +143,7 @@ p{
     color: #fff;
     margin: 0;
     padding: 2px;
-    position: relative;
+    position: absolute;
 }
 
 /* 댓글 칸, 버튼 위치 조정 */

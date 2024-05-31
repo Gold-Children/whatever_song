@@ -8,6 +8,8 @@
     // postId를 URL 경로에서 가져옴
     const postId = extractPostIdFromUrl();
 
+
+
     function formatDate(dateString) {
         return dateString.split('T')[0]; // 'T'로 분할하여 첫 번째 요소만 반환
     }
@@ -24,7 +26,6 @@
         const post = response.data.data;
         const like = response.data.like;
         console.log('post.like_count', post.like_count)
-        
         // HTML 요소에 게시물 데이터를 채움
         document.getElementById('post-title').innerText = post.title;
         document.getElementById('post-content').innerText = post.content;
@@ -85,8 +86,6 @@ document.getElementById("like").addEventListener("click", function() {
     }
     // CSRF 토큰을 가져옵니다.
     const csrfToken = getCsrfToken(); 
-
-    
 
     axios.post(`/api/posts/${postId}/like/`,{
         postID : postId
