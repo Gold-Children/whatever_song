@@ -63,7 +63,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         // 데이터를 가져오는 중 오류가 발생하면 오류를 콘솔에 출력함
         console.error('게시물 데이터를 가져오는 중 오류 발생:', error);
     }
+    const updateBtn = document.getElementById("update-link");
+
+    updateBtn.addEventListener("click", function(e) {
+    e.preventDefault();
+    updateBtn.href = `/api/posts/${postId}/update`;
+    })
 });
+
 
 document.getElementById("like").addEventListener("click", function() {
     const userId = window.localStorage.getItem('user_id');
@@ -119,3 +126,4 @@ document.getElementById("unlike").addEventListener("click", function() {
 function update(){
         window.location.href = `/api/posts/${postId}/update/`;
     }
+
