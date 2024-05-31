@@ -3,6 +3,5 @@ from django.conf import settings
 
 
 class Playlist(models.Model):
-    link = models.URLField()
-    save = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='playlist')
-    zzim = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='zzim_playlists')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    playlist_id = models.CharField(max_length=255)     # 고유 플레이리스트 id
