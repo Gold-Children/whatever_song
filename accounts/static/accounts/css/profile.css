@@ -102,3 +102,9 @@ body {
     width: 50%;
 }
 
+
+
+/* 추가된 style */
+.playlist-container, .coach-container {
+    display: none; /* 처음에 모두 숨김 */
+}

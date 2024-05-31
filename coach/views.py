@@ -23,11 +23,11 @@ import os
 import tensorflow as tf
 from pytube import YouTube
 
+class CoachPageView(TemplateView):
+    template_name = "coach/coach.html"
+
 class InputView(APIView):
     permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        return render(request, 'coach/input.html')
 
     def post(self, request):
         user = request.user
@@ -234,7 +234,7 @@ class InputView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 class ResultPageView(TemplateView):
-    template_name = "coach/result.html"
+    template_name = "coach/coach_result.html"
 
 class ResultView(APIView):
     def get(self, request, pk):

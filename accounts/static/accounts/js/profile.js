@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // user_profile_playlist
 function displayPlaylist(playlists) {
-    const container = document.querySelector('.playlist-container');
+    const container = document.getElementById('zzim-playlist-container');
     container.innerHTML = ''; 
 
     playlists.forEach(playlist => {
@@ -74,7 +74,7 @@ function displayPlaylist(playlists) {
 
     // 찜 버튼
     const zzimButtons = document.querySelectorAll('.zzim-button');
-    zzimButtons.forEach(button => {
+        zzimButtons.forEach(button => {
             button.addEventListener('click', function(event) {
             event.preventDefault();
             const playlistId = this.getAttribute('data-id');
@@ -168,4 +168,51 @@ const zzimPlaylist = document.getElementById('zzim-playlist-link')
     zzimPlaylist.addEventListener('click', function(event) {
     event.preventDefault();
     UserPlaylists();
+    document.getElementById('zzim-playlist-container').style.display = 'block';
+    document.getElementById('coach-container').style.display = 'none';
 });
+
+
+//user-profile-coach
+const coachList = document.getElementById('coach-list-link')
+    coachList.addEventListener('click', function(event) {
+    event.preventDefault();
+    coachLists();
+    document.getElementById('coach-container').style.display = 'block';
+    document.getElementById('zzim-playlist-container').style.display = 'none';
+});
+
+function coachLists() {
+    const csrfToken = getCsrfToken();
+    const accessToken = window.localStorage.getItem('access');
+    axios.get(`/api/coach/api/user/`, {
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Authorization': `Bearer ${accessToken}`
+        }
+    })
+        .then(response => {
+            console.log(response.data)
+            const data = response.data
+            displayCoach(data)
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    }
+
+function displayCoach(coachlist) {
+    const container = document.getElementById('coach-container');
+    container.innerHTML = ''; 
+
+    coachlist.forEach(coach => {
+        const item = document.createElement('div');
+        item.className = 'coach-item';
+        item.innerHTML = `
+        <img src="${coach.graph}" >
+        <p>${coach.pitch_score}</p>
+        <p>${coach.message}</p>
+        `;
+        container.appendChild(item);
+    });
+}

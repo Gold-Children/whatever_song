@@ -111,7 +111,7 @@ class PlaylistZzimAPIView(APIView):
             serializer = PlaylistSerializer(new_playlist)
             return Response({'message':'찜하기가 추가 되었습니다.', 'playlist':serializer.data}, status=status.HTTP_200_OK)
         
-
+# 유저가 찜한 플레이리스트 확인하는 뷰
 class UserZzimPlaylistsAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -124,7 +124,7 @@ class UserZzimPlaylistsAPIView(APIView):
 class PlaylistPageView(TemplateView):
     template_name = "playlist/playlist.html"
 
-
+# 특정 유저의 찜한 플레이리스트 조회하는 뷰
 class UserProfileAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
