@@ -74,3 +74,18 @@ input::-ms-input-placeholder {
     font-size : 18px;
     margin : 10px 0 5px;
 }
+
+.zzim-button{
+    font-family: 'SCoreDream-500';
+    color: #fff;
+    width : 25%;
+    height : 30px;
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    font-size : 17px;
+    padding : 5px;
+    border-radius : 5px;
+    border : 0px solid #cccccc00;
+    background-color:rgba(255, 255, 255, 0.075);
+}

@@ -14,17 +14,32 @@
     font-display: swap;
 }
 
-body {
-    background: linear-gradient(to right,#4861da, #8f64c6, #d859aa);
-    background-size: cover;
+
+p{
+    margin: 0 0 10px 0;
 }
 
 #profile-container {
     max-width: 600px;
     margin: 50px auto;
     padding: 20px;
-    text-align: center;  /* 가운데 정렬 */
+    flex-direction: row;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-family: 'SCoreDream-400';
+    font-size: 18px;
+    color: #ffffff;
+}
+
+
+.profile-text{
+    width: 38%;
+    margin-left: 80px;
+}
+
+#text{
+    margin-bottom: 13px;
 }
 
 #nickname {
@@ -32,20 +47,26 @@ body {
     color: #ffffff;
     font-size: 22px;
 }
+
 #edit-profile-button {
     text-decoration: none;
     font-family: 'SCoreDream-400';
     color: #ffffff;
 }
 
+.profile-a{
+    margin-top: 40px;
+}
+
 .profile-image {
-    margin-bottom: 10px;
-    text-align: center; /* 이미지 컨테이너 가운데 정렬 */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* 이미지 컨테이너 가운데 정렬 */
 }
 
 .profile-image img {
-    width: 150px;
-    height: 150px;
+    width: 170px;
+    height: 170px;
     border-radius: 50%;
     object-fit: cover;
     display: inline-block; /* 이미지 블록 정렬 */
