@@ -76,7 +76,9 @@ class PostDetailAPIView(APIView):
     #댓글 작성
     def post(self, request, post_id):
         post = self.get_object(post_id)
+        print("request.data: ", request.data)
         serializer = CommentSerializer(data=request.data)
+        print("serializer: ", serializer)
         if serializer.is_valid(raise_exception=True):
             serializer.save(post=post)
             return Response(serializer.data, status=status.HTTP_201_CREATED)

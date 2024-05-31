@@ -9,7 +9,8 @@
         <p id="post-updated"></p>
         <p id="post-author"></p>
     </div>
-    <a href="" id="update-link">수정하기 | 편집됨</a>
+
+    <a href="#" onclick="update();" id="update-link">수정하기</a>
     <div class="post-img">
         <img id="post-img">
     </div>
@@ -41,10 +42,5 @@
 </div>
 
 
-
-
-<script>
-
-</script>
-<script src="{% static 'posts/js/detail/js' %}"></script>
+<script src="{% static 'posts/js/detail.js' %}"></script>
 {% endblock content %}
