@@ -1,23 +1,33 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from .models import Post, Comment
+from accounts.models import User
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from .serializers import PostSerializer, CommentSerializer
 from django.contrib.auth import get_user_model
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView
-from django.db.models import Count
-from accounts.models import User
+from django.db.models import Count, Q
+from urllib.parse import unquote
 
 class PostAPIView(APIView):
 
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get(self, request):
+        search_query = unquote(request.GET.get('search', ''))
         category = request.GET.get('category')
         sort = request.GET.get('sort', '-created_at')
         posts = Post.objects.all()
+
+        if search_query:
+            posts = posts.filter(
+                Q(title__icontains=search_query) | Q(content__icontains=search_query) | Q(author_nickname__icontains=search_query)
+            )
 
         if category:
             posts = posts.filter(category=category)
