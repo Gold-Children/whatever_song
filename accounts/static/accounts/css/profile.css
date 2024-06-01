@@ -23,27 +23,8 @@ body {
     max-width: 600px;
     margin: 50px auto;
     padding: 20px;
-    flex-direction: row;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'SCoreDream-400';
-    font-size: 18px;
-    color: #ffffff;
-}
-
-
-.profile-text{
-    width: 38%;
-    margin-left: 80px;
-}
-
-#text{
-    margin-bottom: 13px;
-
     text-align: center;  /* 가운데 정렬 */
     font-family: 'SCoreDream-400';
-
 }
 
 #nickname {
@@ -51,9 +32,6 @@ body {
     color: #ffffff;
     font-size: 22px;
 }
-
-
-
 #edit-profile-button {
     text-decoration: none;
     font-family: 'SCoreDream-400';
@@ -83,7 +61,6 @@ body {
 .profile-image img {
     width: 150px;
     height: 150px;
-
     border-radius: 50%;
     object-fit: cover;
     display: inline-block; /* 이미지 블록 정렬 */
