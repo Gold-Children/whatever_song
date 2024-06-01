@@ -14,6 +14,10 @@ urlpatterns = [
     path("api/<int:post_id>/", views.PostDetailAPIView.as_view()),
     path('<int:post_id>/', views.PostDetailView.as_view(), name='detail'),
     path("<int:post_id>/comments/", views.PostDetailAPIView.as_view()),
-    path("comments/<int:comment_id>/", views.CommentAPIView.as_view()),
+
+    path("api/comments/<int:comment_id>/", views.CommentAPIView.as_view()),
     path("<int:postID>/like/", views.LikeAPIView.as_view()),
+
+    path("api/user/<int:user_id>/", views.UserPostView.as_view()),
+    path("api/user/<int:user_id>/like/", views.UserLikedPostView.as_view())
 ]

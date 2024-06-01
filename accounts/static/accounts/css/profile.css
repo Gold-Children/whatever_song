@@ -14,9 +14,9 @@
     font-display: swap;
 }
 
-
-p{
-    margin: 0 0 10px 0;
+body {
+    background: linear-gradient(to right,#4861da, #8f64c6, #d859aa);
+    background-size: cover;
 }
 
 #profile-container {
@@ -40,6 +40,10 @@ p{
 
 #text{
     margin-bottom: 13px;
+
+    text-align: center;  /* 가운데 정렬 */
+    font-family: 'SCoreDream-400';
+
 }
 
 #nickname {
@@ -47,6 +51,8 @@ p{
     color: #ffffff;
     font-size: 22px;
 }
+
+
 
 #edit-profile-button {
     text-decoration: none;
@@ -67,6 +73,17 @@ p{
 .profile-image img {
     width: 170px;
     height: 170px;
+}
+
+.profile-image {
+    margin-bottom: 10px;
+    text-align: center; /* 이미지 컨테이너 가운데 정렬 */
+}
+
+.profile-image img {
+    width: 150px;
+    height: 150px;
+
     border-radius: 50%;
     object-fit: cover;
     display: inline-block; /* 이미지 블록 정렬 */
@@ -122,7 +139,6 @@ p{
 .menu a.active::after {
     width: 50%;
 }
-
 
 
 /* 추가된 style */
