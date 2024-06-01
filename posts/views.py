@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from .serializers import PostSerializer, CommentSerializer
 from django.contrib.auth import get_user_model
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import render, redirect, get_object_or_404
@@ -12,6 +13,8 @@ from django.views.generic import TemplateView
 from django.db.models import Count
 
 class PostAPIView(APIView):
+
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request):
         category = request.GET.get('category')
@@ -54,6 +57,8 @@ class PostDetailAPIView(APIView):
         post = self.get_object(post_id)
         serializer = PostSerializer(post)
         data = serializer.data
+
+        print('commentid', post.comments)
         like = False
         if request.user.id in data['like']:
             like = True

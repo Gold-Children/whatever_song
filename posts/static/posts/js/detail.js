@@ -8,6 +8,12 @@
     // postId를 URL 경로에서 가져옴
     const postId = extractPostIdFromUrl();
 
+
+
+    function formatDate(dateString) {
+        return dateString.split('T')[0]; // 'T'로 분할하여 첫 번째 요소만 반환
+    }
+
     document.addEventListener('DOMContentLoaded', async function() {
         if (!postId) {
             console.error('postId를 URL 경로에서 추출할 수 없습니다.');
@@ -24,8 +30,9 @@
         document.getElementById('post-title').innerText = post.title;
         document.getElementById('post-content').innerText = post.content;
         document.getElementById('post-author').innerText = `작성자: ${post.author_nickname}`;
-        document.getElementById('post-created').innerText = `작성일: ${post.created_at}`;
+        document.getElementById('post-created').innerText = `작성일: ${formatDate(post.created_at)}`;
         document.getElementById('like-count').innerText = ` ${post.like_count}`;
+        
         if (post.image) {
             console.log('Image URL:', post.image);
             document.getElementById('post-img').src = post.image; 
@@ -52,12 +59,17 @@
             // 각 댓글 항목을 생성함
             const commentItem = document.createElement('li');
             commentItem.innerHTML = `
+                <a href="/api/accounts/profile/${comment.user}">
+                    <img src="${comment.user_profile_image}" style=" height: 30px; border-radius: 10%;">
+                </a>
                 <p>${comment.content}</p>
-                <p>작성자: ${comment.user_nickname} | 작성일: ${comment.created_at} | 수정일: ${comment.updated_at}</p>
+                <p>작성자: ${comment.user_nickname} | 작성일: ${formatDate(comment.created_at)}</p>
                 <button onclick="editComment(${comment.id})">수정</button>
                 <button onclick="deleteComment(${comment.id})">삭제</button>
             `;
+            console.log('comment.user_nickname', comment.user_nickname)
             // 댓글 항목을 댓글 리스트에 추가함
+            console.log('comment.id', comment.id)
             commentsList.appendChild(commentItem);
         });
     } catch (error) {
@@ -144,7 +156,53 @@ document.getElementById("comment-form").addEventListener("submit", function(e) {
         console.error('작성 실패.', error);
     })
 })
+
+function deleteComment(commentId) {
+    console.log("commentid",commentId);
+    if (!confirm("댓글을 삭제하시겠습니까?")) {
+        return;
+    }
+
+    const csrfToken = getCsrfToken();
+
+    axios.delete(`/api/posts/api/comments/${commentId}/`, {
+        headers: {
+            'X-CSRFToken': csrfToken
+        }
+    })
+    .then(response => {
+        window.location.reload();
+    })
+    .catch(error => {
+        console.error('댓글 삭제 실패.', error);
+    });
+}
+
+async function editComment(commentId, currentContent) {
+    const newContent = prompt("새로운 댓글 내용을 입력하세요:", currentContent);
+    if (newContent === null) {
+        return; // 수정 취소
+    }
+
+    const csrfToken = getCsrfToken();
+    const access = window.localStorage.getItem('access');
+    
+    const formData = new FormData();
+    formData.append('content', newContent);
+
+    try {
+        await axios.put(`/api/posts/api/comments/${commentId}/`, formData, {
+            headers: {
+                'Authorization': `Bearer ${access}`,
+                'X-CSRFToken': csrfToken
+            }
+        });
+        window.location.reload();
+    } catch (error) {
+        console.error('댓글 수정 실패:', error);
+    }
+}
+
 function update(){
         window.location.href = `/api/posts/${postId}/update/`;
     }
-

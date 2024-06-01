@@ -55,7 +55,6 @@ function displayPlaylist(playlists) {
         // 이미지 URL이 존재하는지 확인하고 설정
         const imageUrl = playlist.image_url || 'https://via.placeholder.com/150';
 
-        // 콘솔에 playlist 데이터 전체 출력
         console.log(`Playlist Data: ${JSON.stringify(playlist)}`);
         
         // playlist.id를 고유 식별자로 사용
@@ -66,6 +65,7 @@ function displayPlaylist(playlists) {
                 <div class="playlist-info">
                     <h2>${playlist.name}</h2>
                 </div> 
+
             </a>
             <button class="zzim-button" data-id="${playlistId}">🙂</button>
         `;
@@ -216,3 +216,4 @@ function displayCoach(coachlist) {
         container.appendChild(item);
     });
 }
+});

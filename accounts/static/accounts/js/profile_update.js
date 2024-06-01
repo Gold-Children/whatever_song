@@ -64,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .then(function(response) {
-            
             window.location.href = `/api/accounts/profile/${userId}/`;
             console.log(response.data);
         })
@@ -94,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .then(function(response) {
-            
             window.location.href = '{% url "main" %}';
             console.log(response.data);
         })

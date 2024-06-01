@@ -55,11 +55,11 @@ document.getElementById('update-form').addEventListener('submit', function(e) {
         }
     })
     .then(response => {
-
+        alert('응 맞았어~');
         window.location.href = `/api/posts/${postId}/`
     })
     .catch(error => {
-        console.error('수정 실패', error);
+        console.error('응 틀렸어~', error);
     });
 })
 
