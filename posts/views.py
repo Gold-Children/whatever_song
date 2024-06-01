@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from .models import Post, Comment
+from accounts.models import User
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from .serializers import PostSerializer, CommentSerializer
@@ -133,3 +134,20 @@ class LikeAPIView(APIView):
         else:
             post.like.add(request.user)
         return Response(status=status.HTTP_200_OK)
+    
+class UserPostView(APIView):
+
+    def get(self, request, user_id):
+        user = get_object_or_404(User, pk=user_id)
+        posts = Post.objects.filter(author=user)
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserLikedPostView(APIView):
+    def get(self, request, user_id):
+        user = get_object_or_404(User, pk=user_id)
+        liked_posts = user.post_likes.all()
+        print('11111', liked_posts)
+        serializer = PostSerializer(liked_posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

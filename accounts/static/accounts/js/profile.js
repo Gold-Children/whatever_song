@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const userId = window.localStorage.getItem('user_id');  // 템플릿 태그를 사용해 현재 로그인한 유저의 ID를 가져옴
+    const profileuserId = window.location.pathname.split('/').slice(-2, -1)[0];
     function loadProfile() {
         const token = window.localStorage.getItem('access');  // 저장된 토큰 가져오기
         if (!token) {
             console.error('No access token found');
             return;
         }
-        axios.get(`/api/accounts/api/profile/${userId}/`,{
+        axios.get(`/api/accounts/api/profile/${profileuserId}/`,{
             headers: {
                 'Authorization': `Bearer ${token}`  // 인증 토큰을 헤더에 추가
             }
@@ -19,12 +19,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.image) {
                     document.getElementById('profile-picture').src = data.image;
                 }
+                loadEditProfileButton()
             })
             .catch(error => {
                 console.error('Failed to load profile:', error);
             });
-    }
-
+        };
+            function loadEditProfileButton() {
+                const userId = window.localStorage.getItem('user_id');
+                const editProfileButton = document.getElementById("edit-profile-button");
+                if (userId === profileuserId) {
+                    editProfileButton.href = `/api/accounts/profile/${profileuserId}/edit/`;
+                    editProfileButton.style.display = "block";
+                } else {
+                    editProfileButton.style.display = "none";
+                    }
+                };
+        
     loadProfile();
     
     const menuLinks = document.querySelectorAll('.menu a');
@@ -39,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('home-button').addEventListener('click', function() {
         window.location.href = '/api/accounts/api/main/';  // 메인 페이지로 이동
     });
+
 });
 
 
@@ -55,6 +67,7 @@ function displayPlaylist(playlists) {
         // 이미지 URL이 존재하는지 확인하고 설정
         const imageUrl = playlist.image_url || 'https://via.placeholder.com/150';
 
+        // 콘솔에 playlist 데이터 전체 출력
         console.log(`Playlist Data: ${JSON.stringify(playlist)}`);
         
         // playlist.id를 고유 식별자로 사용
@@ -65,7 +78,6 @@ function displayPlaylist(playlists) {
                 <div class="playlist-info">
                     <h2>${playlist.name}</h2>
                 </div> 
-
             </a>
             <button class="zzim-button" data-id="${playlistId}">🙂</button>
         `;
@@ -168,16 +180,20 @@ const zzimPlaylist = document.getElementById('zzim-playlist-link')
     zzimPlaylist.addEventListener('click', function(event) {
     event.preventDefault();
     UserPlaylists();
-    document.getElementById('zzim-playlist-container').style.display = 'block';
+    document.getElementById('post-container').style.display = 'none';
+    document.getElementById('liked-post-container').style.display = 'none';
     document.getElementById('coach-container').style.display = 'none';
+    document.getElementById('zzim-playlist-container').style.display = 'block';
 });
 
 
-//user-profile-coach
+//훈수 목록
 const coachList = document.getElementById('coach-list-link')
     coachList.addEventListener('click', function(event) {
     event.preventDefault();
     coachLists();
+    document.getElementById('post-container').style.display = 'none';
+    document.getElementById('liked-post-container').style.display = 'none';
     document.getElementById('coach-container').style.display = 'block';
     document.getElementById('zzim-playlist-container').style.display = 'none';
 });
@@ -216,4 +232,109 @@ function displayCoach(coachlist) {
         container.appendChild(item);
     });
 }
+
+
+//내가 작성한 post 목록
+const myPostList = document.getElementById('posts-link')
+    myPostList.addEventListener('click', function(event) {
+    event.preventDefault();
+    userPosts();
+    document.getElementById('post-container').style.display = 'block';
+    document.getElementById('liked-post-container').style.display = 'none';
+    document.getElementById('coach-container').style.display = 'none';
+    document.getElementById('zzim-playlist-container').style.display = 'none';
 });
+
+function userPosts() {
+    const csrfToken = getCsrfToken();
+    const accessToken = window.localStorage.getItem('access');
+    const profileuserId = window.location.pathname.split('/').slice(-2, -1)[0];
+    axios.get(`/api/posts/api/user/${profileuserId}/`, {
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Authorization': `Bearer ${accessToken}`
+        }
+    })
+        .then(response => {
+            console.log(response.data)
+            const posts = response.data
+            displayPosts(posts)
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    }
+
+function displayPosts(posts) {
+    const postList = document.getElementById('post-container');
+    postList.innerHTML = ''; 
+
+    posts.forEach(post => {
+        const postElement = document.createElement('div');
+        const postId = post.id
+        postElement.classList.add('post');
+        postElement.innerHTML = `
+            <a href = "/api/posts/${postId}/">
+            <h2>${post.title}</h2>
+            <p>${post.content}</p>
+            </a>
+            <p>Likes: ${post.like_count}</p>
+            <p>Category: ${post.category}</p>
+        `;
+        postList.appendChild(postElement);
+    });
+}
+
+//좋아요한게시글들
+
+const likedPostList = document.getElementById('liked-posts-link')
+    likedPostList.addEventListener('click', function(event) {
+    event.preventDefault();
+    likedPosts();
+    document.getElementById('post-container').style.display = 'none';
+    document.getElementById('liked-post-container').style.display = 'block';
+    document.getElementById('coach-container').style.display = 'none';
+    document.getElementById('zzim-playlist-container').style.display = 'none';
+});
+
+function likedPosts() {
+    const csrfToken = getCsrfToken();
+    const accessToken = window.localStorage.getItem('access');
+    const profileuserId = window.location.pathname.split('/').slice(-2, -1)[0];
+    axios.get(`/api/posts/api/user/${profileuserId}/like/`, {
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Authorization': `Bearer ${accessToken}`
+        }
+    })
+        .then(response => {
+            console.log(response.data)
+            const posts = response.data
+            displayLikedPosts(posts)
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    }
+
+function displayLikedPosts(posts) {
+    const likedPosts = document.getElementById('liked-post-container');
+    likedPosts.innerHTML = ''; 
+
+    posts.forEach(post => {
+        const postElement = document.createElement('div');
+        const postId = post.id
+        postElement.classList.add('post');
+        postElement.innerHTML = `
+            <a href = "/api/posts/${postId}/">
+            <h2>${post.title}</h2>
+            <p>${post.content}</p>
+            </a>
+            <p>By: ${post.author_nickname}</p>
+            <p>Likes: ${post.like_count}</p>
+            <p>Category: ${post.category}</p>
+            <p>Posted on: ${new Date(post.created_at).toLocaleString()}</p>
+        `;
+        likedPosts.appendChild(postElement);
+    });
+}

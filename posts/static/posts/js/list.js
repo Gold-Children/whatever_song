@@ -34,12 +34,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
         posts.forEach(post => {
             const postElement = document.createElement('div');
+            const postId = post.id
             postElement.classList.add('post');
             postElement.innerHTML = `
                 <h2>
                 <a href=/api/posts/${post.id}/>${post.title}</a>
                 </h2>
                 <p>${post.content}</p>
+                </a>
                 <p>By: ${post.author_nickname}</p>
                 <p>Likes: ${post.like_count}</p>
                 <p>Category: ${post.category}</p>

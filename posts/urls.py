@@ -17,4 +17,7 @@ urlpatterns = [
 
     path("api/comments/<int:comment_id>/", views.CommentAPIView.as_view()),
     path("<int:postID>/like/", views.LikeAPIView.as_view()),
+
+    path("api/user/<int:user_id>/", views.UserPostView.as_view()),
+    path("api/user/<int:user_id>/like/", views.UserLikedPostView.as_view())
 ]
