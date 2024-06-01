@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // CSRF 토큰을 가져옵니다.
         const csrfToken = getCsrfToken();
-    
+        const accessToken = window.localStorage.getItem('access');
+        
         axios.post('/api/posts/api/create/', formData, {
             headers: {
                 'X-CSRFToken': csrfToken
