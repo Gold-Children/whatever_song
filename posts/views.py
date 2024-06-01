@@ -10,6 +10,7 @@ from rest_framework import status
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView
 from django.db.models import Count
+from accounts.models import User
 
 class PostAPIView(APIView):
 
@@ -123,3 +124,20 @@ class LikeAPIView(APIView):
         else:
             post.like.add(request.user)
         return Response(status=status.HTTP_200_OK)
+    
+class UserPostView(APIView):
+
+    def get(self, request, user_id):
+        user = get_object_or_404(User, pk=user_id)
+        posts = Post.objects.filter(author=user)
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserLikedPostView(APIView):
+    def get(self, request, user_id):
+        user = get_object_or_404(User, pk=user_id)
+        liked_posts = user.post_likes.all()
+        print('11111', liked_posts)
+        serializer = PostSerializer(liked_posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
