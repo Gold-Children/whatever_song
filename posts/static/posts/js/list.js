@@ -32,7 +32,9 @@ document.addEventListener("DOMContentLoaded", function() {
             const postElement = document.createElement('div');
             postElement.classList.add('post');
             postElement.innerHTML = `
-                <h2>${post.title}</h2>
+                <h2>
+                <a href=/api/posts/${post.id}/>${post.title}</a>
+                </h2>
                 <p>${post.content}</p>
                 <p>By: ${post.author_nickname}</p>
                 <p>Likes: ${post.like_count}</p>
