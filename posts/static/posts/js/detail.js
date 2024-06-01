@@ -66,7 +66,8 @@
         const commentsList = document.getElementById('comment');
         commentsList.innerHTML = '';
         post.comments.forEach(comment => {
-            // 각 댓글 항목을 생성함            
+            // 각 댓글 항목을 생성함
+            const userId = window.localStorage.getItem('user_id');
             const commentItem = document.createElement('div');
             commentItem.innerHTML = `
                 <a href="/api/accounts/profile/${comment.user}">
@@ -74,14 +75,16 @@
                 </a>
                 <p>${comment.content}</p>
                 <p>작성자: ${comment.user_nickname} | 작성일: ${formatDate(comment.created_at)}</p>
-                <button onclick="editComment(${comment.id})">수정</button>
-                <button onclick="deleteComment(${comment.id})">삭제</button>
+                <button id="buttonincomment" onclick="editComment(${comment.id})">수정</button>
+                <button id="buttonincomment" onclick="deleteComment(${comment.id})">삭제</button>
             `;
-            console.log('imgsrc: ', comment.user_image);
-            // 댓글 항목을 댓글 리스트에 추가함
-            console.log('comment:' ,comment);
-            console.log('comment.id', comment.id)
+            const commentButtons = commentItem.querySelectorAll('#buttonincomment');
+            commentButtons.forEach(button => {
+                if (userId != comment.user) {
+                button.style.display = "none";
+                }
             commentsList.appendChild(commentItem);
+            });
         });
     } catch (error) {
         // 데이터를 가져오는 중 오류가 발생하면 오류를 콘솔에 출력함
@@ -103,7 +106,6 @@ document.getElementById("like").addEventListener("click", function() {
     },{
         headers: {
             'X-CSRFToken': csrfToken
-            
         }
     })
     .then(response => {

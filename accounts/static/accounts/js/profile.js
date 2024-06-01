@@ -180,16 +180,20 @@ const zzimPlaylist = document.getElementById('zzim-playlist-link')
     zzimPlaylist.addEventListener('click', function(event) {
     event.preventDefault();
     UserPlaylists();
-    document.getElementById('zzim-playlist-container').style.display = 'block';
+    document.getElementById('post-container').style.display = 'none';
+    document.getElementById('liked-post-container').style.display = 'none';
     document.getElementById('coach-container').style.display = 'none';
+    document.getElementById('zzim-playlist-container').style.display = 'block';
 });
 
 
-//user-profile-coach
+//훈수 목록
 const coachList = document.getElementById('coach-list-link')
     coachList.addEventListener('click', function(event) {
     event.preventDefault();
     coachLists();
+    document.getElementById('post-container').style.display = 'none';
+    document.getElementById('liked-post-container').style.display = 'none';
     document.getElementById('coach-container').style.display = 'block';
     document.getElementById('zzim-playlist-container').style.display = 'none';
 });
@@ -226,5 +230,111 @@ function displayCoach(coachlist) {
         <p>${coach.message}</p>
         `;
         container.appendChild(item);
+    });
+}
+
+
+//내가 작성한 post 목록
+const myPostList = document.getElementById('posts-link')
+    myPostList.addEventListener('click', function(event) {
+    event.preventDefault();
+    userPosts();
+    document.getElementById('post-container').style.display = 'block';
+    document.getElementById('liked-post-container').style.display = 'none';
+    document.getElementById('coach-container').style.display = 'none';
+    document.getElementById('zzim-playlist-container').style.display = 'none';
+});
+
+function userPosts() {
+    const csrfToken = getCsrfToken();
+    const accessToken = window.localStorage.getItem('access');
+    const profileuserId = window.location.pathname.split('/').slice(-2, -1)[0];
+    axios.get(`/api/posts/api/user/${profileuserId}/`, {
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Authorization': `Bearer ${accessToken}`
+        }
+    })
+        .then(response => {
+            console.log(response.data)
+            const posts = response.data
+            displayPosts(posts)
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    }
+
+function displayPosts(posts) {
+    const postList = document.getElementById('post-container');
+    postList.innerHTML = ''; 
+
+    posts.forEach(post => {
+        const postElement = document.createElement('div');
+        const postId = post.id
+        postElement.classList.add('post');
+        postElement.innerHTML = `
+            <a href = "/api/posts/${postId}/">
+            <h2>${post.title}</h2>
+            <p>${post.content}</p>
+            </a>
+            <p>Likes: ${post.like_count}</p>
+            <p>Category: ${post.category}</p>
+        `;
+        postList.appendChild(postElement);
+    });
+}
+
+//좋아요한게시글들
+
+const likedPostList = document.getElementById('liked-posts-link')
+    likedPostList.addEventListener('click', function(event) {
+    event.preventDefault();
+    likedPosts();
+    document.getElementById('post-container').style.display = 'none';
+    document.getElementById('liked-post-container').style.display = 'block';
+    document.getElementById('coach-container').style.display = 'none';
+    document.getElementById('zzim-playlist-container').style.display = 'none';
+});
+
+function likedPosts() {
+    const csrfToken = getCsrfToken();
+    const accessToken = window.localStorage.getItem('access');
+    const profileuserId = window.location.pathname.split('/').slice(-2, -1)[0];
+    axios.get(`/api/posts/api/user/${profileuserId}/like/`, {
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Authorization': `Bearer ${accessToken}`
+        }
+    })
+        .then(response => {
+            console.log(response.data)
+            const posts = response.data
+            displayLikedPosts(posts)
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    }
+
+function displayLikedPosts(posts) {
+    const likedPosts = document.getElementById('liked-post-container');
+    likedPosts.innerHTML = ''; 
+
+    posts.forEach(post => {
+        const postElement = document.createElement('div');
+        const postId = post.id
+        postElement.classList.add('post');
+        postElement.innerHTML = `
+            <a href = "/api/posts/${postId}/">
+            <h2>${post.title}</h2>
+            <p>${post.content}</p>
+            </a>
+            <p>By: ${post.author_nickname}</p>
+            <p>Likes: ${post.like_count}</p>
+            <p>Category: ${post.category}</p>
+            <p>Posted on: ${new Date(post.created_at).toLocaleString()}</p>
+        `;
+        likedPosts.appendChild(postElement);
     });
 }

@@ -164,4 +164,5 @@ class UserProfileAPIView(APIView):
                     "id": item["id"],
                 }        
                 playlists.append(playlist)
-        return Response(playlists, status=200)
+        serializer = PlaylistSerializer(playlists, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
