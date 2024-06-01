@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const sortSelect = document.getElementById('sortSelect');
 
     async function fetchPosts() {
-        const searchQuery = searchInput.value;
+        const searchQuery = encodeURIComponent(searchInput.value.trim()); // 검색어 URI 인코딩
         const category = categorySelect.value;
         const sortOption = sortSelect.value;
 
@@ -18,8 +18,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             });
 
-            const posts = response.data;
-            renderPosts(posts);
+            if (response.status === 200) { // 요청이 성공했는지 확인
+                const posts = response.data;
+                renderPosts(posts);
+            } else {
+                console.error("Failed to fetch posts, status code:", response.status);
+            }
         } catch (error) {
             console.error("Error fetching posts:", error);
         }
