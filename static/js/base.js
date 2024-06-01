@@ -38,7 +38,19 @@ async function refreshAccessToken() {
 axios.interceptors.request.use(
     async config => {
         // 특정 URL을 제외
-        const excludedUrls = ['/api/accounts/signup/', '/api/accounts/api/token/', '/api/accounts/login/', '/api/accounts/logout/', '/api/accounts/api/signup/', '/api/playlist/', '/api/playlist/data/', '/api/playlist/search/', '/api/playlist/zzim/<int:playlist_id>/', '/api/posts/list/', '/api/posts/api/<int:post_id>', '/api/posts/<int:post_id>'];
+        const excludedUrls = ['/api/accounts/signup/', 
+        '/api/accounts/api/token/', 
+        '/api/accounts/login/', 
+        '/api/accounts/logout/', 
+        '/api/accounts/api/signup/', 
+        '/api/playlist/', 
+        '/api/playlist/data/', 
+        '/api/playlist/search/', 
+        '/api/playlist/zzim/<int:playlist_id>/',
+        '/api/posts/',
+        '/api/posts/list/', 
+        '/api/posts/api/<int:post_id>', 
+        '/api/posts/<int:post_id>'];
         if (excludedUrls.some(url => config.url.includes(url))) {
             return config;
         }

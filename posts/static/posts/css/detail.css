@@ -76,10 +76,9 @@ p{
 
 
 /* 수정하기 링크 조정 */
-#update-link{
+.update-link{
     font-family: 'SCoreDream-500';
     font-size: 15px;
-    display: flex;
     justify-content: flex-end;
     margin: 5px 30px;
 }
@@ -203,8 +202,8 @@ textarea::placeholder {
 
 /* 댓글 하나 전체(닉네임, 프사, 내용, 버튼 등) */
 .comment{
-    display: flex;
-    justify-content: flex-start;
+    display: block;
+    /* justify-content: flex-start; */
     margin: 10px 0 0 50px;
 }
 

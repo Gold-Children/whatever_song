@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const csrfToken = getCsrfToken();
 
         console.log('CSRF Token:', csrfToken);  // CSRF 토큰 확인
-
         axios.post('/api/accounts/api/signup/', formData, {
             headers: {
                 'X-CSRFToken': csrfToken,

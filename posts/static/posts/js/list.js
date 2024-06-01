@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const sortSelect = document.getElementById('sortSelect');
 
     async function fetchPosts() {
-        const searchQuery = searchInput.value;
+        const searchQuery = encodeURIComponent(searchInput.value.trim()); // 검색어 URI 인코딩
         const category = categorySelect.value;
         const sortOption = sortSelect.value;
 
@@ -18,8 +18,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             });
 
-            const posts = response.data;
-            renderPosts(posts);
+            if (response.status === 200) { // 요청이 성공했는지 확인
+                const posts = response.data;
+                renderPosts(posts);
+            } else {
+                console.error("Failed to fetch posts, status code:", response.status);
+            }
         } catch (error) {
             console.error("Error fetching posts:", error);
         }
@@ -30,10 +34,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
         posts.forEach(post => {
             const postElement = document.createElement('div');
+            const postId = post.id
             postElement.classList.add('post');
             postElement.innerHTML = `
-                <h2>${post.title}</h2>
+                <h2>
+                <a href=/api/posts/${post.id}/>${post.title}</a>
+                </h2>
                 <p>${post.content}</p>
+                </a>
                 <p>By: ${post.author_nickname}</p>
                 <p>Likes: ${post.like_count}</p>
                 <p>Category: ${post.category}</p>

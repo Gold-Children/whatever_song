@@ -1,9 +1,14 @@
+const access = window.localStorage.getItem('access');
+if (!access) {
+    window.location.href = "/api/accounts/login/";
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('create-form').addEventListener('submit', function(e) {
         e.preventDefault();
 
-        const userId = window.localStorage.getItem('user_id')
-        const userNickname = window.localStorage.getItem('user_nickname')
+        const userId = window.localStorage.getItem('user_id');
+        const userNickname = window.localStorage.getItem('user_nickname');
         const formData = new FormData();
         formData.append('title', document.getElementById('post-title').value);
         formData.append('author', userId);
@@ -20,15 +25,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // CSRF 토큰을 가져옵니다.
         const csrfToken = getCsrfToken();
-    
+
         axios.post('/api/posts/api/create/', formData, {
             headers: {
-                'X-CSRFToken': csrfToken
+                'X-CSRFToken': csrfToken,
+                'Authorization': `Bearer ${access}`
             }
         })
         .then(response => {
-            alert('게시 성공!');
-            window.location.href = '/api/posts/list/';
+            window.location.href = '/api/posts/list/'
+
         })
         .catch(error => {
             console.log("error: ", error);

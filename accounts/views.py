@@ -72,12 +72,6 @@ class ProfileView(APIView):
 class ProfilePageView(TemplateView):
     template_name = "accounts/profile.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["user_id"] = kwargs["pk"]  # 현재 로그인한 사용자의 ID를 컨텍스트에 추가
-        return context
-
-
 class ProfileUpdatePageView(TemplateView):
     template_name = "accounts/profile_update.html"
 
