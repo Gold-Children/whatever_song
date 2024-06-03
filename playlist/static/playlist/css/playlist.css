@@ -54,7 +54,6 @@ input::-ms-input-placeholder {
     overflow : hidden;
     width : calc(25% - 20px);
     text-align : center;
-    /* 추가된 style */
     position: relative; 
 }
 
