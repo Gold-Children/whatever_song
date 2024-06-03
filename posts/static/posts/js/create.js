@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             window.location.href = '/api/posts/list/'
+
         })
         .catch(error => {
             console.log("error: ", error);
