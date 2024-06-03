@@ -15,8 +15,9 @@
     }
 
     document.addEventListener('DOMContentLoaded', async function() {
-        const userId = window.localStorage.getItem('user_id');
         const access = window.localStorage.getItem('access');
+        const headers = access ? { 'Authorization': `Bearer ${access}` } : {};
+        const userId = window.localStorage.getItem('user_id');
         if (!postId) {
             console.error('postId를 URL 경로에서 추출할 수 없습니다.');
             return;
@@ -25,9 +26,7 @@
     try {
         // 게시물 데이터를 서버에서 가져옴
         const response = await axios.get(`/api/posts/api/${postId}/`, {
-            headers: {
-                'Authorization': `Bearer ${access}`
-            }
+            headers
         });
         const post = response.data.data;
         const like = response.data.like;
@@ -36,6 +35,7 @@
         // HTML 요소에 게시물 데이터를 채움
         document.getElementById('post-title').innerText = post.title;
         document.getElementById('post-content').innerText = post.content;
+        document.getElementById('post-link').innerText = post.link;
         document.getElementById('post-author').innerText = `작성자: ${post.author_nickname}`;
         document.getElementById('post-created').innerText = `작성일: ${formatDate(post.created_at)}`;
         document.getElementById('like-count').innerText = ` ${post.like_count}`;
