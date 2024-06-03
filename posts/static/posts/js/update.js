@@ -8,16 +8,16 @@ function extractPostIdFromUrl() {
 // postId를 URL 경로에서 가져옴
 const postId = extractPostIdFromUrl();
 const csrfToken = getCsrfToken();
-const token = localStorage.getItem('access');  // 저장된 토큰 가져오기
+const access = localStorage.getItem('access');  // 저장된 토큰 가져오기
 
 function loadPost() {
-    if (!token) {
+    if (!access) {
         console.error('No access token found');
         return;
     }
     axios.get(`/api/posts/api/${postId}/`, {
         headers: {
-            'Authorization': `Bearer ${token}`  // 인증 토큰을 헤더에 추가
+            'Authorization': `Bearer ${access}`  // 인증 토큰을 헤더에 추가
         }
     })
     .then(response => {
@@ -50,16 +50,15 @@ document.getElementById('update-form').addEventListener('submit', function(e) {
         }
     axios.put(`/api/posts/api/${postId}/`, formData, {
         headers: {
-            'Authorization': `Bearer ${token}`,  // 인증 토큰을 헤더에 추가
+            'Authorization': `Bearer ${access}`,  // 인증 토큰을 헤더에 추가
             'X-CSRFToken': csrfToken
         }
     })
     .then(response => {
-        alert('응 맞았어~');
         window.location.href = `/api/posts/${postId}/`
     })
     .catch(error => {
-        console.error('응 틀렸어~', error);
+        console.error(error);
     });
 })
 
@@ -67,12 +66,10 @@ document.getElementById('update-form').addEventListener('submit', function(e) {
 //삭제기능 추가
 
 document.getElementById('delete-button').addEventListener('click', function() {
-    const csrfToken = getCsrfToken();
-    const accessToken = window.localStorage.getItem('access');
     if(confirm('삭제하시겠습니까?')) {
         axios.delete(`/api/posts/api/${postId}/`, {
             headers: {
-                'Authorization': `Bearer ${accessToken}`,
+                'Authorization': `Bearer ${access}`,
                 'X-CSRFToken': csrfToken
             }
         })

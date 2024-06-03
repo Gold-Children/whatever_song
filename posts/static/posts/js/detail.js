@@ -13,6 +13,9 @@
     }
 
     document.addEventListener('DOMContentLoaded', async function() {
+        const access = window.localStorage.getItem('access');
+        const headers = access ? { 'Authorization': `Bearer ${access}` } : {};
+        const userId = window.localStorage.getItem('user_id');
         if (!postId) {
             console.error('postId를 URL 경로에서 추출할 수 없습니다.');
             return;
@@ -20,19 +23,17 @@
 
     try {
         // 게시물 데이터를 서버에서 가져옴
-        const response = await axios.get(`/api/posts/api/${postId}/`);
+        const response = await axios.get(`/api/posts/api/${postId}/`, {
+            headers
+        });
         const post = response.data.data;
         const like = response.data.like;
         const editPostButton = document.getElementById('update');
         const authorId = post.author;
-        console.log('authorId: ' , authorId);
-        const userId = window.localStorage.getItem('user_id');
-        console.log('userid: ' , userId);
-        console.log('post.like_count', post.like_count)
-        
         // HTML 요소에 게시물 데이터를 채움
         document.getElementById('post-title').innerText = post.title;
         document.getElementById('post-content').innerText = post.content;
+        document.getElementById('post-link').innerText = post.link;
         document.getElementById('post-author').innerText = `작성자: ${post.author_nickname}`;
         document.getElementById('post-created').innerText = `작성일: ${formatDate(post.created_at)}`;
         document.getElementById('like-count').innerText = ` ${post.like_count}`;
@@ -93,25 +94,24 @@
 
 
 document.getElementById("like").addEventListener("click", function() {
+    const access = window.localStorage.getItem('access');
     const userId = window.localStorage.getItem('user_id');
     if (!userId) {
         window.location.href = '/api/accounts/login';
     }
     // CSRF 토큰을 가져옵니다.
     const csrfToken = getCsrfToken(); 
+    const data = { post_id: postId, user_id: userId };
+    axios.post(`/api/posts/${postId}/like/`, data, {
 
-    
-
-    axios.post(`/api/posts/${postId}/like/`,{
-        postID : postId
-    },{
         headers: {
-            'X-CSRFToken': csrfToken
+            'X-CSRFToken': csrfToken,
+            'Authorization': `Bearer ${access}`
         }
     })
     .then(response => {
         
-        window.location.href = `/api/posts/${postId}/`; 
+        window.location.href = `/api/posts/${postId}/`;
     })
     .catch(error => {
         console.log("error: ", error);
@@ -120,19 +120,19 @@ document.getElementById("like").addEventListener("click", function() {
 });
 
 document.getElementById("unlike").addEventListener("click", function() {
+    const access = window.localStorage.getItem('access');
     const userId = window.localStorage.getItem('user_id');
     if (!userId) {
         window.location.href = '/api/accounts/login';
     }
     // CSRF 토큰을 가져옵니다.
     const csrfToken = getCsrfToken(); 
+    const data = { post_id: postId, user_id: userId };
 
-    axios.post(`/api/posts/${postId}/like/`,{
-        postID : postId
-    },{
+    axios.post(`/api/posts/${postId}/like/`, data, {
         headers: {
-            'X-CSRFToken': csrfToken
-            
+            'X-CSRFToken': csrfToken,
+            'Authorization': `Bearer ${access}`
         }
     })
     .then(response => {
@@ -147,7 +147,7 @@ document.getElementById("unlike").addEventListener("click", function() {
 
 document.getElementById("comment-form").addEventListener("submit", function(e) {
     e.preventDefault();
-    const access = window.localStorage.getItem('access')
+    const access = window.localStorage.getItem('access');
     const userId = window.localStorage.getItem('user_id');
     const userNickname = window.localStorage.getItem('user_nickname');
     const formData = new FormData();
@@ -172,7 +172,6 @@ document.getElementById("comment-form").addEventListener("submit", function(e) {
 })
 
 function deleteComment(commentId) {
-    console.log("commentid",commentId);
     if (!confirm("댓글을 삭제하시겠습니까?")) {
         return;
     }
