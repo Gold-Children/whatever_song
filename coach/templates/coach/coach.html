@@ -20,11 +20,15 @@
         
         <h2>녹음파일</h2>
         <div class="input-group">
-            <input type="file" id="input_file" class="input-song" placeholder="녹음 파일을 넣어주세요">
-            <div class="button-container">
-                <button type="submit" class='button'>작업하기</button>
+
+            <span id="file-name">선택된 파일 없음</span>
+            <label for="input_file" class="file-choice-btn">파일 선택</label>
+            <input type="file" id="input_file" class="input-song" style="display:none;">
         </div>
-        </div>
+        <div class="button-container">
+            <button type="submit" class='button'>작업하기</button>
+    </div>
+
     </form>
     </div>
 </div>
