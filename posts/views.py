@@ -13,6 +13,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView
 from django.db.models import Count, Q
 from urllib.parse import unquote
+import uuid
 
 class PostAPIView(APIView):
 
@@ -44,6 +45,7 @@ class PostAPIView(APIView):
 
     def post(self, request):
         print(request.data)
+        request.data.image = f'accounts_{uuid.uuid4()}.png'
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
