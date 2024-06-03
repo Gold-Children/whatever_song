@@ -1,32 +1,51 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from .models import Post, Comment
+from accounts.models import User
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from .serializers import PostSerializer, CommentSerializer
 from django.contrib.auth import get_user_model
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView
-from django.db.models import Count
+from django.db.models import Count, Q
+from urllib.parse import unquote
+import uuid
 
 class PostAPIView(APIView):
 
-    def get(self, request):
-        sort = request.GET.get('sort', '-created_at')
-        posts = Post.objects.annotate(likes_count=Count('like'))
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
-        if sort == "-like": #좋아요순을 선택하면
+    def get(self, request):
+        search_query = unquote(request.GET.get('search', ''))
+        category = request.GET.get('category')
+        sort = request.GET.get('sort', '-created_at')
+        posts = Post.objects.all()
+
+        if search_query:
+            posts = posts.filter(
+                Q(title__icontains=search_query) | Q(content__icontains=search_query) | Q(author_nickname__icontains=search_query)
+            )
+
+        if category:
+            posts = posts.filter(category=category)
+
+        posts = posts.annotate(likes_count=Count('like'))
+
+        if sort == "-like":
             posts = posts.order_by('-likes_count', '-created_at')
         else:
-            posts = posts.order_by(sort) #그냥 최신순 
-        
+            posts = posts.order_by(sort)
+
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         print(request.data)
+        request.data.image = f'accounts_{uuid.uuid4()}.png'
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -48,6 +67,8 @@ class PostDetailAPIView(APIView):
         post = self.get_object(post_id)
         serializer = PostSerializer(post)
         data = serializer.data
+
+        print('commentid', post.comments)
         like = False
         if request.user.id in data['like']:
             like = True
@@ -70,7 +91,9 @@ class PostDetailAPIView(APIView):
     #댓글 작성
     def post(self, request, post_id):
         post = self.get_object(post_id)
+        print("request.data: ", request.data)
         serializer = CommentSerializer(data=request.data)
+        print("serializer: ", serializer)
         if serializer.is_valid(raise_exception=True):
             serializer.save(post=post)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -113,3 +136,20 @@ class LikeAPIView(APIView):
         else:
             post.like.add(request.user)
         return Response(status=status.HTTP_200_OK)
+    
+class UserPostView(APIView):
+
+    def get(self, request, user_id):
+        user = get_object_or_404(User, pk=user_id)
+        posts = Post.objects.filter(author=user)
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserLikedPostView(APIView):
+    def get(self, request, user_id):
+        user = get_object_or_404(User, pk=user_id)
+        liked_posts = user.post_likes.all()
+        print('11111', liked_posts)
+        serializer = PostSerializer(liked_posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

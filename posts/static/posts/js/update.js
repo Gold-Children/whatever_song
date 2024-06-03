@@ -55,13 +55,32 @@ document.getElementById('update-form').addEventListener('submit', function(e) {
         }
     })
     .then(response => {
-
+        alert('응 맞았어~');
         window.location.href = `/api/posts/${postId}/`
     })
     .catch(error => {
-        console.error('수정 실패', error);
+        console.error('응 틀렸어~', error);
     });
 })
 
 
+//삭제기능 추가
 
+document.getElementById('delete-button').addEventListener('click', function() {
+    const csrfToken = getCsrfToken();
+    const accessToken = window.localStorage.getItem('access');
+    if(confirm('삭제하시겠습니까?')) {
+        axios.delete(`/api/posts/api/${postId}/`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'X-CSRFToken': csrfToken
+            }
+        })
+        .then(response => {
+            window.location.href = '/api/posts/list/'
+        })
+        .catch(error => {
+            console.error('삭제 실패.', error);
+        });
+    }
+})

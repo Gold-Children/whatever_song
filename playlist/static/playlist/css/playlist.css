@@ -54,6 +54,8 @@ input::-ms-input-placeholder {
     overflow : hidden;
     width : calc(25% - 20px);
     text-align : center;
+    /* 추가된 style */
+    position: relative; 
 }
 
 /* 플레이리스트 이미지 : 너비 및 높이 자동 설정 */
@@ -72,6 +74,7 @@ input::-ms-input-placeholder {
     font-size : 18px;
     margin : 10px 0 5px;
 }
+
 
 .zzim-button{
     font-family: 'SCoreDream-500';
