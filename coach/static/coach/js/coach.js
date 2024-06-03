@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
 document.getElementById('inputForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const csrfToken = getCsrfToken();
-    const accessToken = window.localStorage.getItem('access');
-    if (!accessToken) {
+    const access = window.localStorage.getItem('access');
+    if (!access) {
         alert('로그인이 필요합니다.');
         window.location.href = '/api/accounts/login/';
         return;
@@ -28,7 +28,7 @@ document.getElementById('inputForm').addEventListener('submit', function(e) {
     axios.post('/api/coach/api/input/', formData,{ 
         headers: {
             'X-CSRFToken': csrfToken,
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${access}`
         }
     })
     .then(response => {

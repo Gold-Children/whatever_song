@@ -2,7 +2,6 @@
 function searchPlaylist(query) {
     axios.get(`/api/playlist/search/?query=${query}`)
         .then(response => {
-            console.log(response.data); // API 응답 데이터 구조 확인
             displayPlaylist(response.data);
         })
         .catch(error => {
@@ -59,11 +58,11 @@ function displayPlaylist(playlists) {
 // 로그인 여부를 확인하고, 로그인 된 상태라면 해당 user의 찜한 playlist.id를 가져와 일치하는 찜 버튼의 설정을 바꿈
 function checkUserZzimPlaylists() {
     const csrfToken = getCsrfToken();
-    const accessToken = localStorage.getItem('access');
+    const access = localStorage.getItem('access');
     axios.get('/api/playlist/user-zzim/', {
         headers: {
             'X-CSRFToken': csrfToken,
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${access}`
         }
     })
     .then(response => {
@@ -89,17 +88,15 @@ function toggleZzim(playlistId, button) {
         return;
     }
     const csrfToken = getCsrfToken();
-    const accessToken = localStorage.getItem('access');
-    if (!accessToken)
-    console.log("playlistId: ", playlistId);
+    const access = localStorage.getItem('access');
+    if (!access)
     axios.post(`/api/playlist/zzim/${playlistId}/`, playlistId, {
         headers: {
             'X-CSRFToken': csrfToken,
-            'Authorization': `Bearer ${accessToken}` 
+            'Authorization': `Bearer ${access}` 
         }
     })
     .then(response => {
-        console.log(response.data.message);
         if (response.data.message.includes('추가')) {
             button.textContent = '♥️';
         } else {
@@ -126,7 +123,6 @@ function fetchPlaylists() {
         }
     })    
         .then(response => {
-            console.log(response.data); // API 응답 데이터 구조 확인
             displayPlaylist(response.data);
             checkUserZzimPlaylists();
         })

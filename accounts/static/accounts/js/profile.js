@@ -1,14 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     const profileuserId = window.location.pathname.split('/').slice(-2, -1)[0];
     function loadProfile() {
-        const token = window.localStorage.getItem('access');  // 저장된 토큰 가져오기
-        if (!token) {
+        const access = window.localStorage.getItem('access');  // 저장된 토큰 가져오기
+        if (!access) {
             console.error('No access token found');
             return;
         }
         axios.get(`/api/accounts/api/profile/${profileuserId}/`,{
             headers: {
-                'Authorization': `Bearer ${token}`  // 인증 토큰을 헤더에 추가
+                'Authorization': `Bearer ${access}`  // 인증 토큰을 헤더에 추가
             }
         })
             .then(response => {
@@ -99,11 +99,11 @@ function displayPlaylist(playlists) {
 // 로그인 여부를 확인하고, 로그인 된 상태라면 해당 user의 찜한 playlist.id를 가져와 일치하는 찜 버튼의 설정을 바꿈
 function checkUserZzimPlaylists() {
     const csrfToken = getCsrfToken();
-    const accessToken = window.localStorage.getItem('access');
+    const access = window.localStorage.getItem('access');
     axios.get('/api/playlist/user-zzim/', {
         headers: {
             'X-CSRFToken': csrfToken,
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${access}`
         }
     })
     .then(response => {
@@ -129,17 +129,15 @@ function toggleZzim(playlistId, button) {
         return;
     }
     const csrfToken = getCsrfToken();
-    const accessToken = window.localStorage.getItem('access');
-    if (!accessToken)
-    console.log("playlistId: ", playlistId);
+    const access = window.localStorage.getItem('access');
+    if (!access)
     axios.post(`/api/playlist/zzim/${playlistId}/`, playlistId, {
         headers: {
             'X-CSRFToken': csrfToken,
-            'Authorization': `Bearer ${accessToken}` 
+            'Authorization': `Bearer ${access}` 
         }
     })
     .then(response => {
-        console.log(response.data.message);
         if (response.data.message.includes('추가')) {
             button.textContent = '🥰';
         } else {
@@ -158,16 +156,15 @@ function toggleZzim(playlistId, button) {
 
 function UserPlaylists() {
     const csrfToken = getCsrfToken();
-    const accessToken = window.localStorage.getItem('access');
+    const access = window.localStorage.getItem('access');
     const userId = window.localStorage.getItem('user_id');
     axios.get(`/api/playlist/profile-zzim/${userId}/`, {
         headers: {
             'X-CSRFToken': csrfToken,
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${access}`
         }
     })    
         .then(response => {
-            console.log(response.data);
             displayPlaylist(response.data);
             checkUserZzimPlaylists();
         })
@@ -200,15 +197,14 @@ const coachList = document.getElementById('coach-list-link')
 
 function coachLists() {
     const csrfToken = getCsrfToken();
-    const accessToken = window.localStorage.getItem('access');
+    const access = window.localStorage.getItem('access');
     axios.get(`/api/coach/api/user/`, {
         headers: {
             'X-CSRFToken': csrfToken,
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${access}`
         }
     })
         .then(response => {
-            console.log(response.data)
             const data = response.data
             displayCoach(data)
         })
@@ -247,16 +243,15 @@ const myPostList = document.getElementById('posts-link')
 
 function userPosts() {
     const csrfToken = getCsrfToken();
-    const accessToken = window.localStorage.getItem('access');
+    const access = window.localStorage.getItem('access');
     const profileuserId = window.location.pathname.split('/').slice(-2, -1)[0];
     axios.get(`/api/posts/api/user/${profileuserId}/`, {
         headers: {
             'X-CSRFToken': csrfToken,
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${access}`
         }
     })
         .then(response => {
-            console.log(response.data)
             const posts = response.data
             displayPosts(posts)
         })
@@ -299,16 +294,15 @@ const likedPostList = document.getElementById('liked-posts-link')
 
 function likedPosts() {
     const csrfToken = getCsrfToken();
-    const accessToken = window.localStorage.getItem('access');
+    const access = window.localStorage.getItem('access');
     const profileuserId = window.location.pathname.split('/').slice(-2, -1)[0];
     axios.get(`/api/posts/api/user/${profileuserId}/like/`, {
         headers: {
             'X-CSRFToken': csrfToken,
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${access}`
         }
     })
         .then(response => {
-            console.log(response.data)
             const posts = response.data
             displayLikedPosts(posts)
         })

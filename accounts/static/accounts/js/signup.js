@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.addEventListener('DOMContentLoaded', function () {
     const signupForm = document.getElementById('signup-form');
-    console.log(signupForm);
     if (!signupForm) {
         console.error('signup-form이 존재하지 않습니다.');
         return;
@@ -20,8 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     signupForm.addEventListener('submit', function(e) {
         e.preventDefault();
-
-        console.log('폼 제출 시작');  // 폼 제출 시 로그 확인
 
         const formData = new FormData();
         formData.append('username', document.getElementById('username').value);
@@ -36,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // CSRF 토큰을 가져옵니다.
         const csrfToken = getCsrfToken();
 
-        console.log('CSRF Token:', csrfToken);  // CSRF 토큰 확인
         axios.post('/api/accounts/api/signup/', formData, {
             headers: {
                 'X-CSRFToken': csrfToken,
