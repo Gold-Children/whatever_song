@@ -34,7 +34,9 @@ function displayPlaylist(playlists) {
                     <h2>${playlist.name}</h2>
                 </div>
             </a>
-            <button class="zzim-button" data-id="${playlistId}">🙂</button>
+            <button class="zzim-button" data-id="${playlistId}">♡</button>
+
+
         `;
         container.appendChild(item);
     });
@@ -68,7 +70,7 @@ function checkUserZzimPlaylists() {
         zzimButtons.forEach(button => {
             const playlistId = button.getAttribute('data-id');
             if (zzimPlaylistIds.includes(playlistId)) {
-                button.textContent = '🥰'; // 이미 찜한 버튼 변경
+                button.textContent = '♥️'; // 이미 찜한 버튼 변경
             }
         });
     })
@@ -96,9 +98,9 @@ function toggleZzim(playlistId, button) {
     .then(response => {
         console.log(response.data.message);
         if (response.data.message.includes('추가')) {
-            button.textContent = '🥰';
+            button.textContent = '♥️';
         } else {
-            button.textContent = '🙂';
+            button.textContent = '♡';
         }
     })
     .catch(error => {
