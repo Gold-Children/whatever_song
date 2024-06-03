@@ -17,5 +17,7 @@ urlpatterns = [
     path('api/profile/<int:pk>/image/', views.ProfileImageView.as_view(), name='profile_image_update'),
     path('api/profile/<int:pk>/change-password/', views.PasswordChangeView.as_view(), name='change-password'),
     path('api/profile/<int:pk>/delete/', views.ProfiledeleteView.as_view(), name='profile-delete'),
+    path('verify-email/<uidb64>/<token>/', views.VerifyEmailView.as_view(), name='verify-email'),
+    
 
 ]
