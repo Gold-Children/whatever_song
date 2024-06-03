@@ -2,15 +2,15 @@ document.addEventListener("DOMContentLoaded", function() {
     const pk = window.location.pathname.split('/').slice(-2, -1)[0];
     function loadResult() {
         const csrfToken = getCsrfToken();
-        const accessToken = localStorage.getItem('access');
-        if (!accessToken) {
+        const access = localStorage.getItem('access');
+        if (!access) {
             console.error('No access token found');
             return;
         }
         axios.get(`/api/coach/api/result/${pk}/`, {
             headers: {
                 'X-CSRFToken': csrfToken,
-                'Authorization': `Bearer ${accessToken}`
+                'Authorization': `Bearer ${access}`
             }
         })
         .then(response => {

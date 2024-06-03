@@ -1,17 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
     const userId = window.localStorage.getItem('user_id');
-    const csrfToken = "{{ csrf_token }}"; // Django 템플릿에서 제공한 CSRF 토큰
-    const token = localStorage.getItem('access');  // 저장된 토큰 가져오기
+    const csrfToken = getCsrfToken();
+    const access = localStorage.getItem('access');  // 저장된 토큰 가져오기
 
     // 프로필 정보 로드
     function loadProfile() {
-        if (!token) {
+        if (!access) {
             console.error('No access token found');
             return;
         }
         axios.get(`/api/accounts/api/profile/${userId}/`, {
             headers: {
-                'Authorization': `Bearer ${token}`  // 인증 토큰을 헤더에 추가
+                'Authorization': `Bearer ${access}`  // 인증 토큰을 헤더에 추가
             }
         })
         .then(response => {
@@ -60,12 +60,11 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: {
                 'X-CSRFToken': csrfToken,
                 'Content-Type': 'multipart/form-data',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${access}`
             }
         })
         .then(function(response) {
             window.location.href = `/api/accounts/profile/${userId}/`;
-            console.log(response.data);
         })
         .catch(function(error) {
             console.error('There was an error!', error);
@@ -89,12 +88,11 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: {
                 'X-CSRFToken': csrfToken,
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${access}`
             }
         })
         .then(function(response) {
             window.location.href = '{% url "main" %}';
-            console.log(response.data);
         })
         .catch(function(error) {
             console.error('There was an error!', error);
