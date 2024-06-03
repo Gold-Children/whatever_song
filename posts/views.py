@@ -59,6 +59,8 @@ class PostcreateView(TemplateView):
 
 class PostDetailAPIView(APIView):
     
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get_object(self, post_id):
         return get_object_or_404(Post, pk=post_id)
     
