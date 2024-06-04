@@ -68,7 +68,6 @@ class PostDetailAPIView(APIView):
         post = self.get_object(post_id)
         serializer = PostSerializer(post)
         data = serializer.data
-
         like = False
         if request.user.is_authenticated:
             if request.user.id in data['like']:
