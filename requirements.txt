@@ -5,7 +5,7 @@ asttokens==2.4.1
 astunparse==1.6.3
 async-timeout==4.0.3
 audioread==3.0.1
-black==24.4.2
+Brotli==1.1.0
 cachetools==5.3.3
 certifi==2024.2.2
 cffi==1.16.0
@@ -17,7 +17,6 @@ cycler==0.12.1
 decorator==4.4.2
 Django==4.2
 django-extensions==3.2.3
-django-otp==1.5.0
 django-redis==5.4.0
 djangorestframework==3.15.1
 djangorestframework-simplejwt==5.3.1
@@ -55,6 +54,7 @@ MarkupSafe==2.1.5
 matplotlib==3.8.4
 matplotlib-inline==0.1.6
 msgpack==1.0.8
+mutagen==1.47.0
 mypy-extensions==1.0.0
 norbert==0.2.1
 numba==0.55.2
@@ -76,6 +76,7 @@ pure-eval==0.2.2
 pyasn1==0.6.0
 pyasn1_modules==0.4.0
 pycparser==2.22
+pycryptodomex==3.20.0
 Pygments==2.17.2
 PyJWT==2.8.0
 pyparsing==3.1.2
@@ -102,8 +103,7 @@ tensorboard-data-server==0.7.2
 tensorboard-plugin-wit==1.8.1
 tensorflow==2.13.1
 tensorflow-estimator==2.13.0
-tensorflow-intel==2.13.1
-tensorflow-io-gcs-filesystem==0.31.0
+tensorflow-macos==2.13.1
 termcolor==2.4.0
 threadpoolctl==3.5.0
 tomli==2.0.1
@@ -113,5 +113,8 @@ typing_extensions==4.5.0
 tzdata==2024.1
 urllib3==2.2.1
 wcwidth==0.2.13
+websockets==12.0
 Werkzeug==3.0.3
 wrapt==1.16.0
+yt-dlp==2024.5.27
+

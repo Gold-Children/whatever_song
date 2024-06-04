@@ -94,7 +94,7 @@ function displayPlaylist(playlists) {
             button.addEventListener('click', function(event) {
             event.preventDefault();
             const playlistId = this.getAttribute('data-id');
-            console.log(`Clicked Playlist ID: ${playlistId}`); // 콘솔에 클릭된 playlistId 값 출력
+
             toggleZzim(playlistId, this);
         });
     });
@@ -134,7 +134,7 @@ function toggleZzim(playlistId, button) {
     }
     const csrfToken = getCsrfToken();
     const access = window.localStorage.getItem('access');
-    if (!access)
+
     axios.post(`/api/playlist/zzim/${playlistId}/`, playlistId, {
         headers: {
             'X-CSRFToken': csrfToken,
@@ -183,8 +183,9 @@ const zzimPlaylist = document.getElementById('zzim-playlist-link')
     UserPlaylists();
     document.getElementById('post-container').style.display = 'none';
     document.getElementById('liked-post-container').style.display = 'none';
-    document.getElementById('coach-container').style.display = 'none';
     document.getElementById('zzim-playlist-container').style.display = 'flex';
+    document.getElementById('coach-container').style.display = 'none';
+
 });
 
 
@@ -195,8 +196,8 @@ const coachList = document.getElementById('coach-list-link')
     coachLists();
     document.getElementById('post-container').style.display = 'none';
     document.getElementById('liked-post-container').style.display = 'none';
-    document.getElementById('coach-container').style.display = 'flex';
     document.getElementById('zzim-playlist-container').style.display = 'none';
+    document.getElementById('coach-container').style.display = 'flex';
 });
 
 function coachLists() {
@@ -225,9 +226,17 @@ function displayCoach(coachlist) {
         const item = document.createElement('div');
         item.className = 'coach-item';
         item.innerHTML = `
-        <img src="${coach.graph}" >
-        <p>${coach.pitch_score}</p>
-        <p>${coach.message}</p>
+       
+        <img src=${coach.graph}>
+        <div class="score-message">
+            <h2>제 목</h2>
+            <p>${coach.youtube_title}</p>
+            <h2>총 점수</h2>
+            <p>${coach.pitch_score}</p>
+            <h2>한 줄 평</h2> 
+            <p>${coach.message}</p>
+        </div>
+
         `;
         container.appendChild(item);
     });
@@ -241,8 +250,9 @@ const myPostList = document.getElementById('posts-link')
     userPosts();
     document.getElementById('post-container').style.display = 'flex';
     document.getElementById('liked-post-container').style.display = 'none';
-    document.getElementById('coach-container').style.display = 'none';
     document.getElementById('zzim-playlist-container').style.display = 'none';
+    document.getElementById('coach-container').style.display = 'none';
+
 });
 
 function userPosts() {
@@ -257,6 +267,7 @@ function userPosts() {
     })
         .then(response => {
             const posts = response.data
+
             displayPosts(posts)
         })
         .catch(error => {
@@ -295,11 +306,13 @@ function displayPosts(posts) {
 const likedPostList = document.getElementById('liked-posts-link')
     likedPostList.addEventListener('click', function(event) {
     event.preventDefault();
+
     likedPosts();
     document.getElementById('post-container').style.display = 'none';
     document.getElementById('liked-post-container').style.display = 'flex';
-    document.getElementById('coach-container').style.display = 'none';
     document.getElementById('zzim-playlist-container').style.display = 'none';
+    document.getElementById('coach-container').style.display = 'none';
+
 });
 
 function likedPosts() {

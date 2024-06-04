@@ -170,6 +170,47 @@
     margin: 20px auto;
 }
 
+
+.coach-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    margin: 20px auto;
+}
+
+.coach-item{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+
+.coach-item img{
+    width: 50%;
+}
+
+.score-message{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.score-message p{
+    font-family: 'SCoreDream-400';
+    font-size: 25px;
+    color: #fff;
+    margin: 10px;
+}
+
+.score-message h2{
+    font-family: 'SCoreDream-500';
+    font-size: 26px;
+    color: #fff;
+    margin: 10px;
+}
+
 .post{
     width: 100%;
     display: flex;
