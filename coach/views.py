@@ -1,4 +1,5 @@
 from django.urls import path
+from . import views
 from django.views import View
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -12,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 from django.conf import settings
 import uuid
+
 import os
 import subprocess
 import librosa
@@ -295,8 +297,10 @@ class ResultView(APIView):
         serializer = CoachSerializer(coach)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class UserCoachedVocalView(APIView):
     def get(self, request):
         user_coached_vocals = Coach.objects.filter(user=request.user)
         serializer = CoachSerializer(user_coached_vocals, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+

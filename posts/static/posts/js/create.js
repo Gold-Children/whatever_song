@@ -28,7 +28,9 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('content', document.getElementById('post-content').value);
         formData.append('category', document.getElementById('post-category').value);
         formData.append('link', document.getElementById('post-url').value);
+
         const imageInput = document.getElementById('file-input');
+
         if (imageInput.files.length > 0) {
             formData.append('image', imageInput.files[0]);
         }

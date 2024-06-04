@@ -26,6 +26,7 @@ document.getElementById('inputForm').addEventListener('submit', function(e) {
     formData.append('youtube_url', youtubeUrl);
     formData.append('input_file', inputFile);
 
+
     axios.post('/api/coach/api/input/', formData,{ 
         headers: {
             'X-CSRFToken': csrfToken,
