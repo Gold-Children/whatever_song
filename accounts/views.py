@@ -73,6 +73,20 @@ class VerifyEmailView(APIView):
         else:
             return Response({'error': '유효하지 않은 링크입니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
+class ResendVerificationEmailView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')  # 요청에서 이메일을 가져옴
+        user = get_object_or_404(get_user_model(), email=email)
+
+        if user.is_active:
+            return Response({'error': '이미 이메일 인증이 완료된 사용자입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 이메일 재발송
+        SignUpView().send_verification_email(user)
+        return Response({'message': '이메일 인증 메일이 재발송되었습니다.'}, status=status.HTTP_200_OK)
+
 
 class SignUpPageView(TemplateView):
     template_name = "accounts/signup.html"
