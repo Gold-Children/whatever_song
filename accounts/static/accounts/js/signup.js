@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
         formData.append('email', document.getElementById('email').value);
         formData.append('password', document.getElementById('password').value);
         formData.append('nickname', document.getElementById('nickname').value);
-        
+        const imageInput = document.getElementById('file-input');
         if (imageInput.files.length > 0) {
             formData.append('image', imageInput.files[0]);
         }
