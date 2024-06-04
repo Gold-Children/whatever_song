@@ -53,7 +53,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-
+function formatDate(dateString) {
+    return dateString.split('T')[0]; // 'T'로 분할하여 첫 번째 요소만 반환
+}
 
 // user_profile_playlist
 function displayPlaylist(playlists) {
@@ -79,7 +81,7 @@ function displayPlaylist(playlists) {
                     <h2>${playlist.name}</h2>
                 </div> 
             </a>
-            <button class="zzim-button" data-id="${playlistId}">🙂</button>
+            <button class="zzim-button" data-id="${playlistId}">♡</button>
         `;
         container.appendChild(item);
     });
@@ -113,7 +115,7 @@ function checkUserZzimPlaylists() {
         zzimButtons.forEach(button => {
             const playlistId = button.getAttribute('data-id');
             if (zzimPlaylistIds.includes(playlistId)) {
-                button.textContent = '🥰'; // 이미 찜한 버튼 변경
+                button.textContent = '♥️'; // 이미 찜한 버튼 변경
             }
         });
     })
@@ -141,9 +143,9 @@ function toggleZzim(playlistId, button) {
     .then(response => {
         console.log(response.data.message);
         if (response.data.message.includes('추가')) {
-            button.textContent = '🥰';
+            button.textContent = '♥️';
         } else {
-            button.textContent = '🙂';
+            button.textContent = '♡';
         }
     })
     .catch(error => {
@@ -183,7 +185,7 @@ const zzimPlaylist = document.getElementById('zzim-playlist-link')
     document.getElementById('post-container').style.display = 'none';
     document.getElementById('liked-post-container').style.display = 'none';
     document.getElementById('coach-container').style.display = 'none';
-    document.getElementById('zzim-playlist-container').style.display = 'block';
+    document.getElementById('zzim-playlist-container').style.display = 'flex';
 });
 
 
@@ -194,7 +196,7 @@ const coachList = document.getElementById('coach-list-link')
     coachLists();
     document.getElementById('post-container').style.display = 'none';
     document.getElementById('liked-post-container').style.display = 'none';
-    document.getElementById('coach-container').style.display = 'block';
+    document.getElementById('coach-container').style.display = 'flex';
     document.getElementById('zzim-playlist-container').style.display = 'none';
 });
 
@@ -239,7 +241,7 @@ const myPostList = document.getElementById('posts-link')
     myPostList.addEventListener('click', function(event) {
     event.preventDefault();
     userPosts();
-    document.getElementById('post-container').style.display = 'block';
+    document.getElementById('post-container').style.display = 'flex';
     document.getElementById('liked-post-container').style.display = 'none';
     document.getElementById('coach-container').style.display = 'none';
     document.getElementById('zzim-playlist-container').style.display = 'none';
@@ -274,12 +276,18 @@ function displayPosts(posts) {
         const postId = post.id
         postElement.classList.add('post');
         postElement.innerHTML = `
-            <a href = "/api/posts/${postId}/">
-            <h2>${post.title}</h2>
-            <p>${post.content}</p>
+            <a href=/api/posts/${post.id}/>
+            <img src=${post.image}/>
+            <div class="content">
+                <p id="post-title">${post.title}</p>
+                <p id="post-content">${post.content}</p>
+                <div class="author-create-like">
+                    <p>카테고리: ${post.category}</p>
+                    <p>${formatDate(post.created_at).toLocaleString()}</p>
+                    <p>좋아요 ${post.like_count}</p>
+                </div>
+            </div>
             </a>
-            <p>Likes: ${post.like_count}</p>
-            <p>Category: ${post.category}</p>
         `;
         postList.appendChild(postElement);
     });
@@ -292,7 +300,7 @@ const likedPostList = document.getElementById('liked-posts-link')
     event.preventDefault();
     likedPosts();
     document.getElementById('post-container').style.display = 'none';
-    document.getElementById('liked-post-container').style.display = 'block';
+    document.getElementById('liked-post-container').style.display = 'flex';
     document.getElementById('coach-container').style.display = 'none';
     document.getElementById('zzim-playlist-container').style.display = 'none';
 });
@@ -326,14 +334,18 @@ function displayLikedPosts(posts) {
         const postId = post.id
         postElement.classList.add('post');
         postElement.innerHTML = `
-            <a href = "/api/posts/${postId}/">
-            <h2>${post.title}</h2>
-            <p>${post.content}</p>
+            <a href=/api/posts/${post.id}/>
+            <img src=${post.image}/>
+            <div class="content">
+                <p id="post-title">${post.title}</p>
+                <p id="post-content">${post.content}</p>
+                <div class="author-create-like">
+                    <p>카테고리:${post.category}</p>
+                    <p>${formatDate(post.created_at).toLocaleString()}</p>
+                    <p>좋아요 ${post.like_count}</p>
+                </div>
+            </div>
             </a>
-            <p>By: ${post.author_nickname}</p>
-            <p>Likes: ${post.like_count}</p>
-            <p>Category: ${post.category}</p>
-            <p>Posted on: ${new Date(post.created_at).toLocaleString()}</p>
         `;
         likedPosts.appendChild(postElement);
     });
