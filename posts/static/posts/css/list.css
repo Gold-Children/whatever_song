@@ -53,7 +53,7 @@ p{
     align-items: center;
 }
 
-/* 제목 스타일 */
+/* 제목 스타일 Whatever Song */
 .title-search p{
     font-family: 'SCoreDream-600';
     font-size: 50px;
@@ -93,20 +93,34 @@ input::placeholder {
     margin-bottom: 30px;
 }
 
+.category{
+    display: flex;
+}
+
 /* 카테고리 간격 띄우기 */
-.category a{
-    margin: 0 20px 0 0px;
+select{
+    font-family: 'SCoreDream-500';
+    font-size: 15px;
+    text-align: center;
+    margin: 0 5px;
+    padding: 7px 5px;
+    background-color: rgba(255, 255, 255, 0);
+    color: #fff;
+    border-color: #fff;
+    border-width: 1px;
+    border-radius: 5px;
+    width: 50%
 }
 
 /* 한 개의 포스트 정렬 */
-.post{
+.list a{
     display: flex;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
 /* 이미지 간격, 크기 조절 */
-.post img{
+img{
     margin-right: 15px;
     width: 15%;
 }
@@ -136,5 +150,6 @@ input::placeholder {
 
 /* 작성자, 작성일, 좋아요 간격 조절 */
 .author-create-like p{
+    font-family: 'SCoreDream-400';
     margin-right: 15px;
 }

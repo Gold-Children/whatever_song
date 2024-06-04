@@ -1,14 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     const profileuserId = window.location.pathname.split('/').slice(-2, -1)[0];
     function loadProfile() {
-        const token = window.localStorage.getItem('access');  // 저장된 토큰 가져오기
-        if (!token) {
+        const access = window.localStorage.getItem('access');  // 저장된 토큰 가져오기
+        if (!access) {
             console.error('No access token found');
             return;
         }
         axios.get(`/api/accounts/api/profile/${profileuserId}/`,{
             headers: {
-                'Authorization': `Bearer ${token}`  // 인증 토큰을 헤더에 추가
+                'Authorization': `Bearer ${access}`  // 인증 토큰을 헤더에 추가
             }
         })
             .then(response => {
@@ -53,7 +53,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-
+function formatDate(dateString) {
+    return dateString.split('T')[0]; // 'T'로 분할하여 첫 번째 요소만 반환
+}
 
 // user_profile_playlist
 function displayPlaylist(playlists) {
@@ -81,7 +83,7 @@ function displayPlaylist(playlists) {
                 </div> 
 
             </a>
-            <button class="zzim-button" data-id="${playlistId}">🙂</button>
+            <button class="zzim-button" data-id="${playlistId}">♡</button>
         `;
         container.appendChild(item);
     });
@@ -101,11 +103,11 @@ function displayPlaylist(playlists) {
 // 로그인 여부를 확인하고, 로그인 된 상태라면 해당 user의 찜한 playlist.id를 가져와 일치하는 찜 버튼의 설정을 바꿈
 function checkUserZzimPlaylists() {
     const csrfToken = getCsrfToken();
-    const accessToken = window.localStorage.getItem('access');
+    const access = window.localStorage.getItem('access');
     axios.get('/api/playlist/user-zzim/', {
         headers: {
             'X-CSRFToken': csrfToken,
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${access}`
         }
     })
     .then(response => {
@@ -115,7 +117,7 @@ function checkUserZzimPlaylists() {
         zzimButtons.forEach(button => {
             const playlistId = button.getAttribute('data-id');
             if (zzimPlaylistIds.includes(playlistId)) {
-                button.textContent = '🥰'; // 이미 찜한 버튼 변경
+                button.textContent = '♥️'; // 이미 찜한 버튼 변경
             }
         });
     })
@@ -131,21 +133,19 @@ function toggleZzim(playlistId, button) {
         return;
     }
     const csrfToken = getCsrfToken();
-    const accessToken = window.localStorage.getItem('access');
-    if (!accessToken)
-    console.log("playlistId: ", playlistId);
+    const access = window.localStorage.getItem('access');
+    if (!access)
     axios.post(`/api/playlist/zzim/${playlistId}/`, playlistId, {
         headers: {
             'X-CSRFToken': csrfToken,
-            'Authorization': `Bearer ${accessToken}` 
+            'Authorization': `Bearer ${access}` 
         }
     })
     .then(response => {
-        console.log(response.data.message);
         if (response.data.message.includes('추가')) {
-            button.textContent = '🥰';
+            button.textContent = '♥️';
         } else {
-            button.textContent = '🙂';
+            button.textContent = '♡';
         }
     })
     .catch(error => {
@@ -160,16 +160,15 @@ function toggleZzim(playlistId, button) {
 
 function UserPlaylists() {
     const csrfToken = getCsrfToken();
-    const accessToken = window.localStorage.getItem('access');
+    const access = window.localStorage.getItem('access');
     const userId = window.localStorage.getItem('user_id');
     axios.get(`/api/playlist/profile-zzim/${userId}/`, {
         headers: {
             'X-CSRFToken': csrfToken,
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${access}`
         }
     })    
         .then(response => {
-            console.log(response.data);
             displayPlaylist(response.data);
             checkUserZzimPlaylists();
         })
@@ -185,7 +184,7 @@ const zzimPlaylist = document.getElementById('zzim-playlist-link')
     document.getElementById('post-container').style.display = 'none';
     document.getElementById('liked-post-container').style.display = 'none';
     document.getElementById('coach-container').style.display = 'none';
-    document.getElementById('zzim-playlist-container').style.display = 'block';
+    document.getElementById('zzim-playlist-container').style.display = 'flex';
 });
 
 
@@ -196,21 +195,20 @@ const coachList = document.getElementById('coach-list-link')
     coachLists();
     document.getElementById('post-container').style.display = 'none';
     document.getElementById('liked-post-container').style.display = 'none';
-    document.getElementById('coach-container').style.display = 'block';
+    document.getElementById('coach-container').style.display = 'flex';
     document.getElementById('zzim-playlist-container').style.display = 'none';
 });
 
 function coachLists() {
     const csrfToken = getCsrfToken();
-    const accessToken = window.localStorage.getItem('access');
+    const access = window.localStorage.getItem('access');
     axios.get(`/api/coach/api/user/`, {
         headers: {
             'X-CSRFToken': csrfToken,
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${access}`
         }
     })
         .then(response => {
-            console.log(response.data)
             const data = response.data
             displayCoach(data)
         })
@@ -241,7 +239,7 @@ const myPostList = document.getElementById('posts-link')
     myPostList.addEventListener('click', function(event) {
     event.preventDefault();
     userPosts();
-    document.getElementById('post-container').style.display = 'block';
+    document.getElementById('post-container').style.display = 'flex';
     document.getElementById('liked-post-container').style.display = 'none';
     document.getElementById('coach-container').style.display = 'none';
     document.getElementById('zzim-playlist-container').style.display = 'none';
@@ -249,16 +247,15 @@ const myPostList = document.getElementById('posts-link')
 
 function userPosts() {
     const csrfToken = getCsrfToken();
-    const accessToken = window.localStorage.getItem('access');
+    const access = window.localStorage.getItem('access');
     const profileuserId = window.location.pathname.split('/').slice(-2, -1)[0];
     axios.get(`/api/posts/api/user/${profileuserId}/`, {
         headers: {
             'X-CSRFToken': csrfToken,
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${access}`
         }
     })
         .then(response => {
-            console.log(response.data)
             const posts = response.data
             displayPosts(posts)
         })
@@ -276,12 +273,18 @@ function displayPosts(posts) {
         const postId = post.id
         postElement.classList.add('post');
         postElement.innerHTML = `
-            <a href = "/api/posts/${postId}/">
-            <h2>${post.title}</h2>
-            <p>${post.content}</p>
+            <a href=/api/posts/${post.id}/>
+            <img src=${post.image}/>
+            <div class="content">
+                <p id="post-title">${post.title}</p>
+                <p id="post-content">${post.content}</p>
+                <div class="author-create-like">
+                    <p>카테고리: ${post.category}</p>
+                    <p>${formatDate(post.created_at).toLocaleString()}</p>
+                    <p>좋아요 ${post.like_count}</p>
+                </div>
+            </div>
             </a>
-            <p>Likes: ${post.like_count}</p>
-            <p>Category: ${post.category}</p>
         `;
         postList.appendChild(postElement);
     });
@@ -294,23 +297,22 @@ const likedPostList = document.getElementById('liked-posts-link')
     event.preventDefault();
     likedPosts();
     document.getElementById('post-container').style.display = 'none';
-    document.getElementById('liked-post-container').style.display = 'block';
+    document.getElementById('liked-post-container').style.display = 'flex';
     document.getElementById('coach-container').style.display = 'none';
     document.getElementById('zzim-playlist-container').style.display = 'none';
 });
 
 function likedPosts() {
     const csrfToken = getCsrfToken();
-    const accessToken = window.localStorage.getItem('access');
+    const access = window.localStorage.getItem('access');
     const profileuserId = window.location.pathname.split('/').slice(-2, -1)[0];
     axios.get(`/api/posts/api/user/${profileuserId}/like/`, {
         headers: {
             'X-CSRFToken': csrfToken,
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${access}`
         }
     })
         .then(response => {
-            console.log(response.data)
             const posts = response.data
             displayLikedPosts(posts)
         })
@@ -328,14 +330,18 @@ function displayLikedPosts(posts) {
         const postId = post.id
         postElement.classList.add('post');
         postElement.innerHTML = `
-            <a href = "/api/posts/${postId}/">
-            <h2>${post.title}</h2>
-            <p>${post.content}</p>
+            <a href=/api/posts/${post.id}/>
+            <img src=${post.image}/>
+            <div class="content">
+                <p id="post-title">${post.title}</p>
+                <p id="post-content">${post.content}</p>
+                <div class="author-create-like">
+                    <p>카테고리:${post.category}</p>
+                    <p>${formatDate(post.created_at).toLocaleString()}</p>
+                    <p>좋아요 ${post.like_count}</p>
+                </div>
+            </div>
             </a>
-            <p>By: ${post.author_nickname}</p>
-            <p>Likes: ${post.like_count}</p>
-            <p>Category: ${post.category}</p>
-            <p>Posted on: ${new Date(post.created_at).toLocaleString()}</p>
         `;
         likedPosts.appendChild(postElement);
     });

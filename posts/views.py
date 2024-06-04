@@ -44,7 +44,6 @@ class PostAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
-        print(request.data)
         request.data.image = f'accounts_{uuid.uuid4()}.png'
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -60,6 +59,8 @@ class PostcreateView(TemplateView):
 
 class PostDetailAPIView(APIView):
     
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get_object(self, post_id):
         return get_object_or_404(Post, pk=post_id)
     
@@ -67,10 +68,10 @@ class PostDetailAPIView(APIView):
         post = self.get_object(post_id)
         serializer = PostSerializer(post)
         data = serializer.data
-        print('commentid', post.comments)
         like = False
-        if request.user.id in data['like']:
-            like = True
+        if request.user.is_authenticated:
+            if request.user.id in data['like']:
+                like = True
         data = {'data':data, 'like':like}
         return Response(data, status=status.HTTP_200_OK)
 
@@ -90,9 +91,7 @@ class PostDetailAPIView(APIView):
     #댓글 작성
     def post(self, request, post_id):
         post = self.get_object(post_id)
-        print("request.data: ", request.data)
         serializer = CommentSerializer(data=request.data)
-        print("serializer: ", serializer)
         if serializer.is_valid(raise_exception=True):
             serializer.save(post=post)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -130,10 +129,10 @@ class LikeAPIView(APIView):
     
     def post(self, request, postID):
         post = self.get_object(postID)
-        if post.like.filter(pk=request.user.pk).exists():
-            post.like.remove(request.user)
+        if post.like.filter(pk=request.user.id).exists():
+            post.like.remove(request.user.id)
         else:
-            post.like.add(request.user)
+            post.like.add(request.user.id)
         return Response(status=status.HTTP_200_OK)
     
 class UserPostView(APIView):
@@ -149,6 +148,5 @@ class UserLikedPostView(APIView):
     def get(self, request, user_id):
         user = get_object_or_404(User, pk=user_id)
         liked_posts = user.post_likes.all()
-        print('11111', liked_posts)
         serializer = PostSerializer(liked_posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
