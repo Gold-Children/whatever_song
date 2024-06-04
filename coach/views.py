@@ -37,18 +37,26 @@ class InputView(APIView):
         if not input_file:
             return Response({"error": "파일을 입력하세요"}, status=status.HTTP_400_BAD_REQUEST)
         
-        def download_audio_from_youtube(url, output_path):
+        def download_audio_from_youtube(youtube_url, output_path):
             print("Downloading audio from YouTube...")
-            command = [
+            title_command = [
+                'yt-dlp',
+                '--get-title',
+                youtube_url
+            ]
+            title_result = subprocess.run(title_command, capture_output=True, text=True, check=True)
+            title = title_result.stdout.strip()
+
+            audio_command = [
                 'yt-dlp',
                 '-x',
                 '--audio-format', 'mp3',
                 '--playlist-items', '1',
                 '-o', output_path,
-                url
+                youtube_url
             ]
-            subprocess.run(command, check=True)
-            return output_path
+            subprocess.run(audio_command, check=True)
+            return title, output_path
 
         def separate_vocals(audio_path, output_path):
             print(f"Separating vocals from {audio_path}...")
@@ -181,7 +189,7 @@ class InputView(APIView):
 
             # YouTube 오디오 다운로드
             audio_path_youtube = os.path.join(output_dir, f'{uuid.uuid4()}_audio.mp3')
-            download_audio_from_youtube(youtube_url, audio_path_youtube)
+            title, _ = download_audio_from_youtube(youtube_url, audio_path_youtube)
 
             # 보컬 추출
             vocal_output_path_youtube = os.path.join(output_dir, 'vocals_youtube')
@@ -261,19 +269,18 @@ class InputView(APIView):
             except Exception as e:
                 print(f"Error deleting files: {e}")
 
-            return graph_rel_path, high_similarity, low_similarity, full_similarity
+            return title, graph_rel_path, high_similarity, low_similarity, full_similarity
 
-        graph, high_pitch_score, low_pitch_score, pitch_score = main(youtube_url, input_file)
+        title, graph, high_pitch_score, low_pitch_score, pitch_score = main(youtube_url, input_file)
 
         coach = Coach.objects.create(
             user=user,
-            youtube_url=youtube_url,
-            input_file=input_file,
-            high_pitch_score=high_pitch_score,
-            low_pitch_score=low_pitch_score,
-            pitch_score=pitch_score,
-            message='메세지 로직을 추가해주세요',
-            graph=graph
+            youtube_title = title,
+            high_pitch_score = high_pitch_score,
+            low_pitch_score = low_pitch_score,
+            pitch_score = pitch_score,
+            message = '메세지 로직을 추가해주세요',
+            graph = graph
         )
         
         serializer = CoachSerializer(coach)
@@ -292,4 +299,4 @@ class UserCoachedVocalView(APIView):
     def get(self, request):
         user_coached_vocals = Coach.objects.filter(user=request.user)
         serializer = CoachSerializer(user_coached_vocals, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)

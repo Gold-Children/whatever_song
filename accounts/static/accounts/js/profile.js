@@ -226,6 +226,8 @@ function displayCoach(coachlist) {
         
         <img src=${coach.graph}>
         <div class="score-message">
+            <h2>제 목</h2>
+            <p>${coach.youtube_title}</p>
             <h2>총 점수</h2>
             <p>${coach.pitch_score}</p>
             <h2>한 줄 평</h2> 
