@@ -1,4 +1,13 @@
 @font-face {
+    font-family: 'SCoreDream-500';
+    font-weight: 500; 
+    font-style: normal; 
+    src: url(https://cdn.jsdelivr.net/gh/webfontworld/SCoreDream/SCoreDream5.woff2) format('woff2');
+    font-display: swap;
+}
+
+
+@font-face {
     font-family: 'SCoreDream-400';
     font-weight: 400; 
     font-style: normal; 
@@ -14,13 +23,15 @@
     font-display: swap;
 }
 
-body {
-    background: linear-gradient(to right,#4861da, #8f64c6, #d859aa);
-    background-size: cover;
+.containor{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 
+
 #profile-container {
-    max-width: 600px;
+    width: 90%;
     margin: 50px auto;
     padding: 20px;
     flex-direction: row;
@@ -33,14 +44,10 @@ body {
 }
 
 
-.profile-text{
-    width: 38%;
-    margin-left: 80px;
-}
+
 
 #text{
-    margin-bottom: 13px;
-
+    margin-bottom: 0px;
     text-align: center;  /* 가운데 정렬 */
     font-family: 'SCoreDream-400';
 
@@ -65,9 +72,18 @@ body {
 }
 
 .profile-image {
+    width: 25%;
     display: flex;
-    justify-content: center;
-    align-items: center; /* 이미지 컨테이너 가운데 정렬 */
+    justify-content: flex-end;
+    margin-right: 20px;
+}
+
+.profile-text{
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    width: 25%;
+    margin-left: 20px;
 }
 
 .profile-image img {
@@ -76,7 +92,6 @@ body {
 }
 
 .profile-image {
-    margin-bottom: 10px;
     text-align: center; /* 이미지 컨테이너 가운데 정렬 */
 }
 
@@ -89,6 +104,15 @@ body {
     display: inline-block; /* 이미지 블록 정렬 */
     background-color: white;
 }
+
+.post-wrap{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    margin: 0 auto;
+}
+
 
 .menu {
     display: flex;
@@ -140,43 +164,116 @@ body {
     width: 50%;
 }
 
+.post-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    margin: 20px auto;
+}
 
-/* 추가된 style */
-.playlist-container, .coach-container {
-    display: none; /* 처음에 모두 숨김 */
+.liked-post-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    margin: 20px auto;
+}
+
+.post{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.post a{
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.post a img{
+    width: 15%;
+    height: auto;
+    margin-right: 20px;
+}
+
+/* 게시글 제목 스타일 */
+#post-title{
+    font-family: 'SCoreDream-500';
+    color: #fff;
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+/* 게시글 내용 스타일 */
+#post-content{
+    font-family: 'SCoreDream-300';
+    color: #fff;
+    font-size: 12px;
+    margin-bottom: 0px;
+    width: 100%;
+}
+
+/* 작성자, 작성일, 좋아요 */
+.author-create-like{
+    display: flex;
+    font-family: 'SCoreDream-500';
+    color: #fff;
+    font-size: 11px;
+    margin: 0px;
+}
+
+/* 작성자, 작성일, 좋아요 간격 조절 */
+.author-create-like p{
+    font-family: 'SCoreDream-400';
+    color: #fff;
+    margin-right: 15px;
 }
 
 /* 플레이리스트 컨테이너 : 폰트 및 정렬 등 설정 */
-.playlist-container {
-    font-family: 'SCoreDream-500';
-    display : none;
-    flex-wrap : wrap;
-    justify-content : flex-start; 
-    max-width : 900px;
-    margin : 0 auto;
-    gap : 20px;
+.playlist-container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 80%;
+    margin: 20px auto;
+    
 }
 
 /* 플레이리스트 아이템 : 폰트 및 테두리, 너비, 정렬 설정 */
-/* 추가된 style */
 .playlist-item {
-    font-family: 'SCoreDream-500';
-    color : #fff;
-    border-radius : 10px;
-    overflow : hidden;
-    width : calc(25% - 20px);
-    text-align : center;
-    position: relative; 
+font-family: 'SCoreDream-500';
+color : #fff;
+display: flex;
+flex-direction: column;
+align-items: center;
+width: 225px;
+margin: 5px 5px;
+position: relative; 
 }
-/* 추가된 style */
+
+.playlist-item h2{
+width: 90%;
+text-align: center;
+font-family: 'SCoreDream-400';
+font-size: 20px;
+}
+
+.playlist-item img{
+width: 100%;
+}
+
 /* 찜버튼 위치 absolute라서 원하는 위치로 배치 가능 */
 .zzim-button {
-    position: absolute;
-    top: 200px;
-    right: 30px;
-    background-color: rgba(255, 255, 255, 0.7);
-    border: none;
-    border-radius: 50%;
-    padding: 10px;
-    cursor: pointer;
+font-family: 'SCoreDream-500';
+color: #fff;
+font-size : 35px;
+text-shadow: 3px 3px 1px rgb(0, 0, 0);
+border : 0px solid #cccccc00;
+background-color:rgba(255, 255, 255, 0);
+position: absolute;
+top: 175px;
+right: 5px;
 }
