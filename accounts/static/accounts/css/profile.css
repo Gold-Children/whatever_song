@@ -50,7 +50,6 @@
     margin-bottom: 0px;
     text-align: center;  /* 가운데 정렬 */
     font-family: 'SCoreDream-400';
-
 }
 
 #nickname {
@@ -58,9 +57,6 @@
     color: #ffffff;
     font-size: 22px;
 }
-
-
-
 #edit-profile-button {
     text-decoration: none;
     font-family: 'SCoreDream-400';
@@ -98,7 +94,6 @@
 .profile-image img {
     width: 150px;
     height: 150px;
-
     border-radius: 50%;
     object-fit: cover;
     display: inline-block; /* 이미지 블록 정렬 */
@@ -277,3 +272,4 @@ position: absolute;
 top: 175px;
 right: 5px;
 }
+

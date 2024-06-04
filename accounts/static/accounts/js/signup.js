@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         })
         .then(response => {
+            alert('회원가입을 성공했습니다!');
             window.location.href = '/api/accounts/login/';
         })
         .catch(error => {

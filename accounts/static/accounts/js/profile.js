@@ -59,7 +59,7 @@ function formatDate(dateString) {
 
 // user_profile_playlist
 function displayPlaylist(playlists) {
-    const container = document.getElementById('zzim-playlist-container');
+    const container = document.querySelector('.playlist-container');
     container.innerHTML = ''; 
 
     playlists.forEach(playlist => {
@@ -70,6 +70,7 @@ function displayPlaylist(playlists) {
         const imageUrl = playlist.image_url || 'https://via.placeholder.com/150';
 
         // 콘솔에 playlist 데이터 전체 출력
+
         console.log(`Playlist Data: ${JSON.stringify(playlist)}`);
         
         // playlist.id를 고유 식별자로 사용
@@ -80,6 +81,7 @@ function displayPlaylist(playlists) {
                 <div class="playlist-info">
                     <h2>${playlist.name}</h2>
                 </div> 
+
             </a>
             <button class="zzim-button" data-id="${playlistId}">♡</button>
         `;
@@ -88,7 +90,7 @@ function displayPlaylist(playlists) {
 
     // 찜 버튼
     const zzimButtons = document.querySelectorAll('.zzim-button');
-        zzimButtons.forEach(button => {
+    zzimButtons.forEach(button => {
             button.addEventListener('click', function(event) {
             event.preventDefault();
             const playlistId = this.getAttribute('data-id');
