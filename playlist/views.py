@@ -101,7 +101,7 @@ class PlaylistSearchAPIView(APIView):
             }
             # 리스트에 플레이리스트 추가
             playlists.append(playlist)
-        return Response(playlists, status=status.HTTP_200_OK)
+        return Response(playlists, status=200)
 
 class PlaylistZzimAPIView(APIView):
 
@@ -118,7 +118,7 @@ class PlaylistZzimAPIView(APIView):
         else:
             new_playlist = Playlist.objects.create(user=user, playlist_id=playlist_id)
             serializer = PlaylistSerializer(new_playlist)
-            return Response({'message':'찜하기가 추가 되었습니다.', 'playlist':serializer.data}, status=status.HTTP_200_OK)
+            return Response({'message':'찜하기가 추가 되었습니다.', 'playlist':serializer.data}, status=200)
         
 # 유저가 찜한 플레이리스트 확인하는 뷰
 class UserZzimPlaylistsAPIView(APIView):
@@ -128,7 +128,7 @@ class UserZzimPlaylistsAPIView(APIView):
         user = request.user
         playlists = Playlist.objects.filter(user=user)
         serializer = PlaylistSerializer(playlists, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=200)
 
 class PlaylistPageView(TemplateView):
     template_name = "playlist/playlist.html"
@@ -164,4 +164,4 @@ class UserProfileAPIView(APIView):
                     "id": item["id"],
                 }        
                 playlists.append(playlist)
-        return Response(playlists, status=status.HTTP_200_OK)
+        return Response(playlists, status=200)
