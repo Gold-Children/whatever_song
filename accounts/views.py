@@ -22,11 +22,70 @@ from django.contrib.auth.hashers import make_password
 from django.db import transaction
 from .serializers import SignupSerializer, CustomTokenObtainPairSerializer
 from .models import User
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode
+from django.contrib.auth.tokens import default_token_generator
+
 
 class SignUpView(CreateAPIView):
     model = get_user_model()
     serializer_class = SignupSerializer
     permission_classes = [AllowAny]
+
+    def perform_create(self, serializer):
+        user = serializer.save()
+        user.is_active = False  # 이메일 인증 전까지 비활성화 상태
+        user.save()
+        self.send_verification_email(user)
+
+    def send_verification_email(self, user):
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        subject = '이메일 인증 요청'
+        message = render_to_string('accounts/email_verification.html', {
+            'user': user,
+            'uid': uid,
+            'token': token,
+            'protocol': 'http',
+            'domain': 'your-domain.com'
+        })
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+    
+class VerifyEmailView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, uidb64, token):
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = get_user_model().objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
+            user = None
+
+        if user is not None and default_token_generator.check_token(user, token):
+            user.is_active = True
+            user.save()
+            return Response({'message': '이메일 인증이 완료되었습니다.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': '유효하지 않은 링크입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+class ResendVerificationEmailView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')  # 요청에서 이메일을 가져옴
+        user = get_object_or_404(get_user_model(), email=email)
+
+        if user.is_active:
+            return Response({'error': '이미 이메일 인증이 완료된 사용자입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 이메일 재발송
+        SignUpView().send_verification_email(user)
+        return Response({'message': '이메일 인증 메일이 재발송되었습니다.'}, status=status.HTTP_200_OK)
 
 
 class SignUpPageView(TemplateView):

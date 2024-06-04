@@ -8,8 +8,6 @@
     // postId를 URL 경로에서 가져옴
     const postId = extractPostIdFromUrl();
 
-
-
     function formatDate(dateString) {
         return dateString.split('T')[0]; // 'T'로 분할하여 첫 번째 요소만 반환
     }
@@ -105,7 +103,9 @@ document.getElementById("like").addEventListener("click", function() {
     const csrfToken = getCsrfToken(); 
     const data = { post_id: postId, user_id: userId };
 
+
     axios.post(`/api/posts/${postId}/like/`, data, {
+
         headers: {
             'X-CSRFToken': csrfToken,
             'Authorization': `Bearer ${access}`
@@ -217,3 +217,4 @@ async function editComment(commentId, currentContent) {
         console.error('댓글 수정 실패:', error);
     }
 }
+
