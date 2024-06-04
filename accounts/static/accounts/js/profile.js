@@ -90,7 +90,6 @@ function displayPlaylist(playlists) {
             button.addEventListener('click', function(event) {
             event.preventDefault();
             const playlistId = this.getAttribute('data-id');
-            console.log(`Clicked Playlist ID: ${playlistId}`); // 콘솔에 클릭된 playlistId 값 출력
             toggleZzim(playlistId, this);
         });
     });
@@ -130,7 +129,6 @@ function toggleZzim(playlistId, button) {
     }
     const csrfToken = getCsrfToken();
     const access = window.localStorage.getItem('access');
-    if (!access)
     axios.post(`/api/playlist/zzim/${playlistId}/`, playlistId, {
         headers: {
             'X-CSRFToken': csrfToken,

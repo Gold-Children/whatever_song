@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('create-form').addEventListener('submit', function(e) {
         e.preventDefault();
-
         const userId = window.localStorage.getItem('user_id');
         const userNickname = window.localStorage.getItem('user_nickname');
         const formData = new FormData();
@@ -28,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('content', document.getElementById('post-content').value);
         formData.append('category', document.getElementById('post-category').value);
         formData.append('link', document.getElementById('post-url').value);
-
+        const imageInput = document.getElementById('file-input');
         if (imageInput.files.length > 0) {
             formData.append('image', imageInput.files[0]);
         }
