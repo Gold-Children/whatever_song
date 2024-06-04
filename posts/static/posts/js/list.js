@@ -4,6 +4,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const categorySelect = document.getElementById('categorySelect');
     const sortSelect = document.getElementById('sortSelect');
 
+    function formatDate(dateString) {
+        return dateString.split('T')[0]; // 'T'로 분할하여 첫 번째 요소만 반환
+    }
+    
     async function fetchPosts() {
         const searchQuery = encodeURIComponent(searchInput.value.trim()); // 검색어 URI 인코딩
         const category = categorySelect.value;
@@ -37,15 +41,20 @@ document.addEventListener("DOMContentLoaded", function() {
             const postId = post.id
             postElement.classList.add('post');
             postElement.innerHTML = `
-                <h2>
-                <a href=/api/posts/${post.id}/>${post.title}</a>
-                </h2>
-                <p>${post.content}</p>
+            <div class="list">
+                <a href=/api/posts/${post.id}/>
+                <img src=${post.image}/>
+                <div class="content">
+                    <p id="post-title">${post.title}</p>
+                    <p id="post-content">${post.content}</p>
+                        <div class="author-create-like">
+                            <p>${post.author_nickname}</p>
+                            <p>${formatDate(post.created_at).toLocaleString()}</p>
+                            <p>좋아요 ${post.like_count}</p>
+                        </div>
+                </div>
                 </a>
-                <p>By: ${post.author_nickname}</p>
-                <p>Likes: ${post.like_count}</p>
-                <p>Category: ${post.category}</p>
-                <p>Posted on: ${new Date(post.created_at).toLocaleString()}</p>
+            </div>
             `;
             postsList.appendChild(postElement);
         });
