@@ -109,7 +109,6 @@ document.getElementById("like").addEventListener("click", function() {
         }
     })
     .then(response => {
-        
         window.location.href = `/api/posts/${postId}/`; 
     })
     .catch(error => {

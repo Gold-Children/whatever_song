@@ -130,8 +130,6 @@ function toggleZzim(playlistId, button) {
     }
     const csrfToken = getCsrfToken();
     const accessToken = window.localStorage.getItem('access');
-    if (!accessToken)
-    console.log("playlistId: ", playlistId);
     axios.post(`/api/playlist/zzim/${playlistId}/`, playlistId, {
         headers: {
             'X-CSRFToken': csrfToken,
