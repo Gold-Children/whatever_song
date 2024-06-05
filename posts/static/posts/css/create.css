@@ -158,7 +158,8 @@ textarea::placeholder {
 
 /* '선택된 파일 없음' input칸 스타일(파일 이름 보여질 자리)  */
 #file-name{
-    display: flex;
+    display: inline-block;
+    width: 120px;
     justify-content: center;
     font-family: 'SCoreDream-300';
     font-size: 16px;
@@ -168,6 +169,11 @@ textarea::placeholder {
     border: 1px solid;
     border-color: #fff;
     border-radius: 5px;
+
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    vertical-align: middle; 
 }
 
 
