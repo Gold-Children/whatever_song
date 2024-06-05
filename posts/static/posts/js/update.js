@@ -37,6 +37,18 @@ function loadPost() {
 
 loadPost();
 
+document.addEventListener('DOMContentLoaded', function() {
+    const imageInput = document.getElementById('file-input');
+    const fileNameDisplay = document.getElementById('file-name');
+
+    imageInput.addEventListener('change', function() {
+        if (imageInput.files.length > 0) {
+            fileNameDisplay.innerText = imageInput.files[0].name;
+        } else {
+            fileNameDisplay.innerText = fileNameDisplay.files[0];
+    }});
+});
+
 document.getElementById('update-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData();
@@ -46,7 +58,6 @@ document.getElementById('update-form').addEventListener('submit', function(e) {
         const imageFile = document.getElementById('file-input').files[0];
         if (imageFile) { 
             formData.append('image', imageFile);
-            document.getElementById("file-name").src = imageFile
         }
     axios.put(`/api/posts/api/${postId}/`, formData, {
         headers: {
