@@ -43,6 +43,7 @@
         postAuthor.textContent = `작성자: ${post.author_nickname}`;
         document.getElementById('post-created').innerText = `작성일: ${formatDate(post.created_at)}`;
         document.getElementById('like-count').innerText = ` ${post.like_count}`;
+        document.getElementById('comment-count').innerText = `💬 ${post.comments_count}`
         if (userId == authorId) {            
             editPostButton.href = `/api/posts/${postId}/update/`;
             editPostButton.style.display = "block";
