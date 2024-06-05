@@ -210,14 +210,14 @@
 
 .score-message p{
     font-family: 'SCoreDream-400';
-    font-size: 25px;
+    font-size: 18px;
     color: #fff;
-    margin: 10px;
+    margin: 3px;
 }
 
 .score-message h2{
     font-family: 'SCoreDream-500';
-    font-size: 26px;
+    font-size: 24px;
     color: #fff;
     margin: 10px;
 }

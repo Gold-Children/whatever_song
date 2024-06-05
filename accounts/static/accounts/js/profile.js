@@ -288,7 +288,7 @@ function displayPosts(posts) {
                 <p id="post-title">${post.title}</p>
                 <p id="post-content">${post.content}</p>
                 <div class="author-create-like">
-                    <p>카테고리: ${post.category}</p>
+                    <p>${post.category}</p>
                     <p>${formatDate(post.created_at).toLocaleString()}</p>
                     <p>좋아요 ${post.like_count}</p>
                 </div>
@@ -347,7 +347,8 @@ function displayLikedPosts(posts) {
                 <p id="post-title">${post.title}</p>
                 <p id="post-content">${post.content}</p>
                 <div class="author-create-like">
-                    <p>카테고리:${post.category}</p>
+                    <p>${post.author_nickname}</p>
+                    <p>${post.category}</p>
                     <p>${formatDate(post.created_at).toLocaleString()}</p>
                     <p>좋아요 ${post.like_count}</p>
                 </div>
