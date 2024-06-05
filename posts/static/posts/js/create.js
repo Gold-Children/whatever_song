@@ -25,7 +25,11 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('author', userId);
         formData.append('author_nickname', userNickname);
         formData.append('content', document.getElementById('post-content').value);
-        formData.append('link', document.getElementById('post-url').value);
+        const postUrl = document.getElementById('post-url');
+        if (postUrl.value) {
+            formData.append('link', postUrl.value);
+        }
+
         const postCategory = document.getElementById('post-category')
         if (postCategory.value != '----') {
             formData.append('category', postCategory.value);

@@ -3,13 +3,18 @@ document.addEventListener("DOMContentLoaded", function() {
     const searchInput = document.getElementById('searchInput');
     const categorySelect = document.getElementById('categorySelect');
     const sortSelect = document.getElementById('sortSelect');
+    const prevPageButton = document.getElementById('prevPage');
+    const nextPageButton = document.getElementById('nextPage');
+    const pageInfo = document.getElementById('pageInfo');
+    let currentPage = 1;
+    let totalPages = 1;
 
     function formatDate(dateString) {
-        return dateString.split('T')[0]; // 'T'로 분할하여 첫 번째 요소만 반환
+        return dateString.split('T')[0];
     }
-    
+
     async function fetchPosts() {
-        const searchQuery = encodeURIComponent(searchInput.value.trim()); // 검색어 URI 인코딩
+        const searchQuery = encodeURIComponent(searchInput.value.trim());
         const category = categorySelect.value;
         const sortOption = sortSelect.value;
 
@@ -18,13 +23,17 @@ document.addEventListener("DOMContentLoaded", function() {
                 params: {
                     search: searchQuery,
                     category: category,
-                    sort: sortOption
+                    sort: sortOption,
+                    page: currentPage
                 }
             });
 
-            if (response.status === 200) { // 요청이 성공했는지 확인
-                const posts = response.data;
+            if (response.status === 200) {
+                const { posts, total_pages, current_page } = response.data;
+                totalPages = total_pages;
+                currentPage = current_page;
                 renderPosts(posts);
+                updatePaginationControls();
             } else {
                 console.error("Failed to fetch posts, status code:", response.status);
             }
@@ -60,9 +69,29 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    function updatePaginationControls() {
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        prevPageButton.disabled = currentPage <= 1;
+        nextPageButton.disabled = currentPage >= totalPages;
+    }
+
+    prevPageButton.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            fetchPosts();
+        }
+    });
+
+    nextPageButton.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            fetchPosts();
+        }
+    });
+
     searchInput.addEventListener('input', fetchPosts);
     categorySelect.addEventListener('change', fetchPosts);
     sortSelect.addEventListener('change', fetchPosts);
 
-    fetchPosts(); // 페이지 로드 시 초기 게시글 목록을 가져옴
+    fetchPosts();
 });

@@ -13,9 +13,9 @@ class Post(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="posts"
     )
     author_nickname = models.CharField(max_length=50)
-    link = models.URLField()
+    link = models.URLField(blank=True, null=True)
     image = models.ImageField(
-        upload_to="posts/post_pic/%Y/%m/%d/", blank=True, null=True
+        upload_to="posts/post_pic/%Y/%m/%d/", blank=True, null=True, default="posts/post_pic/logo.png/"
     )
     category = models.CharField(
         max_length=5, blank=True, choices=category.choices
