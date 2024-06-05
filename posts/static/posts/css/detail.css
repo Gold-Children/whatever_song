@@ -137,13 +137,18 @@ p{
 
 /* 댓글 수, 좋아요 수 글자 조정 및 폰트 조정 */
 .count{
-    font-family: 'SCoreDream-500';
-    font-size: 18px;
+    font-family: 'SCoreDream-400';
+    font-size: 22px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
     margin: 0 50px 10px 50px;
     position: relative;
+}
+
+#comment-count{
+    font-size: 22px;
+    margin-left: 20px;
 }
 
 #like-count{
