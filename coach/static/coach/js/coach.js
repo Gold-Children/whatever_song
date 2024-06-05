@@ -19,7 +19,6 @@ document.getElementById('inputForm').addEventListener('submit', function(e) {
         window.location.href = '/api/accounts/login/';
         return;
     }
-
     const youtubeUrl = document.getElementById('youtube_url').value;
     const inputFile = document.getElementById('input_file').files[0];
     const formData = new FormData();

@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from .models import Post, Comment
@@ -23,6 +24,9 @@ class PostAPIView(APIView):
         search_query = unquote(request.GET.get('search', ''))
         category = request.GET.get('category')
         sort = request.GET.get('sort', '-created_at')
+        page_number = request.GET.get('page', 1)
+        page_size = 20
+
         posts = Post.objects.all()
 
         if search_query:
@@ -40,8 +44,15 @@ class PostAPIView(APIView):
         else:
             posts = posts.order_by(sort)
 
-        serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = Paginator(posts, page_size)
+        paginated_posts = paginator.get_page(page_number)
+
+        serializer = PostSerializer(paginated_posts, many=True)
+        return Response({
+            'posts': serializer.data,
+            'total_pages': paginator.num_pages,
+            'current_page': paginated_posts.number
+        }, status=status.HTTP_200_OK)
 
     def post(self, request):
         request.data.image = f'accounts_{uuid.uuid4()}.png'
