@@ -63,21 +63,3 @@ document.getElementById('update-form').addEventListener('submit', function(e) {
 })
 
 
-//삭제기능 추가
-
-document.getElementById('delete-button').addEventListener('click', function() {
-    if(confirm('삭제하시겠습니까?')) {
-        axios.delete(`/api/posts/api/${postId}/`, {
-            headers: {
-                'Authorization': `Bearer ${access}`,
-                'X-CSRFToken': csrfToken
-            }
-        })
-        .then(response => {
-            window.location.href = '/api/posts/list/'
-        })
-        .catch(error => {
-            console.error('삭제 실패.', error);
-        });
-    }
-})
