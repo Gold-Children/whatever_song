@@ -161,7 +161,7 @@ function toggleZzim(playlistId, button) {
 function UserPlaylists() {
     const csrfToken = getCsrfToken();
     const access = window.localStorage.getItem('access');
-    const userId = window.localStorage.getItem('user_id');
+    const userId = window.location.pathname.split('/').slice(-2, -1)[0];
     axios.get(`/api/playlist/profile-zzim/${userId}/`, {
         headers: {
             'X-CSRFToken': csrfToken,
@@ -175,7 +175,7 @@ function UserPlaylists() {
         .catch(error => {
             console.error('Error fetching data:', error);
         });
-}
+}   
 
 const zzimPlaylist = document.getElementById('zzim-playlist-link')
     zzimPlaylist.addEventListener('click', function(event) {
@@ -193,7 +193,12 @@ const zzimPlaylist = document.getElementById('zzim-playlist-link')
 const coachList = document.getElementById('coach-list-link')
     coachList.addEventListener('click', function(event) {
     event.preventDefault();
-    coachLists();
+    const userId = window.localStorage.getItem('user_id');
+    const ReuserId = window.location.pathname.split('/').slice(-2, -1)[0];
+    if (userId == ReuserId) {
+        console.log('111111111111111111');
+        coachLists();
+    }
     document.getElementById('post-container').style.display = 'none';
     document.getElementById('liked-post-container').style.display = 'none';
     document.getElementById('zzim-playlist-container').style.display = 'none';
