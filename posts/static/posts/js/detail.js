@@ -38,7 +38,7 @@
         document.getElementById('post-title').innerText = post.title;
         document.getElementById('post-content').innerText = post.content;
         postLink.href = post.link;
-        postLink.textContent = post.link;
+        postLink.textContent = '바로가기';
         postAuthor.href = `/api/accounts/profile/${authorId}/`
         postAuthor.textContent = `작성자: ${post.author_nickname}`;
         document.getElementById('post-created').innerText = `작성일: ${formatDate(post.created_at)}`;
@@ -47,8 +47,29 @@
         if (userId == authorId) {            
             editPostButton.href = `/api/posts/${postId}/update/`;
             editPostButton.style.display = "block";
+            //삭제기능 추가
+            document.getElementById('delete-button').addEventListener('click', function() {
+                const access = window.localStorage.getItem('access');
+                const csrfToken = getCsrfToken();
+                if(confirm('삭제하시겠습니까?')) {
+                    axios.delete(`/api/posts/api/${postId}/`, {
+                        headers: {
+                            'Authorization': `Bearer ${access}`,
+                            'X-CSRFToken': csrfToken
+                        }
+                    })
+                    .then(response => {
+                        window.location.href = '/api/posts/list/'
+                    })
+                    .catch(error => {
+                        console.error('삭제 실패.', error);
+                    });
+                }
+            })
+            document.getElementById('delete-button').style.display = 'block';
         } else {
             editPostButton.style.display = "none";
+            document.getElementById('delete-button').style.display = 'none';
             }
         if (post.image) {
             document.getElementById('post-img').src = post.image; 
@@ -68,6 +89,10 @@
             unlikeButton.style.visibility = "hidden";
         }
         
+
+
+
+
         // 댓글 목록을 처리함
         const commentsList = document.getElementById('comment');
         commentsList.innerHTML = '';
@@ -75,14 +100,22 @@
             // 각 댓글 항목을 생성함
             const userId = window.localStorage.getItem('user_id');
             const commentItem = document.createElement('div');
+            commentItem.className = 'comment-wrap'
             commentItem.innerHTML = `
                 <a href="/api/accounts/profile/${comment.user}">
-                    <img src="${comment.user_image}" style=" height: 30px; border-radius: 10%;">
+                    <img src="${comment.user_image}">
                 </a>
-                <p>${comment.content}</p>
-                <p>작성자: ${comment.user_nickname} | 작성일: ${formatDate(comment.created_at)}</p>
-                <button id="buttonincomment" onclick="editComment(${comment.id})">수정</button>
-                <button id="buttonincomment" onclick="deleteComment(${comment.id})">삭제</button>
+                <div class="comment-content">
+                    <div class="author-update-delete">
+                        <p class="comment-auhtor">${comment.user_nickname}</p>
+                        <div class="btn">
+                            <button id="buttonincomment" onclick="editComment(${comment.id})">수정</button>
+                            <button id="buttonincomment" onclick="deleteComment(${comment.id})">삭제</button>
+                        </div>
+                    </div>
+                    <p class="comment-content">${comment.content}</p>
+                    <p>${formatDate(comment.created_at)}</p>
+                </div>
             `;
             const commentButtons = commentItem.querySelectorAll('#buttonincomment');
             commentButtons.forEach(button => {
@@ -220,3 +253,4 @@ async function editComment(commentId, currentContent) {
         console.error('댓글 수정 실패:', error);
     }
 }
+
