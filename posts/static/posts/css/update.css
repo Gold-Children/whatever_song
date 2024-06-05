@@ -39,7 +39,7 @@
     color: #fff;
     display: flex;
     flex-direction: column;
-    width: 650px;
+    width: 60%;
     height: 100%;
     background-color : rgba(0, 0, 0, 0.075);
     border-radius: 10px;
@@ -105,7 +105,7 @@ input {
     font-size: 20px;
     margin: 0 10px;
     padding: 10px;
-    width: 60%;
+    width: 70%;
 }
 
 
@@ -118,22 +118,11 @@ textarea {
     font-size: 20px;
     margin: 0 10px;
     padding: 10px;
-    width: 60%;
+    width: 70%;
+    height: 250px;
 }
 
 
-/* 카테고리 스타일 */
-select{
-    color: #fff;
-    border:1px solid #fff;
-    background-color:transparent;
-    border-radius: 5px;
-    font-family: 'SCoreDream-300';
-    font-size: 16px;
-    margin: 0 10px;
-    padding: 10px;
-    width: 64%;
-}
 
 
 /*  input placeholder 스타일 */
@@ -158,8 +147,8 @@ textarea::placeholder {
 
 /* '선택된 파일 없음' input칸 스타일(파일 이름 보여질 자리)  */
 #file-name{
-    display: inline-block;
-    width: 120px;
+    display: flex;
+    width: 316px;
     justify-content: center;
     font-family: 'SCoreDream-300';
     font-size: 16px;
@@ -191,14 +180,14 @@ textarea::placeholder {
 
 /* 등록 버튼 스타일 */
 form button {
-font-family: 'SCoreDream-400';
+    font-family: 'SCoreDream-400';
     font-size: 16px;
     background-color: rgba(255, 255, 255, 0);
     color: #fff;
     border-color: #fff;
     border-width: 1px;
     border-radius: 5px;
-    margin: 10px 0 50px 520px;
+    margin: 10px 0 50px 700px;
     padding: 5px 10px;
     width: 10%
 }

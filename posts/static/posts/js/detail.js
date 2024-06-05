@@ -66,8 +66,10 @@
                     });
                 }
             })
+            document.getElementById('delete-button').style.display = 'block';
         } else {
             editPostButton.style.display = "none";
+            document.getElementById('delete-button').style.display = 'none';
             }
         if (post.image) {
             document.getElementById('post-img').src = post.image; 
