@@ -5,6 +5,7 @@ asttokens==2.4.1
 astunparse==1.6.3
 async-timeout==4.0.3
 audioread==3.0.1
+Brotli==1.1.0
 cachetools==5.3.3
 certifi==2024.2.2
 cffi==1.16.0
@@ -53,6 +54,7 @@ MarkupSafe==2.1.5
 matplotlib==3.8.4
 matplotlib-inline==0.1.6
 msgpack==1.0.8
+mutagen==1.47.0
 mypy-extensions==1.0.0
 norbert==0.2.1
 numba==0.55.2
@@ -74,6 +76,7 @@ pure-eval==0.2.2
 pyasn1==0.6.0
 pyasn1_modules==0.4.0
 pycparser==2.22
+pycryptodomex==3.20.0
 Pygments==2.17.2
 PyJWT==2.8.0
 pyparsing==3.1.2
@@ -110,5 +113,7 @@ typing_extensions==4.5.0
 tzdata==2024.1
 urllib3==2.2.1
 wcwidth==0.2.13
+websockets==12.0
 Werkzeug==3.0.3
 wrapt==1.16.0
+yt-dlp==2024.5.27

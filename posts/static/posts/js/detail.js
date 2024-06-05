@@ -30,12 +30,14 @@
         });
         const post = response.data.data;
         const like = response.data.like;
+        const postLink = document.getElementById('post-link');
         const editPostButton = document.getElementById('update');
         const authorId = post.author;
         // HTML 요소에 게시물 데이터를 채움
         document.getElementById('post-title').innerText = post.title;
         document.getElementById('post-content').innerText = post.content;
-        document.getElementById('post-link').innerText = post.link;
+        postLink.href = post.link;
+        postLink.textContent = post.link;
         document.getElementById('post-author').innerText = `작성자: ${post.author_nickname}`;
         document.getElementById('post-created').innerText = `작성일: ${formatDate(post.created_at)}`;
         document.getElementById('like-count').innerText = ` ${post.like_count}`;
@@ -46,7 +48,6 @@
             editPostButton.style.display = "none";
             }
         if (post.image) {
-            console.log('Image URL:', post.image);
             document.getElementById('post-img').src = post.image; 
         }
         else { 
@@ -112,8 +113,7 @@ document.getElementById("like").addEventListener("click", function() {
         }
     })
     .then(response => {
-        
-        window.location.href = `/api/posts/${postId}/`;
+        window.location.href = `/api/posts/${postId}/`; 
     })
     .catch(error => {
         console.log("error: ", error);

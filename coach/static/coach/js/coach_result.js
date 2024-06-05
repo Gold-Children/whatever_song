@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .then(response => {
             const data = response.data;
+            document.getElementById('title').innerText = data.youtube_title;
             document.getElementById('high_pitch_score').innerText = data.high_pitch_score;
             document.getElementById('low_pitch_score').innerText = data.low_pitch_score;
             document.getElementById('pitch_score').innerText = data.pitch_score;
