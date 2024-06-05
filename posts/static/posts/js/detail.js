@@ -30,13 +30,17 @@
         });
         const post = response.data.data;
         const like = response.data.like;
+        const postAuthor = document.getElementById('post-author');
+        const postLink = document.getElementById('post-link');
         const editPostButton = document.getElementById('update');
         const authorId = post.author;
         // HTML 요소에 게시물 데이터를 채움
         document.getElementById('post-title').innerText = post.title;
         document.getElementById('post-content').innerText = post.content;
-        document.getElementById('post-link').innerText = post.link;
-        document.getElementById('post-author').innerText = `작성자: ${post.author_nickname}`;
+        postLink.href = post.link;
+        postLink.textContent = post.link;
+        postAuthor.href = `/api/accounts/profile/${authorId}/`
+        postAuthor.textContent = `작성자: ${post.author_nickname}`;
         document.getElementById('post-created').innerText = `작성일: ${formatDate(post.created_at)}`;
         document.getElementById('like-count').innerText = ` ${post.like_count}`;
         if (userId == authorId) {            
@@ -46,7 +50,6 @@
             editPostButton.style.display = "none";
             }
         if (post.image) {
-            console.log('Image URL:', post.image);
             document.getElementById('post-img').src = post.image; 
         }
         else { 

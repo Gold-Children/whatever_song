@@ -55,6 +55,15 @@ p{
     margin: 0;
 }
 
+.post-link{
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 700px;
+    height: 100%;
+    margin: 0;
+}
 
 /* 게시글 제목 조정 */
 #post-title{
