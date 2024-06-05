@@ -195,8 +195,7 @@ const coachList = document.getElementById('coach-list-link')
     event.preventDefault();
     const userId = window.localStorage.getItem('user_id');
     const ReuserId = window.location.pathname.split('/').slice(-2, -1)[0];
-    if (userId == ReuserId) {
-        console.log('111111111111111111');
+    if (userId == ReuserId) {   
         coachLists();
     }
     document.getElementById('post-container').style.display = 'none';
