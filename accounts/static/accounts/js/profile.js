@@ -224,7 +224,7 @@ function displayCoach(coachlist) {
         const item = document.createElement('div');
         item.className = 'coach-item';
         item.innerHTML = `
-       
+
         <img src=${coach.graph}>
         <div class="score-message">
             <h2>제 목</h2>
@@ -281,12 +281,15 @@ function displayPosts(posts) {
         const postElement = document.createElement('div');
         const postId = post.id
         postElement.classList.add('post');
+        const truncatedContent = post.content.length > 50 
+                ? post.content.substring(0, 50) + '...' 
+                : post.content;
         postElement.innerHTML = `
             <a href=/api/posts/${post.id}/>
             <img src=${post.image}/>
             <div class="content">
                 <p id="post-title">${post.title}</p>
-                <p id="post-content">${post.content}</p>
+                <p id="post-content">${truncatedContent}</p>
                 <div class="author-create-like">
                     <p>카테고리: ${post.category}</p>
                     <p>${formatDate(post.created_at).toLocaleString()}</p>
@@ -340,12 +343,15 @@ function displayLikedPosts(posts) {
         const postElement = document.createElement('div');
         const postId = post.id
         postElement.classList.add('post');
+        const truncatedContent = post.content.length > 50 
+                ? post.content.substring(0, 50) + '...' 
+                : post.content;
         postElement.innerHTML = `
             <a href=/api/posts/${post.id}/>
             <img src=${post.image}/>
             <div class="content">
                 <p id="post-title">${post.title}</p>
-                <p id="post-content">${post.content}</p>
+                <p id="post-content">${truncatedContent}</p>
                 <div class="author-create-like">
                     <p>카테고리:${post.category}</p>
                     <p>${formatDate(post.created_at).toLocaleString()}</p>
