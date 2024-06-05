@@ -47,21 +47,27 @@ document.addEventListener("DOMContentLoaded", function() {
 
         posts.forEach(post => {
             const postElement = document.createElement('div');
-            const postId = post.id
+            const postId = post.id;
             postElement.classList.add('post');
+            
+            // 콘텐츠를 100자로 자르기
+            const truncatedContent = post.content.length > 50 
+                ? post.content.substring(0, 50) + '...' 
+                : post.content;
+
             postElement.innerHTML = `
             <div class="list">
-                <a href=/api/posts/${post.id}/>
-                <img src=${post.image}/>
-                <div class="content">
-                    <p id="post-title">${post.title}</p>
-                    <p id="post-content">${post.content}</p>
+                <a href="/api/posts/${post.id}">
+                    <img src="${post.image}" />
+                    <div class="content">
+                        <p id="post-title">${post.title}</p>
+                        <p id="post-content">${truncatedContent}</p>
                         <div class="author-create-like">
                             <p>${post.author_nickname}</p>
                             <p>${formatDate(post.created_at).toLocaleString()}</p>
                             <p>좋아요 ${post.like_count}</p>
                         </div>
-                </div>
+                    </div>
                 </a>
             </div>
             `;
