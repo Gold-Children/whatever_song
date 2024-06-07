@@ -29,39 +29,53 @@
             <input type="email" id="email" name="email" placeholder="이메일을 입력해주세요" required><br>
         </div>
         <div class="email-btn">
-            <button type="button" onclick="resendVerificationEmail()">이메일 인증</button>
+            <button type="button" onclick="sendVerificationEmail()">이메일 인증</button>
         </div>
         <div class="signup-btn-line">
             <button type="submit">Signup</button>
         </div>
     </form>
-    <div class="resend-verification">
-    </div>
+    <div class="resend-verification"></div>
 </div>
 
 <script src="{% static 'accounts/js/signup.js' %}"></script>
 <script>
-    function resendVerificationEmail() {
-        const email = document.getElementById('email').value;  // 이메일 입력 필드의 값을 가져옴
+    document.getElementById('signup-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        checkEmailAndSubmit();
+    });
 
-        fetch("{% url 'resend-verification-email' %}", {
+    function sendVerificationEmail() {
+        const email = document.getElementById('email').value;
+    
+        fetch("/api/accounts/send-verification-email/", {  // 전체 경로 확인
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRFToken": "{{ csrf_token }}"
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
             },
             body: JSON.stringify({ email: email })
         })
-        .then(response => response.json())
+        .then(response => response.json().then(data => {
+            if (!response.ok) {
+                throw new Error(data.error || response.statusText);
+            }
+            return data;
+        }))
         .then(data => {
             if (data.message) {
                 alert(data.message);
-            } else {
+            } else if (data.error) {
                 alert(data.error);
             }
         })
         .catch(error => {
             console.error('Error:', error);
+            if (error.message === 'No user with this email exists.') {
+                alert('입력하신 이메일 주소로 가입된 사용자가 없습니다.');
+            } else {
+                alert(  error.message);
+            }
         });
     }
 </script>
