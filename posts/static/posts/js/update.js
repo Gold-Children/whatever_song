@@ -52,9 +52,12 @@ document.addEventListener('DOMContentLoaded', function() {
 document.getElementById('update-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData();
-        formData.append("title", document.getElementById('post-title').value)
-        formData.append("content", document.getElementById('post-content').value)
-        formData.append("link", document.getElementById('song-link').value)
+        formData.append("title", document.getElementById('post-title').value);
+        formData.append("content", document.getElementById('post-content').value);
+        const postUrl = document.getElementById('song-link');
+        if (postUrl.value) {
+            formData.append('link', postUrl.value);
+        }
         const imageFile = document.getElementById('file-input').files[0];
         if (imageFile) { 
             formData.append('image', imageFile);
