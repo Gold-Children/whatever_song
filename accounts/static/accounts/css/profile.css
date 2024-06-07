@@ -50,7 +50,7 @@
 #nickname {
     font-family: 'SCoreDream-400';
     color: #ffffff;
-    font-size: 22px;
+    font-size: 18px;
 }
 #edit-profile-button {
     text-decoration: none;
@@ -90,9 +90,10 @@
     width: 150px;
     height: 150px;
     border-radius: 50%;
+    border: solid 1px #fff;
     object-fit: cover;
     display: inline-block; /* 이미지 블록 정렬 */
-    background-color: white;
+    background-color: transparent
 }
 
 .post-wrap{
@@ -199,14 +200,14 @@
 
 .score-message p{
     font-family: 'SCoreDream-400';
-    font-size: 25px;
+    font-size: 18px;
     color: #fff;
-    margin: 10px;
+    margin: 3px;
 }
 
 .score-message h2{
     font-family: 'SCoreDream-500';
-    font-size: 26px;
+    font-size: 24px;
     color: #fff;
     margin: 10px;
 }

@@ -7,7 +7,7 @@ def upload_to_graph(instance, filename):
     ext = filename.split('.')[-1]
     filename = f'{uuid.uuid4()}.{ext}'
     return os.path.join('graphs', filename)
-  
+
 class Coach(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     youtube_title = models.TextField()

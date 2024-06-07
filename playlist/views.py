@@ -52,7 +52,7 @@ class PlaylistDataAPIView(APIView):
 
         # spotify api 호출
         spotify_api = requests.get(
-            "https://api.spotify.com/v1/browse/featured-playlists", headers=headers
+            "https://api.spotify.com/v1/browse/featured-playlists?limit=40", headers=headers
         )
         spotify_data = spotify_api.json()
         
@@ -84,7 +84,7 @@ class PlaylistSearchAPIView(APIView):
 
         # spotify api 호출
         spotify_api = requests.get(
-            "https://api.spotify.com/v1/search", headers=headers, params=params
+            "https://api.spotify.com/v1/search?limit=40", headers=headers, params=params
         )
 
         spotify_data = spotify_api.json()

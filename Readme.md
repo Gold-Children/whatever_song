@@ -11,11 +11,12 @@
 
 ## Development Environment
 - Programming Language : Python 3.10
-- Web Framework : DJANGO, DRF
-- Database : 
-- IDE : Vscode
+- Framework : DJANGO, DRF
+- Database : PostgreSQL, Redis
+- Deployment : AWS (EC2, S3), Docker, Gunicorn, Nginx, Ubuntu
+- FrontEnd : Html, CSS, JS
 - Version Control : Git, GitHub
-- Communication Tool : Notion, Pigma, Slack, Zep
+- Communication Tool : Notion, Figma, Slack, Zep
 
 ## Requirements
 - Li-brosa : 음악 및 오디오 신호 처리를 위한 파이썬 라이브러리, 피치 분석, 주파수 도메인 변환에서 유리한 라이브러리라서 선택

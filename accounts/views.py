@@ -138,7 +138,6 @@ class LogoutAPIView(APIView):
             
         except Exception as e:
             print(f"Exception: {e}")  # 예외 메시지 출력
-        
         return Response(status=status.HTTP_205_RESET_CONTENT)
 
 

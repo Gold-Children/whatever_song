@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData();
         formData.append('username', document.getElementById('username').value);
         formData.append('nickname', document.getElementById('nickname').value);
+        localStorage.setItem('user_nickname', document.getElementById('nickname').value);
         formData.append('email', document.getElementById('email').value);
         const imageFile = document.getElementById('image').files[0];
         if (imageFile) {
