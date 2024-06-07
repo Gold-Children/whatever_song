@@ -15,7 +15,7 @@
 - Database : PostgreSQL, Redis
 - Deployment : AWS (EC2, S3), Docker, Gunicorn, Nginx, Ubuntu
 - FrontEnd : Html, CSS, JS
-- Version Control : Git, GitHub
+- Version Control : Git, GitHub, Google Slides
 - Communication Tool : Notion, Figma, Slack, Zep
 
 ## Requirements
