@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const sortOption = sortSelect.value;
 
         try {
-            const response = await axios.get('/api/posts/', {
+            const response = await axios.get('/api/posts/api/list/', {
                 params: {
                     search: searchQuery,
                     category: category,
