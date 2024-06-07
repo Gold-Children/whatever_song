@@ -22,7 +22,6 @@ async function refreshAccessToken() {
         return newAccessToken;
     } catch (error) {
         console.error('Error refreshing token:', error);
-        // 필요한 경우 추가 처리 (예: 로그인 페이지로 리디렉션)
         localStorage.removeItem('access');
         localStorage.removeItem('refresh');
         localStorage.removeItem('user_id');
@@ -34,26 +33,38 @@ async function refreshAccessToken() {
     }
 }
 
+function isExcludedUrl(url, patterns) {
+    return patterns.some(pattern => {
+        const regex = new RegExp(pattern.replace(/<int:\w+>/g, '\\d+'));
+        return regex.test(url);
+    });
+}
+
 // Axios 요청 인터셉터를 설정하여 자동으로 토큰을 갱신하는 함수
 axios.interceptors.request.use(
     async config => {
+        console.log("121312312");
         // 특정 URL을 제외
-        const excludedUrls = ['/api/accounts/signup/', 
+        const excludedUrls = [
+        '/api/accounts/main/',
+        '/api/accounts/signup/', 
         '/api/accounts/api/token/', 
         '/api/accounts/login/', 
         '/api/accounts/logout/', 
         '/api/accounts/api/signup/', 
-        '/api/playlist/', 
+        '/api/playlist/list/', 
         '/api/playlist/data/', 
         '/api/playlist/search/', 
-        '/api/playlist/zzim/<int:playlist_id>/',
-        '/api/posts/',
+        '/api/playlist/zzim/\\d+',
+        '/api/posts/api/list/',
         '/api/posts/list/', 
-        '/api/posts/api/<int:post_id>', 
-        '/api/posts/<int:post_id>'];
-        if (excludedUrls.some(url => config.url.includes(url))) {
+        '/api/posts/api/\\d+', 
+        '/api/posts/\\d+'];
+        if (isExcludedUrl(config.url, excludedUrls)) {
+            console.log("Request URL excluded from token check");
             return config;
         }
+
 
         let accessToken = localStorage.getItem('access');  // let으로 선언하여 재할당 가능
         const tokenData = parseJwt(accessToken);
