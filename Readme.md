@@ -11,7 +11,7 @@
 
 ## Development Environment
 - Programming Language : Python 3.10
-- Web Framework : DJANGO DRF
+- Web Framework : DJANGO, DRF
 - Database : 
 - IDE : Vscode
 - Version Control : Git, GitHub
@@ -78,3 +78,4 @@ api 명세서
 - 훈수를 받았던 내용 확인
 
 ## ERD
+![image](https://github.com/Gold-Children/whatever_song/assets/145152442/4b9340ac-10fa-4ca0-b9a2-2fe8d501d641)

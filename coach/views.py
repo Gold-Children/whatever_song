@@ -1,4 +1,5 @@
 from django.urls import path
+from . import views
 from django.views import View
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -12,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 from django.conf import settings
 import uuid
+
 import os
 import subprocess
 import librosa
@@ -25,6 +27,7 @@ import shutil
 from dtaidistance import dtw
 from django.core.cache import cache
 from scipy.signal import correlate
+import random
 
 class CoachPageView(TemplateView):
     template_name = "coach/coach.html"
@@ -131,8 +134,6 @@ class InputView(APIView):
                     if diff < 12:
                         score = max(0, 100 - (diff * 25))
                         scores.append(score)
-                    else:
-                        scores.append(0)
             return scores
 
         def calculate_signal_similarity(signal1, signal2):
@@ -270,6 +271,7 @@ class InputView(APIView):
             
             # 보컬 추출
             progress = "YouTube 오디오에서 보컬 분리 중"
+            progress = "YouTube 오디오에서 보컬 분리 중"
             update_progress(user, progress)
             vocal_output_path_youtube = os.path.join(output_dir, 'vocals_youtube')
             os.makedirs(vocal_output_path_youtube, exist_ok=True)
@@ -282,7 +284,7 @@ class InputView(APIView):
                 for chunk in input_file.chunks():
                     temp_file.write(chunk)
                 temp_file_path = temp_file.name
-            
+
             vocal_output_path_file = os.path.join(output_dir, 'vocals_file')
             os.makedirs(vocal_output_path_file, exist_ok=True)
             vocal_path_file = separate_vocals(temp_file_path, vocal_output_path_file)
@@ -355,13 +357,35 @@ class InputView(APIView):
 
         title, graph, high_pitch_score, low_pitch_score, pitch_score = main(youtube_url, input_file)
 
+        
+
+        def get_random_message(score):
+            messages = {
+                0: ['ㅋ', '? 뭐하세요?', '공기가 노래 부르나용?'],
+                1: ['부른고 있는건 맞냐?', '뭐해????????????', '아는 노래가 맞나요?'],
+                2: ['오 이게 그거죠? 당신 억장 무너지는 소리', '걍… 하지마…', '소불고기 레시피:\n\n1. 소고기 등심에 설탕 40컵, 물엿 2병을 넣어요.\n2. 거기에 매실, 다진마늘 3접, 간장 12병 후추 약간을 넣고 주물러 양념이 배게 해줍니다.\n3. 여기에 기름 1L를 넣고 주물러 30초 기다려줘요.'],
+                3: ['성대에 기름칠 못하셨어요?', '당신의 노래는 마치 반 고흐가 받았던 평가만큼 150년 후에야 칭찬 받을 만한 노래 실력이라고 말할 수 있겠는데요.'],
+                4: ['우와! 절반 아래로 나오기 힘든데 그걸 하셨군요! 대단해요!', '베토벤이 말합니다 : 넌 노래하지 마라;'],
+                5: ['그… 내가 받아쓰기해도 이것보단 잘나오겠는데?', '어…음….그래 노력해봐'],
+                6: ['넌 그냥 흥얼거리기만 하자', '이걸 잘 불렀다고 해야 해 못 불렀다고 해야 해…?'],
+                7: ['이 정도면 노력 하면 될거 같기도한데?', '화이팅!'],
+                8: ['아쉽네유', '조금만 더 하지 그거 하나 못해서 100점을 못받네 아이고난', '오?'],
+                9: ['찢었따', 'ㅇㅇ 들어줄만함', '크으', '조금 많이 부를줄 아네?'],
+                10: ['찢었따', 'ㅇㅇ 들어줄만함', '크으', '조금 많이 부를줄 아네?']  # 100점의 경우도 포함
+            }
+            score_key = min(score // 10, 10)  # score가 100일 때를 위해 min 사용
+            return random.choice(messages.get(score_key, ["점수를 확인할 수 없습니다. 다시 시도해주세요."]))
+
+
+        message = get_random_message(pitch_score)
+
         coach = Coach.objects.create(
             user=user,
             youtube_title=title,
             high_pitch_score=high_pitch_score,
             low_pitch_score=low_pitch_score,
             pitch_score=pitch_score,
-            message='메세지 로직을 추가해주세요',
+            message=message,
             graph=graph
         )
         
@@ -376,6 +400,7 @@ class ResultView(APIView):
         coach = get_object_or_404(Coach, pk=pk)
         serializer = CoachSerializer(coach)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class UserCoachedVocalView(APIView):
     def get(self, request):

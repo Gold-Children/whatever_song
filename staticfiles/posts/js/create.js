@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('create-form').addEventListener('submit', function(e) {
         e.preventDefault();
-
         const userId = window.localStorage.getItem('user_id');
         const userNickname = window.localStorage.getItem('user_nickname');
         const formData = new FormData();
@@ -26,8 +25,16 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('author', userId);
         formData.append('author_nickname', userNickname);
         formData.append('content', document.getElementById('post-content').value);
-        formData.append('category', document.getElementById('post-category').value);
-        formData.append('link', document.getElementById('post-url').value);
+        const postUrl = document.getElementById('post-url');
+        if (postUrl.value) {
+            formData.append('link', postUrl.value);
+        }
+
+        const postCategory = document.getElementById('post-category')
+        if (postCategory.value != '----') {
+            formData.append('category', postCategory.value);
+        }
+
         const imageInput = document.getElementById('file-input');
         if (imageInput.files.length > 0) {
             formData.append('image', imageInput.files[0]);
@@ -49,6 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.log("error: ", error);
             console.error('게시 실패.', error);
+            alert("게시 실패: ", error.response.data);
         });
     });
 });

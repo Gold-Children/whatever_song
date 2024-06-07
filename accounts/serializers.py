@@ -15,7 +15,7 @@ class SignupSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
             email=validated_data["email"],
             nickname=validated_data["nickname"],
-            image=validated_data.get("image", None),
+            image=validated_data.get("image",'accounts/profile_pics/logo.png/'),
         )
         user.set_password(validated_data["password"])
         user.save()

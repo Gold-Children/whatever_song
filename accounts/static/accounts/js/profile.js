@@ -92,6 +92,7 @@ function displayPlaylist(playlists) {
             button.addEventListener('click', function(event) {
             event.preventDefault();
             const playlistId = this.getAttribute('data-id');
+
             toggleZzim(playlistId, this);
         });
     });
@@ -131,6 +132,7 @@ function toggleZzim(playlistId, button) {
     }
     const csrfToken = getCsrfToken();
     const access = window.localStorage.getItem('access');
+
     axios.post(`/api/playlist/zzim/${playlistId}/`, playlistId, {
         headers: {
             'X-CSRFToken': csrfToken,
@@ -176,12 +178,12 @@ function UserPlaylists() {
 const zzimPlaylist = document.getElementById('zzim-playlist-link')
     zzimPlaylist.addEventListener('click', function(event) {
     event.preventDefault();
-    console.log("1111212121212");
     UserPlaylists();
     document.getElementById('post-container').style.display = 'none';
     document.getElementById('liked-post-container').style.display = 'none';
     document.getElementById('zzim-playlist-container').style.display = 'flex';
     document.getElementById('coach-container').style.display = 'none';
+
 });
 
 
@@ -189,7 +191,6 @@ const zzimPlaylist = document.getElementById('zzim-playlist-link')
 const coachList = document.getElementById('coach-list-link')
     coachList.addEventListener('click', function(event) {
     event.preventDefault();
-    console.log("1111212121212");
     coachLists();
     document.getElementById('post-container').style.display = 'none';
     document.getElementById('liked-post-container').style.display = 'none';
@@ -223,7 +224,7 @@ function displayCoach(coachlist) {
         const item = document.createElement('div');
         item.className = 'coach-item';
         item.innerHTML = `
-        
+
         <img src=${coach.graph}>
         <div class="score-message">
             <h2>제 목</h2>
@@ -233,6 +234,7 @@ function displayCoach(coachlist) {
             <h2>한 줄 평</h2> 
             <p>${coach.message}</p>
         </div>
+
         `;
         container.appendChild(item);
     });
@@ -243,12 +245,12 @@ function displayCoach(coachlist) {
 const myPostList = document.getElementById('posts-link')
     myPostList.addEventListener('click', function(event) {
     event.preventDefault();
-    console.log("1212121212111");
     userPosts();
     document.getElementById('post-container').style.display = 'flex';
     document.getElementById('liked-post-container').style.display = 'none';
     document.getElementById('zzim-playlist-container').style.display = 'none';
     document.getElementById('coach-container').style.display = 'none';
+
 });
 
 function userPosts() {
@@ -263,7 +265,7 @@ function userPosts() {
     })
         .then(response => {
             const posts = response.data
-            console.log(posts);
+
             displayPosts(posts)
         })
         .catch(error => {
@@ -279,14 +281,17 @@ function displayPosts(posts) {
         const postElement = document.createElement('div');
         const postId = post.id
         postElement.classList.add('post');
+        const truncatedContent = post.content.length > 50 
+                ? post.content.substring(0, 50) + '...' 
+                : post.content;
         postElement.innerHTML = `
             <a href=/api/posts/${post.id}/>
             <img src=${post.image}/>
             <div class="content">
                 <p id="post-title">${post.title}</p>
-                <p id="post-content">${post.content}</p>
+                <p id="post-content">${truncatedContent}</p>
                 <div class="author-create-like">
-                    <p>카테고리: ${post.category}</p>
+                    <p>${post.category}</p>
                     <p>${formatDate(post.created_at).toLocaleString()}</p>
                     <p>좋아요 ${post.like_count}</p>
                 </div>
@@ -302,12 +307,13 @@ function displayPosts(posts) {
 const likedPostList = document.getElementById('liked-posts-link')
     likedPostList.addEventListener('click', function(event) {
     event.preventDefault();
-    console.log("1213213123123123")
+
     likedPosts();
     document.getElementById('post-container').style.display = 'none';
     document.getElementById('liked-post-container').style.display = 'flex';
     document.getElementById('zzim-playlist-container').style.display = 'none';
     document.getElementById('coach-container').style.display = 'none';
+
 });
 
 function likedPosts() {
@@ -337,14 +343,18 @@ function displayLikedPosts(posts) {
         const postElement = document.createElement('div');
         const postId = post.id
         postElement.classList.add('post');
+        const truncatedContent = post.content.length > 50 
+                ? post.content.substring(0, 50) + '...' 
+                : post.content;
         postElement.innerHTML = `
             <a href=/api/posts/${post.id}/>
             <img src=${post.image}/>
             <div class="content">
                 <p id="post-title">${post.title}</p>
-                <p id="post-content">${post.content}</p>
+                <p id="post-content">${truncatedContent}</p>
                 <div class="author-create-like">
-                    <p>카테고리:${post.category}</p>
+                    <p>${post.author_nickname}</p>
+                    <p>${post.category}</p>
                     <p>${formatDate(post.created_at).toLocaleString()}</p>
                     <p>좋아요 ${post.like_count}</p>
                 </div>

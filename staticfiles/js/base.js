@@ -108,7 +108,6 @@ function logout() {
         localStorage.removeItem('user_id');
         localStorage.removeItem('user_nickname');
         window.location.href = '/api/accounts/login/';
-        alert('로그아웃 성공!');
     })
     .catch(error => {
         console.error('로그아웃 실패.', error);
