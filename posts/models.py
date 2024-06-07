@@ -15,7 +15,7 @@ class Post(models.Model):
     author_nickname = models.CharField(max_length=50)
     link = models.URLField(blank=True, null=True)
     image = models.ImageField(
-        upload_to="posts/post_pic/%Y/%m/%d/", blank=True, null=True, default="posts/post_pic/logo.png/"
+        upload_to="posts/post_pic/%Y/%m/%d/", blank=True, null=True, default="posts/post_pic/main logo.png/"
     )
     category = models.CharField(
         max_length=5, blank=True, choices=category.choices

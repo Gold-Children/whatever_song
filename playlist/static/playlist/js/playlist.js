@@ -3,6 +3,7 @@ function searchPlaylist(query) {
     axios.get(`/api/playlist/search/?query=${query}`)
         .then(response => {
             displayPlaylist(response.data);
+            checkUserZzimPlaylists();
         })
         .catch(error => {
             console.error('Error fetching search results:', error);
