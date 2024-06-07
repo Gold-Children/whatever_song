@@ -43,7 +43,6 @@ function isExcludedUrl(url, patterns) {
 // Axios 요청 인터셉터를 설정하여 자동으로 토큰을 갱신하는 함수
 axios.interceptors.request.use(
     async config => {
-        console.log("121312312");
         // 특정 URL을 제외
         const excludedUrls = [
         '/api/accounts/main/',
@@ -61,7 +60,6 @@ axios.interceptors.request.use(
         '/api/posts/api/\\d+', 
         '/api/posts/\\d+'];
         if (isExcludedUrl(config.url, excludedUrls)) {
-            console.log("Request URL excluded from token check");
             return config;
         }
 
