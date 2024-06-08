@@ -15,21 +15,19 @@ from django.contrib.auth import (
     logout,
 )
 from django.shortcuts import render
-from django.http import JsonResponse
-from .serializers import SignupSerializer
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.hashers import make_password
 from django.db import transaction
-from .serializers import SignupSerializer, CustomTokenObtainPairSerializer
-from .models import User
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
-from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
-from django.utils.http import urlsafe_base64_decode
 from django.core.exceptions import MultipleObjectsReturned
+from .serializers import SignupSerializer, CustomTokenObtainPairSerializer
+from .models import User
 
 class SignUpView(CreateAPIView):
     model = get_user_model()
@@ -53,9 +51,8 @@ class SignUpView(CreateAPIView):
             'domain': 'whateversong.com'
         })
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-    
+
 class VerifyEmailView(APIView):
-    permission_classes = [AllowAny]
 
     def get(self, request, uidb64, token):
         try:
@@ -85,18 +82,12 @@ class SendVerificationEmailView(APIView):
         except get_user_model().DoesNotExist:
             pass  # 사용자가 존재하지 않아도 이메일 발송을 시도함
 
-        self.send_verification_email(email)
+        self.send_verification_email(user)
         return Response({'message': '이메일 인증 메일이 발송되었습니다.'}, status=status.HTTP_200_OK)
 
-    def send_verification_email(self, email):
-        # 가짜 사용자 객체를 생성하거나 None으로 처리
-        user = get_user_model()(
-            email=email,
-            username=email.split('@')[0],  # 임시 사용자명 생성
-            is_active=False
-        )
+    def send_verification_email(self, user):
         token = default_token_generator.make_token(user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk if user.pk else '0'))  # 가짜 사용자 ID 처리
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
         subject = '이메일 인증 요청'
         message = render_to_string('accounts/email_verification.html', {
             'user': user,
@@ -105,7 +96,7 @@ class SendVerificationEmailView(APIView):
             'protocol': 'https',
             'domain': 'whateversong.com'
         })
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
 class CheckEmailVerifiedView(APIView):
     permission_classes = [AllowAny]
