@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const imageInput = document.getElementById('file-input');
     const fileNameDisplay = document.getElementById('file-name');
+    const signupForm = document.getElementById('signup-form');
+    const emailVerificationBtn = document.getElementById('email-verification-btn'); // 이메일 인증 버튼 선택
 
     imageInput.addEventListener('change', function() {
         if (imageInput.files.length > 0) {
@@ -9,9 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
             fileNameDisplay.innerText = '선택된 파일 없음';
         }
     });
-
-    const signupForm = document.getElementById('signup-form');
-    const emailVerificationBtn = document.getElementById('email-verification-btn'); // 이메일 인증 버튼 선택
 
     if (!signupForm) {
         console.error('signup-form이 존재하지 않습니다.');
@@ -25,9 +24,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     signupForm.addEventListener('submit', function(e) {
         e.preventDefault();
+        handleFormSubmit();
+    });
 
+    function handleFormSubmit() {
         const formData = new FormData(signupForm);
-        const imageInput = document.getElementById('file-input');
         if (imageInput.files.length > 0) {
             formData.append('image', imageInput.files[0]);
         }
@@ -48,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(error);
             console.error('회원가입에 실패했습니다.', error);
         });
-    });
+    }
 
     // 이메일 인증 요청을 서버로 보내는 함수
     function sendVerificationEmail() {
