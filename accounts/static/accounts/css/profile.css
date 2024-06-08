@@ -41,16 +41,10 @@
     font-family: 'SCoreDream-400';
     font-size: 18px;
     color: #ffffff;
-}
 
 
-
-
-#text{
-    margin-bottom: 0px;
     text-align: center;  /* 가운데 정렬 */
     font-family: 'SCoreDream-400';
-
 }
 
 #nickname {
@@ -58,9 +52,6 @@
     color: #ffffff;
     font-size: 18px;
 }
-
-
-
 #edit-profile-button {
     text-decoration: none;
     font-family: 'SCoreDream-400';
@@ -98,7 +89,6 @@
 .profile-image img {
     width: 150px;
     height: 150px;
-    
     border-radius: 50%;
     border: solid 1px #fff;
     object-fit: cover;
@@ -309,6 +299,7 @@ width: 100%;
 
 /* 찜버튼 위치 absolute라서 원하는 위치로 배치 가능 */
 .zzim-button {
+
 font-family: 'SCoreDream-500';
 color: #fff;
 font-size : 35px;
@@ -319,3 +310,4 @@ position: absolute;
 top: 175px;
 right: 5px;
 }
+
