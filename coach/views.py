@@ -114,11 +114,11 @@ class InputView(APIView):
 
         def split_freq_ranges(highest_dB_freqs, classification):
             if classification == 'male':
-                low_range = (82, 175)  
-                high_range = (175, 350) 
+                low_range = (82, 220)  
+                high_range = (220, 587.33) 
             else:
-                low_range = (175, 350) 
-                high_range = (350, 1046.5)
+                low_range = (175, 440) 
+                high_range = (440, 1046.5)
             
             low_freqs = [(time, freq) for time, freq in highest_dB_freqs if low_range[0] <= freq <= low_range[1]]
             high_freqs = [(time, freq) for time, freq in highest_dB_freqs if high_range[0] <= freq <= high_range[1]]
@@ -289,27 +289,27 @@ class InputView(APIView):
             vocal_path_file = separate_vocals(temp_file_path, vocal_output_path_file)
             
             # 최고 dB 주파수 계산
-            progress = "YouTube 보컬 계산 중"
+            progress = "YouTube 보컬의 주파수 계산 중"
             update_progress(user, progress)
             highest_dB_freqs_youtube = calculate_highest_dB_freqs(vocal_path_youtube)
             
-            progress = "업로드된 보컬 계산 중"
+            progress = "업로드된 보컬의 주파수 계산 중"
             update_progress(user, progress)
             highest_dB_freqs_file = calculate_highest_dB_freqs(vocal_path_file)
             
             # 성별 분류
-            progress = "보컬 분류 중"
+            progress = "보컬 범위 분류 중"
             update_progress(user, progress)
             classification = classify_vocal_ranges(highest_dB_freqs_youtube)
             
             # 주파수 범위 나누기
-            progress = "범위 나누는 중"
+            progress = "주파수 범위 나누는 중"
             update_progress(user, progress)
             low_freqs_youtube, high_freqs_youtube = split_freq_ranges(highest_dB_freqs_youtube, classification)
             low_freqs_file, high_freqs_file = split_freq_ranges(highest_dB_freqs_file, classification)
             
             # DTW와 크로스 코릴레이션 기반 싱크 맞추기
-            progress = "신호 싱크 맞추기 중"
+            progress = "DTW와 크로스 코릴레이션을 사용하여 신호 싱크 맞추기 중"
             update_progress(user, progress)
             aligned_low_freqs_file = sync_signals_optimized([freq for _, freq in low_freqs_youtube], [freq for _, freq in low_freqs_file])
             aligned_high_freqs_file = sync_signals_optimized([freq for _, freq in high_freqs_youtube], [freq for _, freq in high_freqs_file])
@@ -326,7 +326,7 @@ class InputView(APIView):
             high_score_avg = round(np.mean(high_scores), 2)
             
             # 음정 변화 배열 추출 및 신호 싱크 맞추기
-            progress = "신호 싱크 맞추기 중"
+            progress = "음정 변화 배열 추출 및 신호 싱크 맞추기 중"
             update_progress(user, progress)
             pitch_changes_youtube = extract_pitch_changes(highest_dB_freqs_youtube)
             pitch_changes_file = extract_pitch_changes(highest_dB_freqs_file)
@@ -370,7 +370,7 @@ class InputView(APIView):
                 7: ['이 정도면 노력 하면 될거 같기도한데?', '화이팅!'],
                 8: ['아쉽네유', '조금만 더 하지 그거 하나 못해서 100점을 못받네 아이고난', '오?'],
                 9: ['찢었따', 'ㅇㅇ 들어줄만함', '크으', '조금 많이 부를줄 아네?'],
-                10: ['찢었따', 'ㅇㅇ 들어줄만함', '크으', '조금 많이 부를줄 아네?'] 
+                10: ['찢었따', 'ㅇㅇ 들어줄만함', '크으', '조금 많이 부를줄 아네?']  # 100점의 경우도 포함
             }
             score_key = min(score // 10, 10)  # score가 100일 때를 위해 min 사용
             return random.choice(messages.get(score_key, ["점수를 확인할 수 없습니다. 다시 시도해주세요."]))
