@@ -65,7 +65,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .then(function(response) {
-            alert('프로필 변경에 성공하셨습니다!');
             window.location.href = `/api/accounts/profile/${userId}/`;
         })
         .catch(function(error) {
@@ -94,8 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .then(function(response) {
-            alert('비밀번호 변경을 성공하셨습니다!');
-            window.location.href = '{% url "main" %}';
+            window.location.href = '/api/accounts/main/';
         })
         .catch(function(error) {
             console.error('There was an error!', error);
