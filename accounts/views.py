@@ -40,7 +40,6 @@ class SignUpView(CreateAPIView):
         user = serializer.save()
         user.is_active = False  # 이메일 인증 전까지 비활성화 상태
         user.save()
-        self.send_verification_email(user)
 
     def send_verification_email(self, user):
         token = default_token_generator.make_token(user)
