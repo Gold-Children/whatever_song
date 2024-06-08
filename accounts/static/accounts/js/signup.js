@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const imageInput = document.getElementById('file-input');
     const fileNameDisplay = document.getElementById('file-name');
     const signupForm = document.getElementById('signup-form');
-    const emailVerificationBtn = document.getElementById('email-verification-btn');
+    const emailVerificationBtn = document.getElementById('email-verification-btn'); // 이메일 인증 버튼 선택
 
     imageInput.addEventListener('change', function() {
         if (imageInput.files.length > 0) {
@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    // 이메일 인증 버튼 클릭 시 이메일 인증 요청
     emailVerificationBtn.addEventListener('click', function() {
         sendVerificationEmail();
     });
@@ -32,16 +33,17 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('image', imageInput.files[0]);
         }
 
+        // CSRF 토큰을 가져옵니다.
         const csrfToken = getCsrfToken();
 
-        axios.post('/api/accounts/api/signup/', formData, {
+        axios.post('/api/signup/', formData, {
             headers: {
                 'X-CSRFToken': csrfToken,
-                'Content-Type': 'multipart/form-data'
+                'Content-Type': 'multipart/form-data' // 필수 헤더
             }
         })
         .then(response => {
-            window.location.href = '/api/accounts/login/';
+            window.location.href = '/login/';
         })
         .catch(error => {
             console.log(error);
@@ -49,10 +51,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // 이메일 인증 요청을 서버로 보내는 함수
     function sendVerificationEmail() {
         const email = document.getElementById('email').value;
         const csrfToken = getCsrfToken();
-
+    
         fetch("/api/accounts/send-verification-email/", {
             method: "POST",
             headers: {
@@ -81,9 +84,10 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('이메일 인증 요청에 실패했습니다. 다시 시도해주세요.');
         });
     }
-
-    function getCsrfToken() {
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        return csrfToken;
-    }
+    
 });
+
+function getCsrfToken() {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    return csrfToken;
+}

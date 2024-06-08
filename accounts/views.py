@@ -1,23 +1,13 @@
 from rest_framework import status
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.views.generic import TemplateView
-from django.contrib.auth import (
-    get_user_model,
-    authenticate,
-    update_session_auth_hash,
-    logout,
-)
-from django.shortcuts import render
-from django.db import transaction
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model, update_session_auth_hash, logout
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
 from django.core.mail import send_mail
@@ -28,6 +18,10 @@ from django.utils.http import urlsafe_base64_encode
 from django.core.exceptions import MultipleObjectsReturned
 from .serializers import SignupSerializer, CustomTokenObtainPairSerializer
 from .models import User
+from django.http import JsonResponse
+from django.db import transaction
+
+
 
 class SignUpView(CreateAPIView):
     model = get_user_model()
@@ -41,7 +35,6 @@ class SignUpView(CreateAPIView):
         serializer.send_verification_email(user)
 
 class VerifyEmailView(APIView):
-
     def get(self, request, uidb64, token):
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
@@ -53,7 +46,7 @@ class VerifyEmailView(APIView):
             user.is_active = True
             user.email_verified = True
             user.save()
-            return Response({'message': '이메일 인증이 완료되었습니다.'}, status=status.HTTP_200_OK)
+            return render(request, 'accounts/email_verification_success.html')
         else:
             return Response({'error': '유효하지 않은 링크입니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -66,15 +59,22 @@ class SendVerificationEmailView(APIView):
         try:
             user = get_user_model().objects.get(email=email)
         except MultipleObjectsReturned:
-            return Response({'error': '여러 사용자가 같은 이메일을 사용하고 있습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': '여러 사용자가 같은 이메일을 사용하고 있습니다.'}, status=400)
         except get_user_model().DoesNotExist:
-            pass  # 사용자가 존재하지 않아도 이메일 발송을 시도함
-
+            # 사용자가 존재하지 않을 경우 새 사용자 생성
+            user = get_user_model().objects.create(
+                email=email,
+                username=email.split('@')[0],  # 임시로 이메일의 앞부분을 사용자 이름으로 사용
+                is_active=False  # 이메일 인증 전까지 비활성화 상태
+            )
+        print('11111111111111111111111111111', user)
         if user is not None:
+            print('1222222222222222222222211111')
             self.send_verification_email(user)
-        return Response({'message': '이메일 인증 메일이 발송되었습니다.'}, status=status.HTTP_200_OK)
+        return Response({'message': '이메일 인증 메일이 발송되었습니다.'}, status=200)
 
     def send_verification_email(self, user):
+        print('11111111111111111111111111111')
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         subject = '이메일 인증 요청'
@@ -85,6 +85,7 @@ class SendVerificationEmailView(APIView):
             'protocol': 'https',
             'domain': 'whateversong.com'
         })
+        print('aaaaaaaaaaa', user.email)
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
 class CheckEmailVerifiedView(APIView):
