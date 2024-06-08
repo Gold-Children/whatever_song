@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
+from decouple import config
 import os
 
 load_dotenv()
@@ -187,3 +188,5 @@ CORS_ALLOWED_ORIGINS = [
     "http://3.38.218.187",
     "http://127.0.0.1:8000",
 ]
+
+KAKAO_API_KEY = config('KAKAO_API_KEY')

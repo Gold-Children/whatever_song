@@ -394,6 +394,10 @@ class InputView(APIView):
 class ResultPageView(TemplateView):
     template_name = "coach/coach_result.html"
 
+class KakaoApiKeyView(APIView):
+    def get(self, request):
+        return Response({'kakaoApiKey': settings.KAKAO_API_KEY})
+
 class ResultView(APIView):
     def get(self, request, pk):
         coach = get_object_or_404(Coach, pk=pk)

@@ -9,4 +9,6 @@ urlpatterns = [
     path('api/user/', views.UserCoachedVocalView.as_view(), name='user_coached_vocal'),
 
     path('api/status/', views.CheckStatusView.as_view(), name='status'),
+
+    path('api/kakao-key/', views.KakaoApiKeyView.as_view(), name='kakao-api-key'),
 ]

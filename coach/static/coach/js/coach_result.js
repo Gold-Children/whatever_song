@@ -44,9 +44,15 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         document.getElementById('share-kakao').addEventListener('click', function() {
             // Ensure Kakao SDK is initialized
-            if (!Kakao.isInitialized()) {
-                Kakao.init('여기다가 넣어줘야함'); // Replace with your actual JavaScript key
-            }
+            axios.get('/api/kakao-key/')
+            .then(response => {
+                const kakaoApiKey = response.data.kakaoApiKey;
+                if (!Kakao.isInitialized()) {
+                    Kakao.init(kakaoApiKey);  
+                }
+        
+            })
+            .catch(error => console.error('Error:', error));
             Kakao.Link.sendDefault({
                 objectType: 'feed',
                 content: {
