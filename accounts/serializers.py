@@ -33,6 +33,8 @@ class SignupSerializer(serializers.ModelSerializer):
         return user
 
     def send_verification_email(self, user):
+        if user is None:
+            return
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         subject = '이메일 인증 요청'
@@ -44,7 +46,6 @@ class SignupSerializer(serializers.ModelSerializer):
             'domain': 'whateversong.com'
         })
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 

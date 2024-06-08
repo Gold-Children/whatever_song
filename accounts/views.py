@@ -29,6 +29,7 @@ from django.core.exceptions import MultipleObjectsReturned
 from .serializers import SignupSerializer, CustomTokenObtainPairSerializer
 from .models import User
 
+
 class SignUpView(CreateAPIView):
     model = get_user_model()
     serializer_class = SignupSerializer
@@ -38,19 +39,7 @@ class SignUpView(CreateAPIView):
         user = serializer.save()
         user.is_active = False  # 이메일 인증 전까지 비활성화 상태
         user.save()
-
-    def send_verification_email(self, user):
-        token = default_token_generator.make_token(user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        subject = '이메일 인증 요청'
-        message = render_to_string('accounts/email_verification.html', {
-            'user': user,
-            'uid': uid,
-            'token': token,
-            'protocol': 'https',
-            'domain': 'whateversong.com'
-        })
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+        serializer.send_verification_email(user)
 
 class VerifyEmailView(APIView):
 
@@ -82,7 +71,8 @@ class SendVerificationEmailView(APIView):
         except get_user_model().DoesNotExist:
             pass  # 사용자가 존재하지 않아도 이메일 발송을 시도함
 
-        self.send_verification_email(user)
+        if user is not None:
+            self.send_verification_email(user)
         return Response({'message': '이메일 인증 메일이 발송되었습니다.'}, status=status.HTTP_200_OK)
 
     def send_verification_email(self, user):
@@ -136,11 +126,9 @@ def main(request):
     return render(request, "accounts/main.html")
 
 
-# Create your views here.
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
-    # 프로필 보기
     def get(self, request, pk):
         user = get_object_or_404(User, pk=pk)
         serializer = SignupSerializer(user)
@@ -172,7 +160,6 @@ class ProfileUpdateView(APIView):
 
         serializer = SignupSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
-            # 사용자명(ID)
             new_username = serializer.validated_data.get("username")
             if (
                 new_username
@@ -185,7 +172,6 @@ class ProfileUpdateView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            # 닉네임
             new_nickname = serializer.validated_data.get("nickname")
             if (
                 new_nickname
@@ -198,7 +184,6 @@ class ProfileUpdateView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            # 이메일 중복 확인
             new_email = serializer.validated_data.get("email")
             if (
                 new_email
@@ -231,13 +216,11 @@ class ProfileImageView(APIView):
         if request.user != user:
             return Response({"error": "권한 읍서요"}, status=status.HTTP_403_FORBIDDEN)
 
-        # 이미지 수정
         serializer = SignupSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             with transaction.atomic():
                 image_file = request.data.get("image")
                 if image_file:
-                    # 기존 이미지 삭제
                     user.image.delete()
                     user.image.save(image_file.name, image_file, save=True)
                     serializer.validated_data["image"] = user.image
@@ -250,7 +233,6 @@ class ProfileImageView(APIView):
 class PasswordChangeView(APIView):
     permission_classes = [IsAuthenticated]
 
-    # 패스워드 변경
     def put(self, request, pk):
         user = get_object_or_404(User, pk=pk)
         if request.user != user:
@@ -270,11 +252,9 @@ class PasswordChangeView(APIView):
                 {"error": "이전 비밀번호와 같은 비밀번호로 설정할 수 없습니다."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        # 해싱된 비밀번호를 저장
         user.set_password(new_password)
         user.save()
 
-        # 세션 갱신
         update_session_auth_hash(request, user)
 
         return Response(
