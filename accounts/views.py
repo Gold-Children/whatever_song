@@ -66,6 +66,7 @@ class VerifyEmailView(APIView):
 
         if user is not None and default_token_generator.check_token(user, token):
             user.is_active = True
+            user.email_verified = True
             user.save()
             return Response({'message': '이메일 인증이 완료되었습니다.'}, status=status.HTTP_200_OK)
         else:
@@ -112,7 +113,7 @@ class CheckEmailVerifiedView(APIView):
     def post(self, request):
         email = request.data.get('email')
         user = get_user_model().objects.filter(email=email).first()
-        if user and user.is_active:
+        if user and user.is_active and user.email_verified:
             return JsonResponse({'verified': True})
         return JsonResponse({'verified': False})
 
