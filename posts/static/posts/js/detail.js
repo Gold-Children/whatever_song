@@ -32,13 +32,20 @@
         const like = response.data.like;
         const postAuthor = document.getElementById('post-author');
         const postLink = document.getElementById('post-link');
+        const postLinkBox = document.querySelector('.post-link');
         const editPostButton = document.getElementById('update');
         const authorId = post.author;
         // HTML 요소에 게시물 데이터를 채움
         document.getElementById('post-title').innerText = post.title;
         document.getElementById('post-content').innerText = post.content;
-        postLink.href = post.link;
-        postLink.textContent = '바로가기';
+        if (post.link) {
+            postLink.href = post.link;
+            postLink.textContent = '바로가기';
+        }
+        else {
+            postLinkBox.style.display = "none";
+            postLink.style.display = "none";
+        }
         postAuthor.href = `/api/accounts/profile/${authorId}/`
         postAuthor.textContent = `작성자: ${post.author_nickname}`;
         document.getElementById('post-created').innerText = `작성일: ${formatDate(post.created_at)}`;
