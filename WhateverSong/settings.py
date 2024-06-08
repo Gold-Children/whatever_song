@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
-from . import config
 import os
 
 load_dotenv()
@@ -164,7 +163,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'j4950963@gmail.com'
-EMAIL_HOST_PASSWORD = config.EMAIL_HOST_PASSWORD
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -184,7 +183,7 @@ CACHES = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://example.com",
+    "http://whateversong.com",
     "http://3.38.218.187",
     "http://127.0.0.1:8000",
 ]
