@@ -49,8 +49,8 @@ class SignUpView(CreateAPIView):
             'user': user,
             'uid': uid,
             'token': token,
-            'protocol': 'http',
-            'domain': 'your-domain.com'
+            'protocol': 'https',
+            'domain': 'whateversong.com'
         })
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
     
@@ -101,8 +101,8 @@ class SendVerificationEmailView(APIView):
             'user': user,
             'uid': uid,
             'token': token,
-            'protocol': 'http',
-            'domain': 'your-domain.com'
+            'protocol': 'https',
+            'domain': 'whateversong.com'
         })
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
 
