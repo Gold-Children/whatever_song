@@ -21,5 +21,5 @@ COPY . .
 EXPOSE 8000
 
 # 서버 실행
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-# CMD ["gunicorn", "-b", "0.0.0.0:8000", "--workers", "1", "--worker-class", "gevent", "--timeout", "120", "--preload", "WhateverSong.wsgi:application"]
+# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "--workers", "1", "--worker-class", "gevent", "--timeout", "120", "--preload", "WhateverSong.wsgi:application"]

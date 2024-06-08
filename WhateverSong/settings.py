@@ -177,6 +177,6 @@ CACHES = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://example.com",
-    "http://43.201.100.153",
+    "http://3.38.218.187",
     "http://127.0.0.1:8000",
 ]
