@@ -1,11 +1,23 @@
 from rest_framework import status
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.views.generic import TemplateView
-from django.contrib.auth import get_user_model, update_session_auth_hash, logout
-from django.shortcuts import render, get_object_or_404
+from django.contrib.auth import (
+    get_user_model,
+    authenticate,
+    update_session_auth_hash,
+    logout,
+)
+from django.shortcuts import render
+from django.db import transaction
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
 from django.core.mail import send_mail
@@ -16,7 +28,6 @@ from django.utils.http import urlsafe_base64_encode
 from django.core.exceptions import MultipleObjectsReturned
 from .serializers import SignupSerializer, CustomTokenObtainPairSerializer
 from .models import User
-from rest_framework_simplejwt.views import TokenObtainPairView
 
 class SignUpView(CreateAPIView):
     model = get_user_model()

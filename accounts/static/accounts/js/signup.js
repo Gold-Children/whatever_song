@@ -34,14 +34,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const csrfToken = getCsrfToken();
 
-        axios.post('/api/signup/', formData, {
+        axios.post('/api/accounts/api/signup/', formData, {
             headers: {
                 'X-CSRFToken': csrfToken,
                 'Content-Type': 'multipart/form-data'
             }
         })
         .then(response => {
-            window.location.href = '/login/';
+            window.location.href = '/api/accounts/login/';
         })
         .catch(error => {
             console.log(error);
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const email = document.getElementById('email').value;
         const csrfToken = getCsrfToken();
 
-        fetch("/send-verification-email/", {
+        fetch("/api/accounts/send-verification-email/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
