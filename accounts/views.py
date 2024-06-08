@@ -16,6 +16,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.core.exceptions import MultipleObjectsReturned
 from .serializers import SignupSerializer, CustomTokenObtainPairSerializer
 from .models import User
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 class SignUpView(CreateAPIView):
     model = get_user_model()

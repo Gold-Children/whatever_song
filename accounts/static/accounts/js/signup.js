@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const imageInput = document.getElementById('file-input');
     const fileNameDisplay = document.getElementById('file-name');
     const signupForm = document.getElementById('signup-form');
-    const emailVerificationBtn = document.getElementById('email-verification-btn'); // 이메일 인증 버튼 선택
+    const emailVerificationBtn = document.getElementById('email-verification-btn');
 
     imageInput.addEventListener('change', function() {
         if (imageInput.files.length > 0) {
@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // 이메일 인증 버튼 클릭 시 이메일 인증 요청
     emailVerificationBtn.addEventListener('click', function() {
         sendVerificationEmail();
     });
@@ -33,13 +32,12 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('image', imageInput.files[0]);
         }
 
-        // CSRF 토큰을 가져옵니다.
         const csrfToken = getCsrfToken();
 
         axios.post('/api/signup/', formData, {
             headers: {
                 'X-CSRFToken': csrfToken,
-                'Content-Type': 'multipart/form-data' // 필수 헤더
+                'Content-Type': 'multipart/form-data'
             }
         })
         .then(response => {
@@ -51,12 +49,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 이메일 인증 요청을 서버로 보내는 함수
     function sendVerificationEmail() {
         const email = document.getElementById('email').value;
         const csrfToken = getCsrfToken();
 
-        fetch("/send-verification-email/", {  // 전체 경로 확인
+        fetch("/send-verification-email/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -64,12 +61,14 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify({ 'email': email })
         })
-        .then(response => response.json().then(data => {
+        .then(response => {
             if (!response.ok) {
-                throw new Error(data.error || response.statusText);
+                return response.json().then(data => {
+                    throw new Error(data.error || response.statusText);
+                });
             }
-            return data;
-        }))
+            return response.json();
+        })
         .then(data => {
             if (data.message) {
                 alert(data.message);
@@ -79,16 +78,12 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             console.error('Error:', error);
-            if (error.message === 'No user with this email exists.') {
-                alert('입력하신 이메일 주소로 가입된 사용자가 없습니다.');
-            } else {
-                alert(error.message);
-            }
+            alert('이메일 인증 요청에 실패했습니다. 다시 시도해주세요.');
         });
     }
-});
 
-function getCsrfToken() {
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    return csrfToken;
-}
+    function getCsrfToken() {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        return csrfToken;
+    }
+});
