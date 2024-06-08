@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         })
         .catch(error => {
-            console.log("error: ", error);
+            console.log("error: ", response.error);
             console.error('게시 실패.', error);
             alert("게시 실패: ", error.response.data);
         });
