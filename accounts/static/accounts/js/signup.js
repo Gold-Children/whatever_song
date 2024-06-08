@@ -44,17 +44,16 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('회원가입에 실패했습니다.', error);
         });
     });
+
+    
     document.getElementById('emailvarification').addEventListener('click', function(e) {
-        preventDefault(e)
+        e.preventDefault()
         sendVerificationEmail();
-    });  
-        
-        // CSRF 토큰을 가져옵니다.
-    const csrfToken = getCsrfToken();
+    }); 
 
     function sendVerificationEmail() {
         const email = document.getElementById('email').value;
-    
+        const csrfToken = getCsrfToken();
         fetch("/api/accounts/send-verification-email/", {  // 전체 경로 확인
             method: "POST",
             headers: {
