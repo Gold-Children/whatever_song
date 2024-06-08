@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const email = document.getElementById('email').value;
         const csrfToken = getCsrfToken();
 
-        fetch("/api/accounts/send-verification-email/", {  // 전체 경로 확인
+        fetch("/send-verification-email/", {  // 전체 경로 확인
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -87,3 +87,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function getCsrfToken() {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    return csrfToken;
+}

@@ -12,4 +12,3 @@ class TempUser(models.Model):
     email = models.EmailField(unique=True)
     otp = models.CharField(max_length=6, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
