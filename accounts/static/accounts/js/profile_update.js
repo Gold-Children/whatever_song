@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData();
         formData.append('username', document.getElementById('username').value);
         formData.append('nickname', document.getElementById('nickname').value);
+        localStorage.setItem('user_nickname', document.getElementById('nickname').value);
         formData.append('email', document.getElementById('email').value);
         const imageFile = document.getElementById('image').files[0];
         if (imageFile) {
@@ -92,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .then(function(response) {
-            window.location.href = '{% url "main" %}';
+            window.location.href = '/api/accounts/main/';
         })
         .catch(function(error) {
             console.error('There was an error!', error);

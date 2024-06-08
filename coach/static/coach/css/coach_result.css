@@ -1,4 +1,11 @@
 /* coach result.css */
+@font-face {
+    font-family: 'SCoreDream-300';
+    font-weight: 300;
+    font-style: normal;
+    src: url(https://cdn.jsdelivr.net/gh/webfontworld/SCoreDream/SCoreDream3.woff2) format('woff2'),
+}
+
 
 @font-face {
     font-family: 'SCoreDream-500';
@@ -130,4 +137,37 @@
     width: 75%;
     font-size: 28px;
     font-family: 'SCoreDream-500';    
+}
+
+.share-container{
+    display: flex;
+    align-items: center;
+    /* flex-direction: column; */
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.share-container p{
+    font-family: 'SCoreDream-400';
+    font-size: 27px;
+    color: #fff;
+}
+
+.share-btn{
+    display: flex;
+}
+
+button {
+    background-color:transparent;
+    font-family: 'SCoreDream-400';
+    color: #fff;
+    width: 100%;
+    height: 46px;
+    font-size: 15px;
+    margin: 0 10px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #fff;
+    box-sizing: border-box;
+    cursor: pointer;
 }

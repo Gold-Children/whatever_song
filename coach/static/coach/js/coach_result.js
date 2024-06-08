@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function() {
             console.error('No access token found');
             return;
         }
-        axios.get(`/api/coach/api/result/${pk}/`, {
+        axios.get(`https://whateversong.com/api/coach/api/result/${pk}/`, {
             headers: {
                 'X-CSRFToken': csrfToken,
                 'Authorization': `Bearer ${access}`
@@ -23,8 +23,44 @@ document.addEventListener("DOMContentLoaded", function() {
             if (data.graph) {
                 document.getElementById('graph').src = data.graph;
             }
+            setupSocialShare(data);
         })
         .catch(error => console.error('Error:', error));
     }
+    function setupSocialShare(data) {
+        const baseUrl = 'https://whateversong.com'; // Base URL
+        const url = `${baseUrl}${window.location.pathname}`; // 현재 페이지 UR
+        const title = data.youtube_title;
+        const text = data.message;
+
+        document.getElementById('share-facebook').addEventListener('click', function() {
+            const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+            window.open(facebookUrl, '_blank');
+        });
+
+        document.getElementById('share-twitter').addEventListener('click', function() {
+            const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+            window.open(twitterUrl, '_blank');
+        });
+        document.getElementById('share-kakao').addEventListener('click', function() {
+            // Ensure Kakao SDK is initialized
+            if (!Kakao.isInitialized()) {
+                Kakao.init('여기다가 넣어줘야함'); // Replace with your actual JavaScript key
+            }
+            Kakao.Link.sendDefault({
+                objectType: 'feed',
+                content: {
+                    title: title,
+                    description: text,
+                    imageUrl: data.graph, // 그래프 이미지 URL 사용
+                    link: {
+                        mobileWebUrl: url,
+                        webUrl: url
+                    }
+                }
+            });
+        });
+    }
+
     loadResult();
 });

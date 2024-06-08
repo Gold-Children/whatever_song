@@ -8,8 +8,6 @@
     // postId를 URL 경로에서 가져옴
     const postId = extractPostIdFromUrl();
 
-
-
     function formatDate(dateString) {
         return dateString.split('T')[0]; // 'T'로 분할하여 첫 번째 요소만 반환
     }
@@ -32,13 +30,20 @@
         const like = response.data.like;
         const postAuthor = document.getElementById('post-author');
         const postLink = document.getElementById('post-link');
+        const postLinkBox = document.querySelector('.post-link');
         const editPostButton = document.getElementById('update');
         const authorId = post.author;
         // HTML 요소에 게시물 데이터를 채움
         document.getElementById('post-title').innerText = post.title;
         document.getElementById('post-content').innerText = post.content;
-        postLink.href = post.link;
-        postLink.textContent = '바로가기';
+        if (post.link) {
+            postLink.href = post.link;
+            postLink.textContent = '바로가기';
+        }
+        else {
+            postLinkBox.style.display = "none";
+            postLink.style.display = "none";
+        }
         postAuthor.href = `/api/accounts/profile/${authorId}/`
         postAuthor.textContent = `작성자: ${post.author_nickname}`;
         document.getElementById('post-created').innerText = `작성일: ${formatDate(post.created_at)}`;
@@ -142,7 +147,9 @@ document.getElementById("like").addEventListener("click", function() {
     const csrfToken = getCsrfToken(); 
     const data = { post_id: postId, user_id: userId };
 
+
     axios.post(`/api/posts/${postId}/like/`, data, {
+
         headers: {
             'X-CSRFToken': csrfToken,
             'Authorization': `Bearer ${access}`

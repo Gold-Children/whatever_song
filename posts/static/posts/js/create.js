@@ -52,9 +52,10 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             window.location.href = '/api/posts/list/'
+
         })
         .catch(error => {
-            console.log("error: ", error);
+            console.log("error: ", response.error);
             console.error('게시 실패.', error);
             alert("게시 실패: ", error.response.data);
         });

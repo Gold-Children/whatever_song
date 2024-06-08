@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('content', models.TextField()),
                 ('author_nickname', models.CharField(max_length=50)),
                 ('link', models.URLField(blank=True, null=True)),
-                ('image', models.ImageField(blank=True, default='posts/post_pic/logo.png/', null=True, upload_to='posts/post_pic/%Y/%m/%d/')),
+                ('image', models.ImageField(blank=True, default='posts/post_pic/main logo.png/', null=True, upload_to='posts/post_pic/%Y/%m/%d/')),
                 ('category', models.CharField(blank=True, choices=[('노래 추천', '노래 추천'), ('자유', '자유')], max_length=5)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),

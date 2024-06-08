@@ -3,6 +3,7 @@ function searchPlaylist(query) {
     axios.get(`/api/playlist/search/?query=${query}`)
         .then(response => {
             displayPlaylist(response.data);
+            checkUserZzimPlaylists();
         })
         .catch(error => {
             console.error('Error fetching search results:', error);
@@ -20,9 +21,6 @@ function displayPlaylist(playlists) {
         
         // 이미지 URL이 존재하는지 확인하고 설정
         const imageUrl = playlist.image_url || 'https://via.placeholder.com/150';
-
-        // 콘솔에 playlist 데이터 전체 출력
-        console.log(`Playlist Data: ${JSON.stringify(playlist)}`);
         
         // playlist.id를 고유 식별자로 사용
         const playlistId = playlist.id;

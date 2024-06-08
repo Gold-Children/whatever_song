@@ -173,4 +173,18 @@ input::placeholder {
     padding: 5px 10px;
 }
 
+.email-btn {
+    display: flex;
+    justify-content: center;
+    margin-left: 380px;
+    margin-bottom: 8px;
+    margin-top: 10px;
+}
 
+.email {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'SCoreDream-500';
+    margin-top: 30px;
+}

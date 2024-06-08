@@ -7,7 +7,7 @@ urlpatterns = [
     path('api/signup/', views.SignUpView.as_view(), name='api_signup'),
     path('login/', views.LoginPageView.as_view(), name="login"),
     path('api/token/', views.CustomTokenObtainPairView.as_view(), name="token_obtain"),
-    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name="token_refresh"),
     path('logout/', views.LogoutAPIView.as_view(), name='logout'),
     path('main/', views.main, name='main'),
     path('profile/<int:pk>/', views.ProfilePageView.as_view(), name="profile"),
@@ -17,4 +17,7 @@ urlpatterns = [
     path('api/profile/<int:pk>/image/', views.ProfileImageView.as_view(), name='profile_image_update'),
     path('api/profile/<int:pk>/change-password/', views.PasswordChangeView.as_view(), name='change-password'),
     path('api/profile/<int:pk>/delete/', views.ProfiledeleteView.as_view(), name='profile-delete'),
+    path('verify-email/<uidb64>/<token>/', views.VerifyEmailView.as_view(), name='verify-email'),
+    path('send-verification-email/', views.SendVerificationEmailView.as_view(), name='send-verification-email'),
+    path('check-email-verified/', views.CheckEmailVerifiedView.as_view(), name='check-email-verified'),
 ]

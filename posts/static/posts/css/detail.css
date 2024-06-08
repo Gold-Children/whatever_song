@@ -142,8 +142,7 @@ p{
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    margin: 0 50px 10px 50px;
-    position: relative;
+    margin: 0 50px 10px 50px
 }
 
 #comment-count{
@@ -175,7 +174,7 @@ p{
     color: #fff;
     margin: 0;
     padding: 2px;
-    position: absolute;
+    position: relative;
 }
 
 /* 댓글 칸, 버튼 위치 조정 */
@@ -237,13 +236,14 @@ textarea::placeholder {
 
 /* 댓글 프사 */
 .comment-wrap img{
-    width: 100%;
+    width: 90%;
     border-radius: 70%;
 }
 
 
 .comment-wrap a{
-    width: 12%;
+    width: 11%;
+    margin-right: 20px;
 }
 
 .author-update-delete{

@@ -22,11 +22,99 @@ from django.contrib.auth.hashers import make_password
 from django.db import transaction
 from .serializers import SignupSerializer, CustomTokenObtainPairSerializer
 from .models import User
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.http import urlsafe_base64_decode
+from django.core.exceptions import MultipleObjectsReturned
 
 class SignUpView(CreateAPIView):
     model = get_user_model()
     serializer_class = SignupSerializer
     permission_classes = [AllowAny]
+
+    def perform_create(self, serializer):
+        user = serializer.save()
+        user.is_active = False  # 이메일 인증 전까지 비활성화 상태
+        user.save()
+
+    def send_verification_email(self, user):
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        subject = '이메일 인증 요청'
+        message = render_to_string('accounts/email_verification.html', {
+            'user': user,
+            'uid': uid,
+            'token': token,
+            'protocol': 'https',
+            'domain': 'whateversong.com'
+        })
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+    
+class VerifyEmailView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, uidb64, token):
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = get_user_model().objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
+            user = None
+
+        if user is not None and default_token_generator.check_token(user, token):
+            user.is_active = True
+            user.save()
+            return Response({'message': '이메일 인증이 완료되었습니다.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': '유효하지 않은 링크입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+class SendVerificationEmailView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        user = None
+        try:
+            user = get_user_model().objects.get(email=email)
+        except MultipleObjectsReturned:
+            return Response({'error': '여러 사용자가 같은 이메일을 사용하고 있습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        except get_user_model().DoesNotExist:
+            pass  # 사용자가 존재하지 않아도 이메일 발송을 시도함
+
+        self.send_verification_email(email)
+        return Response({'message': '이메일 인증 메일이 발송되었습니다.'}, status=status.HTTP_200_OK)
+
+    def send_verification_email(self, email):
+        # 가짜 사용자 객체를 생성하거나 None으로 처리
+        user = get_user_model()(
+            email=email,
+            username=email.split('@')[0],  # 임시 사용자명 생성
+            is_active=False
+        )
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk if user.pk else '0'))  # 가짜 사용자 ID 처리
+        subject = '이메일 인증 요청'
+        message = render_to_string('accounts/email_verification.html', {
+            'user': user,
+            'uid': uid,
+            'token': token,
+            'protocol': 'https',
+            'domain': 'whateversong.com'
+        })
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+
+class CheckEmailVerifiedView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        user = get_user_model().objects.filter(email=email).first()
+        if user and user.is_active:
+            return JsonResponse({'verified': True})
+        return JsonResponse({'verified': False})
 
 
 class SignUpPageView(TemplateView):

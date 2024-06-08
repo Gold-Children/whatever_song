@@ -1,0 +1,54 @@
+@font-face {
+    font-family: 'SCoreDream-500';
+    font-weight: 500; 
+    font-style: normal; 
+    src: url(https://cdn.jsdelivr.net/gh/webfontworld/SCoreDream/SCoreDream5.woff2) format('woff2'),
+}
+
+body {
+    font-family: 'SCoreDream-500';
+    line-height: 1.6;
+    color: #333333;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.header {
+    font-family: 'SCoreDream-500';
+    background: linear-gradient(to right,#4861DA, #8F64C6, #D859AA);
+    background-size: cover;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+    border-radius: 10px 10px 0 0;
+}
+.content {
+    padding: 20px;
+}
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background: linear-gradient(to right,#4861DA, #8F64C6, #D859AA);
+    background-size: cover;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+.footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: #aaaaaa;
+}

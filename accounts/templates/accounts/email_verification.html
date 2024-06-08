@@ -1,0 +1,8 @@
+
+            안녕하세요 {{ user.username }}님
+            아래 링크를 클릭하여 이메일 인증을 완료해 주세요
+            {{ protocol }}://{{ domain }}{% url 'verify-email' uid token %}" 이메일 인증하기
+            
+            
+            감사합니다
+            
