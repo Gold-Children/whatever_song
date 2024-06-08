@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .then(function(response) {
-            window.location.href = '{% url "main" %}';
+            window.location.href = '/api/accounts/main/';
         })
         .catch(function(error) {
             console.error('There was an error!', error);
