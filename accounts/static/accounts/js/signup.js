@@ -44,8 +44,10 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('회원가입에 실패했습니다.', error);
         });
     });
-
-    sendVerificationEmail();
+    document.getElementById('emailvarification').addEventListener('click', function(e) {
+        preventDefault(e)
+        sendVerificationEmail();
+    });  
         
         // CSRF 토큰을 가져옵니다.
     const csrfToken = getCsrfToken();
@@ -79,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (error.message === 'No user with this email exists.') {
                 alert('입력하신 이메일 주소로 가입된 사용자가 없습니다.');
             } else {
-                alert(  error.message);
+                alert( error.message);
             }
         });
     }
