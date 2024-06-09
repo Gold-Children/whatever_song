@@ -9,7 +9,7 @@
     <p>안녕하세요, {{ user.username }}님!</p>
     <p>이메일 인증을 위해 아래 링크를 클릭해주세요:</p>
     <p>
-        <a href="{{ protocol }}://{{ domain }}/verify-email/{{ uid }}/{{ token }}">이메일 인증하기</a>
+        <a href="{{ protocol }}://{{ domain }}/api/accounts/verify-email/{{ uid }}/{{ token }}">이메일 인증하기</a>
     </p>
     <p>감사합니다!</p>
 </body>

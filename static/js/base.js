@@ -34,11 +34,13 @@ async function refreshAccessToken() {
 }
 
 function isExcludedUrl(url, patterns) {
+    const decodedUrl = decodeURIComponent(url);
     return patterns.some(pattern => {
         const regex = new RegExp(pattern.replace(/<int:\w+>/g, '\\d+'));
-        return regex.test(url);
+        return regex.test(decodedUrl);
     });
 }
+
 
 // Axios 요청 인터셉터를 설정하여 자동으로 토큰을 갱신하는 함수
 axios.interceptors.request.use(
@@ -69,12 +71,10 @@ axios.interceptors.request.use(
         const now = Math.ceil(Date.now() / 1000);
 
         // 토큰이 만료되었는지 확인
-        if (tokenData && tokenData.exp) {
-            if (tokenData.exp < now) {
-                accessToken = await refreshAccessToken();  // 만료된 경우 새 토큰 발급
-            }    
+        if (tokenData.exp < now) {
+            accessToken = await refreshAccessToken();  // 만료된 경우 새 토큰 발급
         }
-        
+
         config.headers['Authorization'] = 'Bearer ' + accessToken;
         return config;
     },
