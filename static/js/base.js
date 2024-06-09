@@ -69,7 +69,7 @@ axios.interceptors.request.use(
         const now = Math.ceil(Date.now() / 1000);
 
         // 토큰이 만료되었는지 확인
-        if (tokenData.exp < now) {
+        if (tokenData.exp && tokenData.exp < now) {
             accessToken = await refreshAccessToken();  // 만료된 경우 새 토큰 발급
         }
 
