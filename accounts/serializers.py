@@ -25,27 +25,7 @@ class SignupSerializer(serializers.ModelSerializer):
             image=validated_data.get("image", 'accounts/profile_pics/logo.png/'),
         )
         user.set_password(validated_data["password"])
-        user.is_active = False  # 이메일 인증 전까지 비활성화 상태
         user.save()
-
-        # 이메일 인증 링크 발송
-        self.send_verification_email(user)
-        return user
-
-    def send_verification_email(self, user):
-        if user is None:
-            return
-        token = default_token_generator.make_token(user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        subject = '이메일 인증 요청'
-        message = render_to_string('accounts/email_verification.html', {
-            'user': user,
-            'uid': uid,
-            'token': token,
-            'protocol': 'https',
-            'domain': 'whateversong.com'
-        })
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
