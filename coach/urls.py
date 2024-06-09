@@ -7,4 +7,6 @@ urlpatterns = [
     path('api/input/', views.InputView.as_view(), name='api_input'),
     path('api/result/<int:pk>/', views.ResultView.as_view(), name='api_result'), 
     path('api/user/', views.UserCoachedVocalView.as_view(), name='user_coached_vocal'),
+
+    path('api/status/', views.CheckStatusView.as_view(), name='status'),
 ]

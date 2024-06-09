@@ -5,14 +5,21 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import PlaylistSerializer
-from WhateverSong.config import CLIENT_ID, CLIENT_SECRET, TOKEN_URL
+# from WhateverSong.config import CLIENT_ID, CLIENT_SECRET, TOKEN_URL
 from django.shortcuts import get_object_or_404
 from .models import Playlist
 from django.views.generic import TemplateView
 from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from accounts.models import User
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+
+CLIENT_ID = os.getenv('CLIENT_ID')
+CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+TOKEN_URL = os.getenv('TOKEN_URL')
 
 # 토큰 발급
 def get_access_token():

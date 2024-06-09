@@ -17,13 +17,16 @@ import uuid
 import os
 import subprocess
 import librosa
-import matplotlib 
+import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 from spleeter.separator import Separator
 import tempfile
 import shutil
+from dtaidistance import dtw
+from django.core.cache import cache
+from scipy.signal import correlate
 
 class CoachPageView(TemplateView):
     template_name = "coach/coach.html"
@@ -38,6 +41,9 @@ class InputView(APIView):
         
         if not input_file:
             return Response({"error": "파일을 입력하세요"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        def update_progress(user, progress):
+            cache.set(f'progress_{user.id}', progress, timeout=300)
         
         def download_audio_from_youtube(youtube_url, output_path):
             print("Downloading audio from YouTube...")
@@ -62,7 +68,7 @@ class InputView(APIView):
 
         def separate_vocals(audio_path, output_path):
             print(f"Separating vocals from {audio_path}...")
-            separator = Separator('spleeter:2stems')
+            separator = Separator('spleeter:2stems', stft_backend='librosa')
             separator.separate_to_file(audio_path, output_path)
             vocal_path = os.path.join(output_path, os.path.splitext(os.path.basename(audio_path))[0], 'vocals.wav')
             return vocal_path
@@ -90,7 +96,7 @@ class InputView(APIView):
             for t in np.arange(0, times[-1], time_range):
                 start_idx = np.searchsorted(times, t)
                 end_idx = np.searchsorted(times, t + time_range)
-                if start_idx < end_idx:
+                if (start_idx < end_idx) and (end_idx < new_magnitude.shape[1]):
                     max_dB_idx = np.argmax(new_magnitude[:, start_idx:end_idx], axis=None)
                     max_freq_idx = np.unravel_index(max_dB_idx, new_magnitude[:, start_idx:end_idx].shape)
                     if new_magnitude[max_freq_idx[0], start_idx + max_freq_idx[1]] > -80:
@@ -99,63 +105,132 @@ class InputView(APIView):
             return highest_dB_freqs
 
         def classify_vocal_ranges(highest_dB_freqs):
-            male_range = (82, 175)  # Male vocal range (approximately E2 to F3)
-            female_range = (175, 1046.5)  # Female vocal range (approximately F3 to C6)
+            male_range = (82, 587.33) 
+            female_range = (175, 1046.5)
             male_count = sum(1 for time, freq in highest_dB_freqs if male_range[0] <= freq <= male_range[1])
             female_count = sum(1 for time, freq in highest_dB_freqs if female_range[0] <= freq <= female_range[1])
             return 'male' if male_count > female_count else 'female'
 
         def split_freq_ranges(highest_dB_freqs, classification):
             if classification == 'male':
-                low_range = (82, 175)  # Low frequency range for male (approximately E2 to F3)
-                high_range = (175, 350)  # High frequency range for male (approximately F3 to F4)
+                low_range = (82, 175)  
+                high_range = (175, 350) 
             else:
-                low_range = (175, 350)  # Low frequency range for female (approximately F3 to F4)
-                high_range = (350, 1046.5)  # High frequency range for female (approximately F4 to C6)
+                low_range = (175, 350) 
+                high_range = (350, 1046.5)
             
             low_freqs = [(time, freq) for time, freq in highest_dB_freqs if low_range[0] <= freq <= low_range[1]]
             high_freqs = [(time, freq) for time, freq in highest_dB_freqs if high_range[0] <= freq <= high_range[1]]
             return low_freqs, high_freqs
 
-        def cross_correlation_sync(highest_dB_freqs_youtube, highest_dB_freqs_file):
-            print("Performing cross-correlation sync...")
-            youtube_times, youtube_freqs = zip(*highest_dB_freqs_youtube)
-            file_times, file_freqs = zip(*highest_dB_freqs_file)
+        def calculate_scores(youtube_freqs, file_freqs):
+            scores = []
+            for yt_freq, file_freq in zip(youtube_freqs, file_freqs):
+                if yt_freq == file_freq:
+                    scores.append(100)
+                else:
+                    diff = abs(yt_freq - file_freq)
+                    if diff < 12:
+                        score = max(0, 100 - (diff * 25))
+                        scores.append(score)
+                    else:
+                        scores.append(0)
+            return scores
+
+        def calculate_signal_similarity(signal1, signal2):
+            signal1, signal2 = pad_sequences(signal1, signal2)
+            return np.sum(np.minimum(signal1, signal2)) / np.sum(np.maximum(signal1, signal2))
+
+        def pad_sequences(seq1, seq2):
+            max_len = max(len(seq1), len(seq2))
+            if len(seq1) < max_len:
+                seq1 = np.pad(seq1, (0, max_len - len(seq1)), 'constant')
+            if len(seq2) < max_len:
+                seq2 = np.pad(seq2, (0, max_len - len(seq2)), 'constant')
+            return seq1, seq2
+
+        def sync_signals_optimized(youtube_freqs, file_freqs):
+            # 신호 길이 맞춤
+            youtube_freqs, file_freqs = pad_sequences(youtube_freqs, file_freqs)
+
+            # DTW를 사용한 초기 정렬
+            path = dtw.warping_path(youtube_freqs, file_freqs)
+            aligned_file_freqs = [file_freqs[j] for i, j in path]
+
+            # 크로스 코릴레이션을 사용하여 정렬을 추가로 정제
+            aligned_file_freqs = np.array(aligned_file_freqs)
+            youtube_freqs = np.array(youtube_freqs)
             
-            youtube_signal = np.interp(np.arange(0, max(youtube_times[-1], file_times[-1]), 0.1), youtube_times, youtube_freqs)
-            file_signal = np.interp(np.arange(0, max(youtube_times[-1], file_times[-1]), 0.1), file_times, file_freqs)
+            cross_corr = correlate(youtube_freqs, aligned_file_freqs)
+            shift = np.argmax(cross_corr) - (len(aligned_file_freqs) - 1)
             
-            correlation = np.correlate(youtube_signal, file_signal, mode='full')
-            lag = correlation.argmax() - (len(file_signal) - 1)
+            if shift > 0:
+                aligned_file_freqs = np.pad(aligned_file_freqs, (shift, 0), mode='constant')[:-shift]
+            elif shift < 0:
+                aligned_file_freqs = np.pad(aligned_file_freqs, (0, -shift), mode='constant')[-shift:]
             
-            return lag * 0.1  # Multiply by the step size to get the lag in seconds
+            # 최종 싱크를 맞추기 위해 신호 유사도 계산
+            best_shift = 0
+            best_similarity = -1
+
+            for test_shift in range(-len(aligned_file_freqs) + 1, len(aligned_file_freqs)):
+                if test_shift > 0:
+                    test_aligned_file_freqs = np.pad(aligned_file_freqs, (test_shift, 0), mode='constant')[:-test_shift]
+                elif test_shift < 0:
+                    test_aligned_file_freqs = np.pad(aligned_file_freqs, (0, -test_shift), mode='constant')[-test_shift:]
+                else:
+                    test_aligned_file_freqs = aligned_file_freqs
+                
+                similarity = calculate_signal_similarity(youtube_freqs, test_aligned_file_freqs)
+                if similarity > best_similarity:
+                    best_similarity = similarity
+                    best_shift = test_shift
+
+            if best_shift > 0:
+                aligned_file_freqs = np.pad(aligned_file_freqs, (best_shift, 0), mode='constant')[:-best_shift]
+            elif best_shift < 0:
+                aligned_file_freqs = np.pad(aligned_file_freqs, (0, -best_shift), mode='constant')[-best_shift:]
+            
+            return aligned_file_freqs.tolist()
+
+        def extract_pitch_changes(highest_dB_freqs):
+            pitch_changes = []
+            prev_freq = highest_dB_freqs[0][1]
+            for time, freq in highest_dB_freqs[1:]:
+                pitch_changes.append(freq - prev_freq)
+                prev_freq = freq
+            return pitch_changes
 
         def save_and_get_graph_path(highest_dB_freqs_youtube, highest_dB_freqs_file, output_path):
-            print("Saving highest dB frequencies graph...")
-            note_freqs = [82.41, 87.31, 92.50, 98.00, 103.83, 110.00, 116.54, 123.47, 130.81, 138.59, 146.83, 155.56, 
-                        164.81, 174.61, 185.00, 196.00, 207.65, 220.00, 233.08, 246.94, 261.63, 277.18, 293.66, 311.13,
-                        329.63, 349.23, 369.99, 392.00, 415.30, 440.00, 466.16, 493.88, 523.25, 554.37, 587.33, 622.25,
-                        659.25, 698.46, 739.99, 783.99, 830.61, 880.00, 932.33, 987.77, 1046.50]
-            note_labels = ['E2', 'F2', 'F#2/Gb2', 'G2', 'G#2/Ab2', 'A2', 'A#2/Bb2', 'B2', 'C3', 'C#3/Db3', 'D3', 'D#3/Eb3',
-                        'E3', 'F3', 'F#3/Gb3', 'G3', 'G#3/Ab3', 'A3', 'A#3/Bb3', 'B3', 'C4', 'C#4/Db4', 'D4', 'D#4/Eb4',
-                        'E4', 'F4', 'F#4/Gb4', 'G4', 'G#4/Ab4', 'A4', 'A#4/Bb4', 'B4', 'C5', 'C#5/Db5', 'D5', 'D#5/Eb5',
-                        'E5', 'F5', 'F#5/Gb5', 'G5', 'G#5/Ab5', 'A5', 'A#5/Bb5', 'B5', 'C6']
+            note_freqs = [82.41, 87.31, 98.00, 110.00, 123.47, 130.81, 146.83, 
+                        164.81, 174.61, 196.00, 220.00, 246.94, 261.63, 293.66,
+                        329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33,
+                        659.25, 698.46, 783.99, 880.00, 987.77, 1046.50]
+            note_labels = ['E', 'F', 'G', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'A', 'B', 'C', 'D',
+                        'E', 'F', 'G', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'A', 'B', 'C']
 
-            plt.figure(figsize=(12, 8))
+            def map_freq_to_note_index(freq):
+                index = np.argmin(np.abs(np.array(note_freqs) - freq))
+                return index
 
-            plt.plot([x[0] for x in highest_dB_freqs_youtube], [x[1] for x in highest_dB_freqs_youtube], drawstyle='steps-post', linewidth=1, label='YouTube', color='white')
-            plt.plot([x[0] for x in highest_dB_freqs_file], [x[1] for x in highest_dB_freqs_file], drawstyle='steps-post', linewidth=1, label='File', color='orange')
+            highest_dB_freqs_youtube_mapped = [(time, map_freq_to_note_index(freq)) for time, freq in highest_dB_freqs_youtube]
+            highest_dB_freqs_file_mapped = [(time, map_freq_to_note_index(freq)) for time, freq in highest_dB_freqs_file]
 
-            plt.title('Highest dB Frequencies Over Time')
-            plt.xlabel('Time (s)')
-            plt.ylabel('Frequency (Hz)')
-            plt.legend()
+            fig = plt.figure(figsize=(15, 9))
+            ax = fig.add_subplot(111)
 
-            ax = plt.gca()
-            ax.set_yticks(note_freqs)
+            ax.plot([x[0] for x in highest_dB_freqs_youtube_mapped], [x[1] for x in highest_dB_freqs_youtube_mapped], drawstyle='steps-post', linewidth=1, label='YouTube', color='white')
+            ax.plot([x[0] for x in highest_dB_freqs_file_mapped], [x[1] for x in highest_dB_freqs_file_mapped], drawstyle='steps-post', linewidth=1, label='File', color='orange')
+
+            ax.set_xlabel('시간', color='white')
+            ax.set_ylabel('음정', color='white')
+            ax.legend(loc='lower right')
+
+            note_ticks = np.arange(len(note_labels))
+
+            ax.set_yticks(note_ticks)
             ax.set_yticklabels(note_labels)
-            ax.set_yscale('linear')  # Use linear scale for evenly spaced labels
-            ax.set_ylim([82.41, 1046.50])
+            ax.set_ylim([note_ticks[0], note_ticks[-1]])
 
             def format_time(x, pos):
                 minutes = int(x // 60)
@@ -168,6 +243,14 @@ class InputView(APIView):
             # 배경색 제거
             ax.set_facecolor('none')
 
+            # 테두리 색깔 흰색으로 설정
+            for spine in ax.spines.values():
+                spine.set_edgecolor('white')
+
+            # 축 레이블 색상 변경
+            ax.tick_params(axis='x', colors='white')
+            ax.tick_params(axis='y', colors='white')
+
             graph_id = str(uuid.uuid4())
             graph_path = os.path.join(output_path, f'{graph_id}.png')
             plt.savefig(graph_path, transparent=True)
@@ -175,114 +258,113 @@ class InputView(APIView):
             return graph_path
 
 
-        def calculate_similarity(freqs1, freqs2):
-            times1, frequencies1 = zip(*freqs1)
-            times2, frequencies2 = zip(*freqs2)
-
-            signal1 = np.interp(np.arange(0, max(times1[-1], times2[-1]), 0.1), times1, frequencies1)
-            signal2 = np.interp(np.arange(0, max(times1[-1], times2[-1]), 0.1), times2, frequencies2)
-
-            correlation = np.correlate(signal1, signal2, mode='full')
-            return correlation.max()
-
         def main(youtube_url, input_file):
             output_dir = 'output'
             os.makedirs(output_dir, exist_ok=True)
-
+            progress = "작업을 시작합니다"
+            update_progress(user, progress)
+            
             # YouTube 오디오 다운로드
             audio_path_youtube = os.path.join(output_dir, f'{uuid.uuid4()}_audio.mp3')
+            progress = "YouTube에서 오디오 다운로드 중"
+            update_progress(user, progress)
             title, _ = download_audio_from_youtube(youtube_url, audio_path_youtube)
-
+            
             # 보컬 추출
+            progress = "YouTube 오디오에서 보컬 분리 중"
+            update_progress(user, progress)
             vocal_output_path_youtube = os.path.join(output_dir, 'vocals_youtube')
             os.makedirs(vocal_output_path_youtube, exist_ok=True)
             vocal_path_youtube = separate_vocals(audio_path_youtube, vocal_output_path_youtube)
-
-            # 보컬 파일이 존재하는지 확인
-            if not os.path.exists(vocal_path_youtube):
-                print(f"Error: Vocal file not found at {vocal_path_youtube}")
-                return
-
-            # 임시 파일에 저장 후 보컬 추출
+            
+            # 파일에서 보컬 추출
+            progress = "업로드된 파일에서 보컬 분리 중"
+            update_progress(user, progress)
             with tempfile.NamedTemporaryFile(delete=False) as temp_file:
                 for chunk in input_file.chunks():
                     temp_file.write(chunk)
                 temp_file_path = temp_file.name
-
+            
             vocal_output_path_file = os.path.join(output_dir, 'vocals_file')
             os.makedirs(vocal_output_path_file, exist_ok=True)
             vocal_path_file = separate_vocals(temp_file_path, vocal_output_path_file)
-
-            # 보컬 파일이 존재하는지 확인
-            if not os.path.exists(vocal_path_file):
-                print(f"Error: Vocal file not found at {vocal_path_file}")
-                return
-
+            
             # 최고 dB 주파수 계산
+            progress = "YouTube 보컬의 주파수 계산 중"
+            update_progress(user, progress)
             highest_dB_freqs_youtube = calculate_highest_dB_freqs(vocal_path_youtube)
+            
+            progress = "업로드된 보컬의 주파수 계산 중"
+            update_progress(user, progress)
             highest_dB_freqs_file = calculate_highest_dB_freqs(vocal_path_file)
-
+            
             # 성별 분류
+            progress = "보컬 범위 분류 중"
+            update_progress(user, progress)
             classification = classify_vocal_ranges(highest_dB_freqs_youtube)
-            print(f"Detected vocal range is classified as: {classification}")
-
+            
             # 주파수 범위 나누기
+            progress = "주파수 범위 나누는 중"
+            update_progress(user, progress)
             low_freqs_youtube, high_freqs_youtube = split_freq_ranges(highest_dB_freqs_youtube, classification)
             low_freqs_file, high_freqs_file = split_freq_ranges(highest_dB_freqs_file, classification)
-
-            # 크로스 코릴레이션을 통해 싱크 맞춤
-            lag = cross_correlation_sync(highest_dB_freqs_youtube, highest_dB_freqs_file)
-
-            if lag > 0:
-                highest_dB_freqs_youtube = [(time + lag, freq) for time, freq in highest_dB_freqs_youtube]
-            else:
-                highest_dB_freqs_file = [(time - lag, freq) for time, freq in highest_dB_freqs_file]
-
-            # 전체 주파수 유사도 계산
-            full_similarity = calculate_similarity(highest_dB_freqs_youtube, highest_dB_freqs_file)
-
-            # 저음역대 유사도 계산
-            low_similarity = calculate_similarity(low_freqs_youtube, low_freqs_file)
-
-            # 고음역대 유사도 계산
-            high_similarity = calculate_similarity(high_freqs_youtube, high_freqs_file)
-
+            
+            # DTW와 크로스 코릴레이션 기반 싱크 맞추기
+            progress = "DTW와 크로스 코릴레이션을 사용하여 신호 싱크 맞추기 중"
+            update_progress(user, progress)
+            aligned_low_freqs_file = sync_signals_optimized([freq for _, freq in low_freqs_youtube], [freq for _, freq in low_freqs_file])
+            aligned_high_freqs_file = sync_signals_optimized([freq for _, freq in high_freqs_youtube], [freq for _, freq in high_freqs_file])
+            
+            # 점수 계산
+            progress = "점수 계산 중"
+            update_progress(user, progress)
+            full_scores = calculate_scores([freq for _, freq in highest_dB_freqs_youtube], [freq for _, freq in highest_dB_freqs_file])
+            low_scores = calculate_scores([freq for _, freq in low_freqs_youtube], aligned_low_freqs_file)
+            high_scores = calculate_scores([freq for _, freq in high_freqs_youtube], aligned_high_freqs_file)
+            
+            full_score_avg = round(np.mean(full_scores), 2)
+            low_score_avg = round(np.mean(low_scores), 2)
+            high_score_avg = round(np.mean(high_scores), 2)
+            
+            # 음정 변화 배열 추출 및 신호 싱크 맞추기
+            progress = "음정 변화 배열 추출 및 신호 싱크 맞추기 중"
+            update_progress(user, progress)
+            pitch_changes_youtube = extract_pitch_changes(highest_dB_freqs_youtube)
+            pitch_changes_file = extract_pitch_changes(highest_dB_freqs_file)
+            
+            # 두 배열의 길이를 동일하게 맞춤
+            pitch_changes_youtube, pitch_changes_file = pad_sequences(pitch_changes_youtube, pitch_changes_file)
+            
+            aligned_pitch_changes_file = sync_signals_optimized(pitch_changes_youtube, pitch_changes_file)
+            
             # 그래프 저장 및 경로 반환
+            progress = "그래프 저장 중"
+            update_progress(user, progress)
             graph_output_path = os.path.join(settings.MEDIA_ROOT, 'graph')
             os.makedirs(graph_output_path, exist_ok=True)
             graph_path = save_and_get_graph_path(highest_dB_freqs_youtube, highest_dB_freqs_file, graph_output_path)
-
+            
             graph_rel_path = os.path.relpath(graph_path, settings.MEDIA_ROOT)
-
-            print(f"All files saved in directory: {output_dir}")
-            print(f"Vocal file (YouTube): {vocal_path_youtube}")
-            print(f"Vocal file (File): {vocal_path_file}")
-            print(f"Graph file: {graph_rel_path}")
-            print(f"Full range similarity: {full_similarity}")
-            print(f"Low range similarity: {low_similarity}")
-            print(f"High range similarity: {high_similarity}")
-
-            # 임시 파일 및 생성된 파일 삭제
-            try:
-                os.remove(audio_path_youtube)
-                os.remove(temp_file_path)
-                shutil.rmtree(vocal_output_path_youtube)
-                shutil.rmtree(vocal_output_path_file)
-            except Exception as e:
-                print(f"Error deleting files: {e}")
-
-            return title, graph_rel_path, high_similarity, low_similarity, full_similarity
+            
+            progress = "임시 파일 정리 중"
+            update_progress(user, progress)
+            os.remove(audio_path_youtube)
+            os.remove(temp_file_path)
+            shutil.rmtree(vocal_output_path_youtube)
+            shutil.rmtree(vocal_output_path_file)
+            
+            return title, graph_rel_path, high_score_avg, low_score_avg, full_score_avg
 
         title, graph, high_pitch_score, low_pitch_score, pitch_score = main(youtube_url, input_file)
 
         coach = Coach.objects.create(
             user=user,
-            youtube_title = title,
-            high_pitch_score = high_pitch_score,
-            low_pitch_score = low_pitch_score,
-            pitch_score = pitch_score,
-            message = '메세지 로직을 추가해주세요',
-            graph = graph
+            youtube_title=title,
+            high_pitch_score=high_pitch_score,
+            low_pitch_score=low_pitch_score,
+            pitch_score=pitch_score,
+            message='메세지 로직을 추가해주세요',
+            graph=graph
         )
         
         serializer = CoachSerializer(coach)
@@ -304,3 +386,10 @@ class UserCoachedVocalView(APIView):
         serializer = CoachSerializer(user_coached_vocals, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class CheckStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        progress = cache.get(f'progress_{user.id}', '진행중인 프로세스가 없습니다')
+        return Response({"status": progress}, status=status.HTTP_200_OK)
