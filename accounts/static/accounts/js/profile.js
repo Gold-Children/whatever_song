@@ -16,9 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('username').textContent = data.username;
                 document.getElementById('email').textContent = data.email;
                 document.getElementById('nickname').textContent = data.nickname;
-                if (data.image) {
-                    document.getElementById('profile-picture').src = data.image;
-                }
+                document.getElementById('profile-picture').src = data.image ? data.image : 'accounts/profile_pics/logo.png';
                 loadEditProfileButton()
             })
             .catch(error => {

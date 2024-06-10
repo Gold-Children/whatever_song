@@ -107,10 +107,11 @@
             // 각 댓글 항목을 생성함
             const userId = window.localStorage.getItem('user_id');
             const commentItem = document.createElement('div');
+            let commentUserImage = comment.user_image ? comment.user_image : 'accounts/profile_pics/logo.png';
             commentItem.className = 'comment-wrap'
             commentItem.innerHTML = `
                 <a href="/api/accounts/profile/${comment.user}">
-                    <img src="${comment.user_image}">
+                    <img src= ${commentUserImage} >
                 </a>
                 <div class="comment-content">
                     <div class="author-update-delete">
