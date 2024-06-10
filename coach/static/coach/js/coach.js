@@ -26,7 +26,7 @@ document.getElementById('inputForm').addEventListener('submit', function(e) {
     formData.append('input_file', inputFile);
 
 
-    axios.post('/api/coach/api/input/', formData,{ 
+    axios.post('/api/coach/api/input/', formData, { 
         headers: {
             'X-CSRFToken': csrfToken,
             'Authorization': `Bearer ${access}`
@@ -44,9 +44,15 @@ document.getElementById('inputForm').addEventListener('submit', function(e) {
         }
     })
     .catch(error => {
-            console.error(error);        
+        if (error.response) {
+            console.error("Response error:", error.response); // 서버가 응답한 경우 에러 로그 출력
+        } else if (error.request) {
+            console.error("Request error:", error.request); // 요청이 이루어졌으나 응답이 없는 경우 에러 로그 출력
+        } else {
+            console.error("General error:", error.message); // 그 외의 경우 에러 로그 출력
+        }
+        console.error("Error config:", error.config); // 에러 발생 시의 요청 설정 로그 출력
     });
-});
 
 function fetchMessage() {
     axios.get('/api/coach/api/status/')

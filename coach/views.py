@@ -302,13 +302,13 @@ class InputView(APIView):
             
             progress = "점수 계산 중"
             update_progress(user, progress)
-            full_scores = min(100, calculate_scores([freq for _, freq in highest_dB_freqs_youtube], [freq for _, freq in highest_dB_freqs_file]) *6)
-            low_scores = min(100, calculate_scores([freq for _, freq in low_freqs_youtube], aligned_low_freqs_file) *6)
-            high_scores = min(100, calculate_scores([freq for _, freq in high_freqs_youtube], aligned_high_freqs_file) *6)
+            full_scores = calculate_scores([freq for _, freq in highest_dB_freqs_youtube], [freq for _, freq in highest_dB_freqs_file])
+            low_scores = 100, calculate_scores([freq for _, freq in low_freqs_youtube], aligned_low_freqs_file)
+            high_scores = 100, calculate_scores([freq for _, freq in high_freqs_youtube], aligned_high_freqs_file)
             
-            full_score_avg = round(np.mean(full_scores), 2)
-            low_score_avg = round(np.mean(low_scores), 2)
-            high_score_avg = round(np.mean(high_scores), 2)
+            full_score_avg = min(100, round(np.mean(full_scores), 2) *6)
+            low_score_avg = min(100, round(np.mean(low_scores), 2) *6)
+            high_score_avg = min(100, round(np.mean(high_scores), 2) *6)
             
             progress = "음정 변화 배열 추출 및 신호 싱크 맞추기 중"
             update_progress(user, progress)
