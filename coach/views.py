@@ -27,6 +27,7 @@ import shutil
 from dtaidistance import dtw
 from django.core.cache import cache
 from scipy.signal import correlate
+import random
 
 class CoachPageView(TemplateView):
     template_name = "coach/coach.html"
@@ -131,7 +132,7 @@ class InputView(APIView):
                 else:
                     diff = abs(yt_freq - file_freq)
                     if diff < 12:
-                        score = max(0, 100 - (diff * 25))
+                        score = max(0, 100 - (diff * 25))  
                         scores.append(score)
                     else:
                         scores.append(0)
@@ -150,14 +151,10 @@ class InputView(APIView):
             return seq1, seq2
 
         def sync_signals_optimized(youtube_freqs, file_freqs):
-            # 신호 길이 맞춤
             youtube_freqs, file_freqs = pad_sequences(youtube_freqs, file_freqs)
-
-            # DTW를 사용한 초기 정렬
             path = dtw.warping_path(youtube_freqs, file_freqs)
             aligned_file_freqs = [file_freqs[j] for i, j in path]
 
-            # 크로스 코릴레이션을 사용하여 정렬을 추가로 정제
             aligned_file_freqs = np.array(aligned_file_freqs)
             youtube_freqs = np.array(youtube_freqs)
             
@@ -169,7 +166,6 @@ class InputView(APIView):
             elif shift < 0:
                 aligned_file_freqs = np.pad(aligned_file_freqs, (0, -shift), mode='constant')[-shift:]
             
-            # 최종 싱크를 맞추기 위해 신호 유사도 계산
             best_shift = 0
             best_similarity = -1
 
@@ -240,14 +236,11 @@ class InputView(APIView):
             ax.xaxis.set_major_locator(plt.MultipleLocator(10))
             ax.xaxis.set_major_formatter(plt.FuncFormatter(format_time))
 
-            # 배경색 제거
             ax.set_facecolor('none')
 
-            # 테두리 색깔 흰색으로 설정
             for spine in ax.spines.values():
                 spine.set_edgecolor('white')
 
-            # 축 레이블 색상 변경
             ax.tick_params(axis='x', colors='white')
             ax.tick_params(axis='y', colors='white')
 
@@ -257,27 +250,23 @@ class InputView(APIView):
 
             return graph_path
 
-
         def main(youtube_url, input_file):
             output_dir = 'output'
             os.makedirs(output_dir, exist_ok=True)
             progress = "작업을 시작합니다"
             update_progress(user, progress)
             
-            # YouTube 오디오 다운로드
             audio_path_youtube = os.path.join(output_dir, f'{uuid.uuid4()}_audio.mp3')
             progress = "YouTube에서 오디오 다운로드 중"
             update_progress(user, progress)
             title, _ = download_audio_from_youtube(youtube_url, audio_path_youtube)
             
-            # 보컬 추출
             progress = "YouTube 오디오에서 보컬 분리 중"
             update_progress(user, progress)
             vocal_output_path_youtube = os.path.join(output_dir, 'vocals_youtube')
             os.makedirs(vocal_output_path_youtube, exist_ok=True)
             vocal_path_youtube = separate_vocals(audio_path_youtube, vocal_output_path_youtube)
             
-            # 파일에서 보컬 추출
             progress = "업로드된 파일에서 보컬 분리 중"
             update_progress(user, progress)
             with tempfile.NamedTemporaryFile(delete=False) as temp_file:
@@ -289,7 +278,6 @@ class InputView(APIView):
             os.makedirs(vocal_output_path_file, exist_ok=True)
             vocal_path_file = separate_vocals(temp_file_path, vocal_output_path_file)
             
-            # 최고 dB 주파수 계산
             progress = "YouTube 보컬의 주파수 계산 중"
             update_progress(user, progress)
             highest_dB_freqs_youtube = calculate_highest_dB_freqs(vocal_path_youtube)
@@ -298,46 +286,39 @@ class InputView(APIView):
             update_progress(user, progress)
             highest_dB_freqs_file = calculate_highest_dB_freqs(vocal_path_file)
             
-            # 성별 분류
             progress = "보컬 범위 분류 중"
             update_progress(user, progress)
             classification = classify_vocal_ranges(highest_dB_freqs_youtube)
             
-            # 주파수 범위 나누기
             progress = "주파수 범위 나누는 중"
             update_progress(user, progress)
             low_freqs_youtube, high_freqs_youtube = split_freq_ranges(highest_dB_freqs_youtube, classification)
             low_freqs_file, high_freqs_file = split_freq_ranges(highest_dB_freqs_file, classification)
             
-            # DTW와 크로스 코릴레이션 기반 싱크 맞추기
             progress = "DTW와 크로스 코릴레이션을 사용하여 신호 싱크 맞추기 중"
             update_progress(user, progress)
             aligned_low_freqs_file = sync_signals_optimized([freq for _, freq in low_freqs_youtube], [freq for _, freq in low_freqs_file])
             aligned_high_freqs_file = sync_signals_optimized([freq for _, freq in high_freqs_youtube], [freq for _, freq in high_freqs_file])
             
-            # 점수 계산
             progress = "점수 계산 중"
             update_progress(user, progress)
-            full_scores = calculate_scores([freq for _, freq in highest_dB_freqs_youtube], [freq for _, freq in highest_dB_freqs_file])
-            low_scores = calculate_scores([freq for _, freq in low_freqs_youtube], aligned_low_freqs_file)
-            high_scores = calculate_scores([freq for _, freq in high_freqs_youtube], aligned_high_freqs_file)
+            full_scores = calculate_scores([freq for _, freq in highest_dB_freqs_youtube], [freq for _, freq in highest_dB_freqs_file]) *5
+            low_scores = calculate_scores([freq for _, freq in low_freqs_youtube], aligned_low_freqs_file) *5
+            high_scores = calculate_scores([freq for _, freq in high_freqs_youtube], aligned_high_freqs_file) *5
             
             full_score_avg = round(np.mean(full_scores), 2)
             low_score_avg = round(np.mean(low_scores), 2)
             high_score_avg = round(np.mean(high_scores), 2)
             
-            # 음정 변화 배열 추출 및 신호 싱크 맞추기
             progress = "음정 변화 배열 추출 및 신호 싱크 맞추기 중"
             update_progress(user, progress)
             pitch_changes_youtube = extract_pitch_changes(highest_dB_freqs_youtube)
             pitch_changes_file = extract_pitch_changes(highest_dB_freqs_file)
             
-            # 두 배열의 길이를 동일하게 맞춤
             pitch_changes_youtube, pitch_changes_file = pad_sequences(pitch_changes_youtube, pitch_changes_file)
             
             aligned_pitch_changes_file = sync_signals_optimized(pitch_changes_youtube, pitch_changes_file)
             
-            # 그래프 저장 및 경로 반환
             progress = "그래프 저장 중"
             update_progress(user, progress)
             graph_output_path = os.path.join(settings.MEDIA_ROOT, 'graph')
@@ -356,19 +337,44 @@ class InputView(APIView):
             return title, graph_rel_path, high_score_avg, low_score_avg, full_score_avg
 
         title, graph, high_pitch_score, low_pitch_score, pitch_score = main(youtube_url, input_file)
+        
+        def generate_message(score):
+            messages = {
+                (0, 10): ["ㅋ", "뭐하세요?", "공기가 노래 부르나용?"],
+                (11, 20): ["부른고 있는건 맞냐?", "뭐해????????????", "아는 노래가 맞나요?"],
+                (21, 30): [
+                    "오 이게 그거죠? 당신 억장 무너지는 소리", 
+                    "걍… 하지마…", 
+                    "소불고기 레시피: [• **1.**소고기 등심에 설탕 40컵, 물엿 2병을 넣어요. • ***2.***거기에 매실, 다진마늘 3접, 간장 12병 후추 약간을 넣고 주물러 양념이 배게 해줍니다. • ***3.***여기에 기름 1L를 넣고 주물러 30초 기다려줘요.](https://m.10000recipe.com/recipe/6879215)"
+                ],
+                (31, 40): ["성대에 기름칠 못하셨어요?", "당신의 노래는 마치 반 고흐가 받았던 평가만큼 150년 후에야 칭찬 받을 만한 노래 실력이라고 말할 수 있겠는데요."],
+                (41, 50): ["우와! 절반 아래로 나오기 힘든데 그걸 하셨군요! 대단해요!", "베토벤이 말합니다 : 넌 노래하지 마라;"],
+                (51, 60): ["그… 내가 받아쓰기해도 이것보단 잘나오겠는데?", "어…음….그래 노력해봐"],
+                (61, 70): ["넌 그냥 흥얼거리기만 하자", "이걸 잘 불렀다고 해야 해 못 불렀다고 해야 해…?"],
+                (71, 80): ["이 정도면 노력 하면 될거 같기도한데?", "화이팅!"],
+                (81, 90): ["아쉽네유", "조금만 더 하지 그거 하나 못해서 100점을 못받네 아이고난", "오?"],
+                (91, 100): ["찢었따", "ㅇㅇ 들어줄만함", "크으", "조금 많이 부를줄 아네?"]
+            }
+            for range_, msgs in messages.items():
+                if range_[0] <= score <= range_[1]:
+                    return random.choice(msgs)
+            return "평가 점수 범위를 벗어났습니다."
 
+        message = generate_message(pitch_score)
+        
         coach = Coach.objects.create(
             user=user,
             youtube_title=title,
             high_pitch_score=high_pitch_score,
             low_pitch_score=low_pitch_score,
             pitch_score=pitch_score,
-            message='메세지 로직을 추가해주세요',
+            message=message,
             graph=graph
         )
         
         serializer = CoachSerializer(coach)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     
 class ResultPageView(TemplateView):
     template_name = "coach/coach_result.html"

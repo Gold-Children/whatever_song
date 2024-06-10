@@ -32,6 +32,10 @@
     </div>
 </div>
 
-<script> const mainLogoImage = {% static 'main_logo.png' %} </script>
+<script> 
+    const mainLogoImage = "{% static 'main_logo.png' %}";
+    window.mainLogoImage = mainLogoImage;
+</script>
+
 <script src="{% static 'posts/js/list.js' %}"></script>
 {% endblock content %}

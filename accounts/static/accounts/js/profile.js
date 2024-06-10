@@ -279,7 +279,7 @@ function displayPosts(posts) {
 
     posts.forEach(post => {
         const postElement = document.createElement('div');
-        let postImage = post.image ? post.image : mainLogoImage;
+        let postImage = post.image ? post.image : window.mainLogoImage;
         postElement.classList.add('post');
         const truncatedContent = post.content.length > 50 
                 ? post.content.substring(0, 50) + '...' 
@@ -341,7 +341,7 @@ function displayLikedPosts(posts) {
 
     posts.forEach(post => {
         const postElement = document.createElement('div');
-        let postImage = post.image ? post.image : mainLogoImage;
+        let postImage = post.image ? post.image : window.mainLogoImage;
         postElement.classList.add('post');
         const truncatedContent = post.content.length > 50 
                 ? post.content.substring(0, 50) + '...' 

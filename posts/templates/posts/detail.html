@@ -45,7 +45,8 @@
 </div>
 
 <script>
-    const logoImage = {% static 'logo.png' %}
+    const logoImage = "{% static 'logo.png' %}";
+    window.logoImage = logoImage;
 </script>
 
 <script src="{% static 'posts/js/detail.js' %}"></script>

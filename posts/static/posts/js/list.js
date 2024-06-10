@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const truncatedContent = post.content.length > 50 
                 ? post.content.substring(0, 50) + '...' 
                 : post.content;
-            let postImage = post.image ? post.image : mainLogoImage;
+            let postImage = post.image ? post.image : window.mainLogoImage;
             postElement.innerHTML = `
             <div class="list">
                 <a href="/api/posts/${post.id}">

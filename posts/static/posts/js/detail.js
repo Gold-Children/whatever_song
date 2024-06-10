@@ -107,7 +107,7 @@
             // 각 댓글 항목을 생성함
             const userId = window.localStorage.getItem('user_id');
             const commentItem = document.createElement('div');
-            let commentUserImage = comment.user_image ? comment.user_image : logoImage;
+            let commentUserImage = comment.user_image ? comment.user_image : window.logoImage;
             commentItem.className = 'comment-wrap'
             commentItem.innerHTML = `
                 <a href="/api/accounts/profile/${comment.user}">
