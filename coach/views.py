@@ -255,88 +255,89 @@ class InputView(APIView):
             os.makedirs(output_dir, exist_ok=True)
             progress = "작업을 시작합니다"
             update_progress(user, progress)
-            
+
             audio_path_youtube = os.path.join(output_dir, f'{uuid.uuid4()}_audio.mp3')
             progress = "YouTube에서 오디오 다운로드 중"
             update_progress(user, progress)
             title, _ = download_audio_from_youtube(youtube_url, audio_path_youtube)
-            
+
             progress = "YouTube 오디오에서 보컬 분리 중"
             update_progress(user, progress)
             vocal_output_path_youtube = os.path.join(output_dir, 'vocals_youtube')
             os.makedirs(vocal_output_path_youtube, exist_ok=True)
             vocal_path_youtube = separate_vocals(audio_path_youtube, vocal_output_path_youtube)
-            
+
             progress = "업로드된 파일에서 보컬 분리 중"
             update_progress(user, progress)
             with tempfile.NamedTemporaryFile(delete=False) as temp_file:
                 for chunk in input_file.chunks():
                     temp_file.write(chunk)
                 temp_file_path = temp_file.name
-            
+
             vocal_output_path_file = os.path.join(output_dir, 'vocals_file')
             os.makedirs(vocal_output_path_file, exist_ok=True)
             vocal_path_file = separate_vocals(temp_file_path, vocal_output_path_file)
-            
+
             progress = "YouTube 보컬의 주파수 계산 중"
             update_progress(user, progress)
             highest_dB_freqs_youtube = calculate_highest_dB_freqs(vocal_path_youtube)
-            
+
             progress = "업로드된 보컬의 주파수 계산 중"
             update_progress(user, progress)
             highest_dB_freqs_file = calculate_highest_dB_freqs(vocal_path_file)
-            
-            progress = "보컬 범위 분류 중"
-            update_progress(user, progress)
-            classification = classify_vocal_ranges(highest_dB_freqs_youtube)
-            
-            progress = "주파수 범위 나누는 중"
-            update_progress(user, progress)
-            low_freqs_youtube, high_freqs_youtube = split_freq_ranges(highest_dB_freqs_youtube, classification)
-            low_freqs_file, high_freqs_file = split_freq_ranges(highest_dB_freqs_file, classification)
-            
-            progress = "DTW와 크로스 코릴레이션을 사용하여 신호 싱크 맞추기 중"
-            update_progress(user, progress)
-            aligned_low_freqs_file = sync_signals_optimized([freq for _, freq in low_freqs_youtube], [freq for _, freq in low_freqs_file])
-            aligned_high_freqs_file = sync_signals_optimized([freq for _, freq in high_freqs_youtube], [freq for _, freq in high_freqs_file])
-            
-            progress = "점수 계산 중"
-            update_progress(user, progress)
-            full_scores = calculate_scores([freq for _, freq in highest_dB_freqs_youtube], [freq for _, freq in highest_dB_freqs_file])
-            low_scores = 100, calculate_scores([freq for _, freq in low_freqs_youtube], aligned_low_freqs_file)
-            high_scores = 100, calculate_scores([freq for _, freq in high_freqs_youtube], aligned_high_freqs_file)
-            
-            full_score_avg = min(100, round(np.mean(full_scores), 2) *6)
-            low_score_avg = min(100, round(np.mean(low_scores), 2) *6)
-            high_score_avg = min(100, round(np.mean(high_scores), 2) *6)
-            
+
             progress = "음정 변화 배열 추출 및 신호 싱크 맞추기 중"
             update_progress(user, progress)
             pitch_changes_youtube = extract_pitch_changes(highest_dB_freqs_youtube)
             pitch_changes_file = extract_pitch_changes(highest_dB_freqs_file)
-            
+
             pitch_changes_youtube, pitch_changes_file = pad_sequences(pitch_changes_youtube, pitch_changes_file)
-            
+
             aligned_pitch_changes_file = sync_signals_optimized(pitch_changes_youtube, pitch_changes_file)
-            
+
+            progress = "보컬 범위 분류 중"
+            update_progress(user, progress)
+            classification = classify_vocal_ranges(highest_dB_freqs_youtube)
+
+            progress = "주파수 범위 나누는 중"
+            update_progress(user, progress)
+            low_freqs_youtube, high_freqs_youtube = split_freq_ranges(highest_dB_freqs_youtube, classification)
+            low_freqs_file, high_freqs_file = split_freq_ranges(highest_dB_freqs_file, classification)
+
+            progress = "DTW와 크로스 코릴레이션을 사용하여 신호 싱크 맞추기 중"
+            update_progress(user, progress)
+            aligned_low_freqs_file = sync_signals_optimized([freq for _, freq in low_freqs_youtube], [freq for _, freq in low_freqs_file])
+            aligned_high_freqs_file = sync_signals_optimized([freq for _, freq in high_freqs_youtube], [freq for _, freq in high_freqs_file])
+
+            progress = "점수 계산 중"
+            update_progress(user, progress)
+            full_scores = calculate_scores([freq for _, freq in highest_dB_freqs_youtube], [freq for _, freq in highest_dB_freqs_file])
+            low_scores = calculate_scores([freq for _, freq in low_freqs_youtube], aligned_low_freqs_file)
+            high_scores = calculate_scores([freq for _, freq in high_freqs_youtube], aligned_high_freqs_file)
+
+            full_score_avg = min(100, round(np.mean(full_scores), 2) * 6)
+            low_score_avg = min(100, round(np.mean(low_scores), 2) * 6)
+            high_score_avg = min(100, round(np.mean(high_scores), 2) * 6)
+
             progress = "그래프 저장 중"
             update_progress(user, progress)
-            graph_output_path = os.path.join(settings.MEDIA_ROOT, 'graph')
+            graph_output_path = os.path.join(settings.STATIC_ROOT, 'coach', 'graph')
             os.makedirs(graph_output_path, exist_ok=True)
             graph_path = save_and_get_graph_path(highest_dB_freqs_youtube, highest_dB_freqs_file, graph_output_path)
-            
-            graph_rel_path = os.path.relpath(graph_path, settings.MEDIA_ROOT)
-            
+
+            graph_rel_path = os.path.relpath(graph_path, settings.STATIC_ROOT)
+
             progress = "임시 파일 정리 중"
             update_progress(user, progress)
             os.remove(audio_path_youtube)
             os.remove(temp_file_path)
             shutil.rmtree(vocal_output_path_youtube)
             shutil.rmtree(vocal_output_path_file)
-            
+
             return title, graph_rel_path, high_score_avg, low_score_avg, full_score_avg
 
         title, graph, high_pitch_score, low_pitch_score, pitch_score = main(youtube_url, input_file)
+
         
         def generate_message(score):
             messages = {
