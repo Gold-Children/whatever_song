@@ -286,7 +286,7 @@ function displayPosts(posts) {
                 : post.content;
         postElement.innerHTML = `
             <a href=/api/posts/${post.id}/>
-            <img src=${post.image}/>
+            <img src=${post.image}>
             <div class="content">
                 <p id="post-title">${post.title}</p>
                 <p id="post-content">${truncatedContent}</p>
@@ -348,7 +348,7 @@ function displayLikedPosts(posts) {
                 : post.content;
         postElement.innerHTML = `
             <a href=/api/posts/${post.id}/>
-            <img src=${post.image}/>
+            <img src=${post.image}>
             <div class="content">
                 <p id="post-title">${post.title}</p>
                 <p id="post-content">${truncatedContent}</p>
