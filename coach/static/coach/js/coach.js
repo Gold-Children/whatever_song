@@ -26,7 +26,7 @@ document.getElementById('inputForm').addEventListener('submit', function(e) {
     formData.append('input_file', inputFile);
 
 
-    axios.post('/api/coach/api/input/', formData, { 
+    axios.post('/api/coach/api/input/', formData,{ 
         headers: {
             'X-CSRFToken': csrfToken,
             'Authorization': `Bearer ${access}`
@@ -53,6 +53,7 @@ document.getElementById('inputForm').addEventListener('submit', function(e) {
         }
         console.error("Error config:", error.config); // 에러 발생 시의 요청 설정 로그 출력
     });
+});
 
 function fetchMessage() {
     axios.get('/api/coach/api/status/')
