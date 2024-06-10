@@ -302,9 +302,9 @@ class InputView(APIView):
             
             progress = "점수 계산 중"
             update_progress(user, progress)
-            full_scores = calculate_scores([freq for _, freq in highest_dB_freqs_youtube], [freq for _, freq in highest_dB_freqs_file]) *5
-            low_scores = calculate_scores([freq for _, freq in low_freqs_youtube], aligned_low_freqs_file) *5
-            high_scores = calculate_scores([freq for _, freq in high_freqs_youtube], aligned_high_freqs_file) *5
+            full_scores = min(100, calculate_scores([freq for _, freq in highest_dB_freqs_youtube], [freq for _, freq in highest_dB_freqs_file]) *6)
+            low_scores = min(100, calculate_scores([freq for _, freq in low_freqs_youtube], aligned_low_freqs_file) *6)
+            high_scores = min(100, calculate_scores([freq for _, freq in high_freqs_youtube], aligned_high_freqs_file) *6)
             
             full_score_avg = round(np.mean(full_scores), 2)
             low_score_avg = round(np.mean(low_scores), 2)

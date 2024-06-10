@@ -34,8 +34,14 @@ document.getElementById('inputForm').addEventListener('submit', function(e) {
     })
     .then(response => {
         const data = response.data;
-        const dataId = data.id;
-        window.location.href = `/api/coach/result/${dataId}/`;
+        console.log("Response data:", data); // 응답 데이터를 로그로 출력하여 확인
+        if (data && data.id) {
+            const dataId = data.id;
+            console.log("Data ID:", dataId); // dataId가 제대로 설정되어 있는지 확인
+            window.location.href = `/api/coach/result/${dataId}/`;
+        } else {
+            console.error("Data or Data ID is missing:", data); // 데이터 또는 ID가 없는 경우 에러 로그 출력
+        }
     })
     .catch(error => {
             console.error(error);        
