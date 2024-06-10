@@ -279,14 +279,14 @@ function displayPosts(posts) {
 
     posts.forEach(post => {
         const postElement = document.createElement('div');
-        const postId = post.id
+        let postImage = post.image ? post.image : mainLogoImage;
         postElement.classList.add('post');
         const truncatedContent = post.content.length > 50 
                 ? post.content.substring(0, 50) + '...' 
                 : post.content;
         postElement.innerHTML = `
             <a href=/api/posts/${post.id}/>
-            <img src=${post.image}>
+            <img src=${postImage}>
             <div class="content">
                 <p id="post-title">${post.title}</p>
                 <p id="post-content">${truncatedContent}</p>
@@ -341,14 +341,14 @@ function displayLikedPosts(posts) {
 
     posts.forEach(post => {
         const postElement = document.createElement('div');
-        const postId = post.id
+        let postImage = post.image ? post.image : mainLogoImage;
         postElement.classList.add('post');
         const truncatedContent = post.content.length > 50 
                 ? post.content.substring(0, 50) + '...' 
                 : post.content;
         postElement.innerHTML = `
             <a href=/api/posts/${post.id}/>
-            <img src=${post.image}>
+            <img src=${postImage}>
             <div class="content">
                 <p id="post-title">${post.title}</p>
                 <p id="post-content">${truncatedContent}</p>

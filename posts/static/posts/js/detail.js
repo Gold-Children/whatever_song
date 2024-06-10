@@ -108,11 +108,10 @@
             const userId = window.localStorage.getItem('user_id');
             const commentItem = document.createElement('div');
             let commentUserImage = comment.user_image ? comment.user_image : logoImage;
-
             commentItem.className = 'comment-wrap'
             commentItem.innerHTML = `
                 <a href="/api/accounts/profile/${comment.user}">
-                    <img src= ${commentUserImage} >
+                    <img src="${commentUserImage}">
                 </a>
                 <div class="comment-content">
                     <div class="author-update-delete">
