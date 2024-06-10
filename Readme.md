@@ -50,7 +50,7 @@ redis-server
 ```
 
 ## API Documentation
-https://www.notion.so/teamsparta/S-A-ffa422cf5db642548637d9615cc1fdff?pvs=4#6c01ccaf30eb4e468a6134cbffb94e82
+https://dear-cricket-a7e.notion.site/whatever-song-API-Documentation-51e39d8170c94be991f9abf306cd8c50?pvs=4
 
 ## Apps Description
 ### 1. Coach
