@@ -24,7 +24,7 @@
 - Matplotlib : 데이터 시각화를 위한 파이썬 라이브러리, 음정을 사용자에게 보여주는 시각화를 위한 그래프 라이브러리 채택
 
 ## Deployment
-프로젝트 배포 링크
+whateversong.com
 
 ## Installation
 1. 깃허브 클론
@@ -50,7 +50,7 @@ redis-server
 ```
 
 ## API Documentation
-api 명세서
+https://www.notion.so/teamsparta/S-A-ffa422cf5db642548637d9615cc1fdff?pvs=4#6c01ccaf30eb4e468a6134cbffb94e82
 
 ## Apps Description
 ### 1. Coach
