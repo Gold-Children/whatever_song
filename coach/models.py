@@ -8,5 +8,5 @@ class Coach(models.Model):
     low_pitch_score = models.FloatField()
     pitch_score = models.FloatField()
     message = models.TextField()
-    graph = models.ImageField(upload_to="coach/graph/%Y/%m/%d/")
+    graph = models.URLField()
 

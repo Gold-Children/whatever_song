@@ -30,7 +30,8 @@ document.getElementById('inputForm').addEventListener('submit', function(e) {
         headers: {
             'X-CSRFToken': csrfToken,
             'Authorization': `Bearer ${access}`
-        }
+        },
+	timeout: 600000 // 10분
     })
     .then(response => {
         const data = response.data;

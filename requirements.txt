@@ -121,3 +121,5 @@ wrapt==1.16.0
 yt-dlp==2024.5.27
 psycopg2
 redis
+django-storages
+boto3

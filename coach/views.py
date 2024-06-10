@@ -29,8 +29,14 @@ from django.core.cache import cache
 from scipy.signal import correlate
 import random
 
+import boto3
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
+
 class CoachPageView(TemplateView):
     template_name = "coach/coach.html"
+
 
 class InputView(APIView):
     permission_classes = [IsAuthenticated]
@@ -39,13 +45,13 @@ class InputView(APIView):
         user = request.user
         youtube_url = request.data.get('youtube_url')
         input_file = request.FILES.get('input_file')
-        
+
         if not input_file:
             return Response({"error": "파일을 입력하세요"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         def update_progress(user, progress):
             cache.set(f'progress_{user.id}', progress, timeout=300)
-        
+
         def download_audio_from_youtube(youtube_url, output_path):
             print("Downloading audio from YouTube...")
             title_command = [
@@ -106,20 +112,20 @@ class InputView(APIView):
             return highest_dB_freqs
 
         def classify_vocal_ranges(highest_dB_freqs):
-            male_range = (82, 587.33) 
-            female_range = (175, 1046.5)
+            male_range = (82, 587.33)
+            female_range = (220, 1046.5)
             male_count = sum(1 for time, freq in highest_dB_freqs if male_range[0] <= freq <= male_range[1])
             female_count = sum(1 for time, freq in highest_dB_freqs if female_range[0] <= freq <= female_range[1])
             return 'male' if male_count > female_count else 'female'
 
         def split_freq_ranges(highest_dB_freqs, classification):
             if classification == 'male':
-                low_range = (82, 175)  
-                high_range = (175, 350) 
+                low_range = (82, 196)
+                high_range = (196, 587.33)
             else:
-                low_range = (175, 350) 
-                high_range = (350, 1046.5)
-            
+                low_range = (220, 392)
+                high_range = (392, 1046.5)
+
             low_freqs = [(time, freq) for time, freq in highest_dB_freqs if low_range[0] <= freq <= low_range[1]]
             high_freqs = [(time, freq) for time, freq in highest_dB_freqs if high_range[0] <= freq <= high_range[1]]
             return low_freqs, high_freqs
@@ -132,7 +138,7 @@ class InputView(APIView):
                 else:
                     diff = abs(yt_freq - file_freq)
                     if diff < 12:
-                        score = max(0, 100 - (diff * 25))  
+                        score = max(0, 100 - (diff * 25))
                         scores.append(score)
                     else:
                         scores.append(0)
@@ -157,15 +163,15 @@ class InputView(APIView):
 
             aligned_file_freqs = np.array(aligned_file_freqs)
             youtube_freqs = np.array(youtube_freqs)
-            
+
             cross_corr = correlate(youtube_freqs, aligned_file_freqs)
             shift = np.argmax(cross_corr) - (len(aligned_file_freqs) - 1)
-            
+
             if shift > 0:
                 aligned_file_freqs = np.pad(aligned_file_freqs, (shift, 0), mode='constant')[:-shift]
             elif shift < 0:
                 aligned_file_freqs = np.pad(aligned_file_freqs, (0, -shift), mode='constant')[-shift:]
-            
+
             best_shift = 0
             best_similarity = -1
 
@@ -176,7 +182,7 @@ class InputView(APIView):
                     test_aligned_file_freqs = np.pad(aligned_file_freqs, (0, -test_shift), mode='constant')[-test_shift:]
                 else:
                     test_aligned_file_freqs = aligned_file_freqs
-                
+
                 similarity = calculate_signal_similarity(youtube_freqs, test_aligned_file_freqs)
                 if similarity > best_similarity:
                     best_similarity = similarity
@@ -186,7 +192,7 @@ class InputView(APIView):
                 aligned_file_freqs = np.pad(aligned_file_freqs, (best_shift, 0), mode='constant')[:-best_shift]
             elif best_shift < 0:
                 aligned_file_freqs = np.pad(aligned_file_freqs, (0, -best_shift), mode='constant')[-best_shift:]
-            
+
             return aligned_file_freqs.tolist()
 
         def extract_pitch_changes(highest_dB_freqs):
@@ -198,12 +204,12 @@ class InputView(APIView):
             return pitch_changes
 
         def save_and_get_graph_path(highest_dB_freqs_youtube, highest_dB_freqs_file, output_path):
-            note_freqs = [82.41, 87.31, 98.00, 110.00, 123.47, 130.81, 146.83, 
-                        164.81, 174.61, 196.00, 220.00, 246.94, 261.63, 293.66,
-                        329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33,
-                        659.25, 698.46, 783.99, 880.00, 987.77, 1046.50]
+            note_freqs = [82.41, 87.31, 98.00, 110.00, 123.47, 130.81, 146.83,
+                          164.81, 174.61, 196.00, 220.00, 246.94, 261.63, 293.66,
+                          329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33,
+                          659.25, 698.46, 783.99, 880.00, 987.77, 1046.50]
             note_labels = ['E', 'F', 'G', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'A', 'B', 'C', 'D',
-                        'E', 'F', 'G', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'A', 'B', 'C']
+                           'E', 'F', 'G', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'A', 'B', 'C']
 
             def map_freq_to_note_index(freq):
                 index = np.argmin(np.abs(np.array(note_freqs) - freq))
@@ -244,11 +250,19 @@ class InputView(APIView):
             ax.tick_params(axis='x', colors='white')
             ax.tick_params(axis='y', colors='white')
 
-            graph_id = str(uuid.uuid4())
-            graph_path = os.path.join(output_path, f'{graph_id}.png')
-            plt.savefig(graph_path, transparent=True)
+            # Save the figure to a BytesIO object
+            import io
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', transparent=True)
+            buf.seek(0)
 
-            return graph_path
+            # Save to S3
+            graph_id = str(uuid.uuid4())
+            s3_path = f'graphs/{graph_id}.png'
+            file_name = default_storage.save(s3_path, ContentFile(buf.read()))
+            s3_url = default_storage.url(file_name)
+
+            return s3_url
 
         def main(youtube_url, input_file):
             output_dir = 'output'
@@ -292,9 +306,7 @@ class InputView(APIView):
             pitch_changes_file = extract_pitch_changes(highest_dB_freqs_file)
 
             pitch_changes_youtube, pitch_changes_file = pad_sequences(pitch_changes_youtube, pitch_changes_file)
-
-            aligned_pitch_changes_file = sync_signals_optimized(pitch_changes_youtube, pitch_changes_file)
-
+            
             progress = "보컬 범위 분류 중"
             update_progress(user, progress)
             classification = classify_vocal_ranges(highest_dB_freqs_youtube)
@@ -302,30 +314,31 @@ class InputView(APIView):
             progress = "주파수 범위 나누는 중"
             update_progress(user, progress)
             low_freqs_youtube, high_freqs_youtube = split_freq_ranges(highest_dB_freqs_youtube, classification)
-            low_freqs_file, high_freqs_file = split_freq_ranges(highest_dB_freqs_file, classification)
+            low_times_youtube = [time for time, _ in low_freqs_youtube]
+            high_times_youtube = [time for time, _ in high_freqs_youtube]
 
-            progress = "DTW와 크로스 코릴레이션을 사용하여 신호 싱크 맞추기 중"
+            low_freqs_file = [(time, freq) for time, freq in highest_dB_freqs_file if time in low_times_youtube]
+            high_freqs_file = [(time, freq) for time, freq in highest_dB_freqs_file if time in high_times_youtube]
+
+            progress = "싱크 맞추기 중"
             update_progress(user, progress)
             aligned_low_freqs_file = sync_signals_optimized([freq for _, freq in low_freqs_youtube], [freq for _, freq in low_freqs_file])
             aligned_high_freqs_file = sync_signals_optimized([freq for _, freq in high_freqs_youtube], [freq for _, freq in high_freqs_file])
 
             progress = "점수 계산 중"
             update_progress(user, progress)
-            full_scores = calculate_scores([freq for _, freq in highest_dB_freqs_youtube], [freq for _, freq in highest_dB_freqs_file])
             low_scores = calculate_scores([freq for _, freq in low_freqs_youtube], aligned_low_freqs_file)
             high_scores = calculate_scores([freq for _, freq in high_freqs_youtube], aligned_high_freqs_file)
 
-            full_score_avg = min(100, round(np.mean(full_scores), 2) * 6)
-            low_score_avg = min(100, round(np.mean(low_scores), 2) * 6)
-            high_score_avg = min(100, round(np.mean(high_scores), 2) * 6)
+            low_score_avg =  min(100, round(np.mean(low_scores), 2)*3)
+            high_score_avg = min(100, round(np.mean(high_scores), 2)*3)
+            full_score_avg = min(100, round((low_score_avg*len(low_times_youtube) + high_score_avg*len(high_times_youtube)) / (len(low_times_youtube)+len(high_times_youtube)), 2))
 
             progress = "그래프 저장 중"
             update_progress(user, progress)
-            graph_output_path = os.path.join(settings.STATIC_ROOT, 'coach', 'graph')
+            graph_output_path = os.path.join(settings.STATIC_URL, 'coach', 'graph')
             os.makedirs(graph_output_path, exist_ok=True)
             graph_path = save_and_get_graph_path(highest_dB_freqs_youtube, highest_dB_freqs_file, graph_output_path)
-
-            graph_rel_path = os.path.relpath(graph_path, settings.STATIC_ROOT)
 
             progress = "임시 파일 정리 중"
             update_progress(user, progress)
@@ -334,18 +347,17 @@ class InputView(APIView):
             shutil.rmtree(vocal_output_path_youtube)
             shutil.rmtree(vocal_output_path_file)
 
-            return title, graph_rel_path, high_score_avg, low_score_avg, full_score_avg
+            return title, graph_path, high_score_avg, low_score_avg, full_score_avg
 
         title, graph, high_pitch_score, low_pitch_score, pitch_score = main(youtube_url, input_file)
 
-        
         def generate_message(score):
             messages = {
                 (0, 10): ["ㅋ", "뭐하세요?", "공기가 노래 부르나용?"],
                 (11, 20): ["부른고 있는건 맞냐?", "뭐해????????????", "아는 노래가 맞나요?"],
                 (21, 30): [
-                    "오 이게 그거죠? 당신 억장 무너지는 소리", 
-                    "걍… 하지마…", 
+                    "오 이게 그거죠? 당신 억장 무너지는 소리",
+                    "걍… 하지마…",
                     "소불고기 레시피: [• **1.**소고기 등심에 설탕 40컵, 물엿 2병을 넣어요. • ***2.***거기에 매실, 다진마늘 3접, 간장 12병 후추 약간을 넣고 주물러 양념이 배게 해줍니다. • ***3.***여기에 기름 1L를 넣고 주물러 30초 기다려줘요.](https://m.10000recipe.com/recipe/6879215)"
                 ],
                 (31, 40): ["성대에 기름칠 못하셨어요?", "당신의 노래는 마치 반 고흐가 받았던 평가만큼 150년 후에야 칭찬 받을 만한 노래 실력이라고 말할 수 있겠는데요."],
@@ -362,7 +374,7 @@ class InputView(APIView):
             return "평가 점수 범위를 벗어났습니다."
 
         message = generate_message(pitch_score)
-        
+
         coach = Coach.objects.create(
             user=user,
             youtube_title=title,
@@ -372,13 +384,14 @@ class InputView(APIView):
             message=message,
             graph=graph
         )
-        
+
         serializer = CoachSerializer(coach)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    
+
 class ResultPageView(TemplateView):
     template_name = "coach/coach_result.html"
+
 
 class ResultView(APIView):
     def get(self, request, pk):
@@ -393,6 +406,7 @@ class UserCoachedVocalView(APIView):
         serializer = CoachSerializer(user_coached_vocals, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class CheckStatusView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -400,3 +414,4 @@ class CheckStatusView(APIView):
         user = request.user
         progress = cache.get(f'progress_{user.id}', '진행중인 프로세스가 없습니다')
         return Response({"status": progress}, status=status.HTTP_200_OK)
+
