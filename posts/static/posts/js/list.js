@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function updatePaginationControls() {
-        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        pageInfo.textContent = `${currentPage}`;
         prevPageButton.disabled = currentPage <= 1;
         nextPageButton.disabled = currentPage >= totalPages;
     }
