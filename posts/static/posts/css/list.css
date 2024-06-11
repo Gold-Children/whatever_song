@@ -120,9 +120,11 @@ select{
 }
 
 /* 이미지 간격, 크기 조절 */
-img{
+img {
+    width: 150px; /* 원하는 고정 너비 */
+    height: 150px; /* 원하는 고정 높이 */
     margin-right: 15px;
-    width: 15%;
+    object-fit: cover; /* 이미지 비율을 유지하면서 크기에 맞게 잘라냄 */
 }
 
 /* 게시글 제목 스타일 */
