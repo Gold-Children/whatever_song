@@ -3,5 +3,6 @@ from django.conf import settings
 
 
 class Playlist(models.Model):
-    link = models.URLField()
-    save = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='playlist')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    playlist_id = models.CharField(max_length=255) 
+
