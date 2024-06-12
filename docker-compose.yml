@@ -1,7 +1,7 @@
 services:
   web:
     build: .
-    command: gunicorn --workers=3 --timeout=300 WhateverSong.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn --workers=12 --timeout=300 WhateverSong.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - .:/app
     expose:
@@ -16,10 +16,13 @@ services:
 
   nginx:
     image: nginx:latest
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/www/certbot:/var/www/certbot
     depends_on:
       - web
 

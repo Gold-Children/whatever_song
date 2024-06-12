@@ -142,5 +142,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-});
 
+    const searchButton = document.getElementById('search-button');
+    searchButton.addEventListener('click', () => {
+        const query = searchInput.value;
+        if (query) {
+            searchPlaylist(query);
+        } else {
+            fetchPlaylists(); // 검색어가 없으면 기본 플레이리스트를 다시 가져옴
+        }
+    });
+});

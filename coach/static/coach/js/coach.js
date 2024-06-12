@@ -19,6 +19,8 @@ document.getElementById('inputForm').addEventListener('submit', function(e) {
         window.location.href = '/api/accounts/login/';
         return;
     }
+    const coachButton = document.getElementById('coach_button');
+    coachButton.style.display="none";
     const youtubeUrl = document.getElementById('youtube_url').value;
     const inputFile = document.getElementById('input_file').files[0];
     const formData = new FormData();
@@ -40,19 +42,10 @@ document.getElementById('inputForm').addEventListener('submit', function(e) {
             const dataId = data.id;
             console.log("Data ID:", dataId); // dataId가 제대로 설정되어 있는지 확인
             window.location.href = `/api/coach/result/${dataId}/`;
-        } else {
-            console.error("Data or Data ID is missing:", data); // 데이터 또는 ID가 없는 경우 에러 로그 출력
         }
     })
     .catch(error => {
-        if (error.response) {
-            console.error("Response error:", error.response); // 서버가 응답한 경우 에러 로그 출력
-        } else if (error.request) {
-            console.error("Request error:", error.request); // 요청이 이루어졌으나 응답이 없는 경우 에러 로그 출력
-        } else {
-            console.error("General error:", error.message); // 그 외의 경우 에러 로그 출력
-        }
-        console.error("Error config:", error.config); // 에러 발생 시의 요청 설정 로그 출력
+        console.error("error", error); 
     });
 });
 

@@ -199,7 +199,7 @@
 
 
 .coach-item img{
-    width: 50%;
+    width: 100%;
 }
 
 .score-message{
@@ -318,4 +318,8 @@ background-color:rgba(255, 255, 255, 0);
 position: absolute;
 top: 175px;
 right: 5px;
+}
+
+.graph_image_link {
+width: 50%;
 }

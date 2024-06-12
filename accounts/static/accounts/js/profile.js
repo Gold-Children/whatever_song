@@ -124,7 +124,7 @@ function checkUserZzimPlaylists() {
     });
 }
 
-// 찜하기 상태 변경. 
+// 찜하기 상태 변경
 function toggleZzim(playlistId, button) {
     if (!playlistId) {
         console.error('Playlist ID is undefined');
@@ -228,8 +228,11 @@ function displayCoach(coachlist) {
         const item = document.createElement('div');
         item.className = 'coach-item';
         item.innerHTML = `
-
-        <img src=${coach.graph}>
+	<div class="graph_image_link">
+        <a href = /api/coach/result/${coach.id}/>
+	<img src=${coach.graph}>
+	</a>
+	</div>
         <div class="score-message">
             <h2>제 목</h2>
             <p>${coach.youtube_title}</p>
@@ -245,7 +248,7 @@ function displayCoach(coachlist) {
 }
 
 
-//내가 작성한 post 목록
+//내가 작성한 postlist
 const myPostList = document.getElementById('posts-link')
     myPostList.addEventListener('click', function(event) {
     event.preventDefault();

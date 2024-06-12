@@ -21,5 +21,6 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
     })
     .catch(error => {
         console.error('로그인 실패.', error);
+	alert('올바른 아이디 혹은 비밀번호를 다시 입력해주세요');
     });
 });

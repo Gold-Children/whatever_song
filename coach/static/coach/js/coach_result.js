@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function() {
             console.error('No access token found');
             return;
         }
-        axios.get(`/api/coach/api/result/${pk}/`, {
+        axios.get(`https://whateversong.com/api/coach/api/result/${pk}/`, {
             headers: {
                 'X-CSRFToken': csrfToken,
                 'Authorization': `Bearer ${access}`
@@ -23,8 +23,59 @@ document.addEventListener("DOMContentLoaded", function() {
             if (data.graph) {
                 document.getElementById('graph').src = data.graph;
             }
+            setupSocialShare(data);
         })
         .catch(error => console.error('Error:', error));
     }
+
+
+    function setupSocialShare(data) {
+        const baseURL = 'https://whateverosong.com/';
+        const url = `${baseURL}${window.location.pathname}`;
+        const title = data.youtube_title;
+        const text = data.youtube_title;
+
+        document.getElementById('share-facebook').addEventListener('click', function() {
+            const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+            window.open(facebookUrl, '_blank');
+        });
+
+        document.getElementById('share-twitter').addEventListener('click', function() {
+            const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+            window.open(twitterUrl, '_blank');
+        });
+
+	
+        document.getElementById('share-kakao').addEventListener('click', function() {
+            // Ensure Kakao SDK is initialized
+            axios.get('/api/coach/api/kakao-api-key/')
+                .then(response => {
+	  	    console.log('data', response.data);
+                    const kakaoApiKey = response.data.kakao_api_key;
+                    if (!Kakao.isInitialized()) {
+                        Kakao.init(kakaoApiKey);
+                    }
+                    Kakao.Link.sendDefault({
+                        objectType: 'feed',
+                        content: {
+                            title: title,
+                            description: text,
+                            imageUrl: data.graph, // 그래프 이미지 URL 사용
+                            link: {
+                                mobileWebUrl: url,
+                                webUrl: url
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching Kakao API key:', error);
+                });
+        });
+    }
+
     loadResult();
 });
+
+
+

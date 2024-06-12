@@ -90,3 +90,16 @@ input::-ms-input-placeholder {
     top: 155px;
     right: 0px;
 }
+
+.search-container button {
+    font-family: 'SCoreDream-400';
+    font-size: 16px;
+    background-color: rgba(255, 255, 255, 0);
+    color: #fff;
+    border-color: #fff;
+    border-width: 1px;
+    border-radius: 5px;
+    margin: 0px 0 0px 10px;
+    padding: 7px 5px;
+    width: 8%;
+    }

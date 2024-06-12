@@ -3,6 +3,7 @@
 
 {% block head %}
     <link rel="stylesheet" href="{% static 'coach/css/coach_result.css' %}">
+    <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
 {% endblock head %}
 
 {% block content %}
@@ -28,7 +29,15 @@
         <h1>한 줄 평</h1>
         <h2 id="message"></h2>
     </div>
-
+    <div class="share-container">
+        <p>공유하실?</p>
+        <div class="share-btn">
+            <button id="share-facebook">Facebook</button>
+            <button id="share-twitter">X</button>
+            <button id="share-kakao">KakaoTalk</button>
+        </div>
+    </div>
+        
 </div>
 <script src="{% static 'coach/js/coach_result.js' %}"></script>
 {% endblock content %}

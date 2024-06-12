@@ -415,3 +415,5 @@ class CheckStatusView(APIView):
         progress = cache.get(f'progress_{user.id}', '진행중인 프로세스가 없습니다')
         return Response({"status": progress}, status=status.HTTP_200_OK)
 
+def get_kakao_api_key(request):
+    return JsonResponse({'kakao_api_key': settings.KAKAO_API_KEY})
