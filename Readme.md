@@ -13,9 +13,9 @@
 - Programming Language : Python 3.10
 - Framework : DJANGO, DRF
 - Database : PostgreSQL, Redis
-- Deployment : AWS (EC2, S3), Docker, Gunicorn, Nginx, Ubuntu
+- Deployment : GCP, S3, Docker-compose, Gunicorn, Nginx, Ubuntu
 - FrontEnd : Html, CSS, JS
-- Version Control : Git, GitHub
+- Version Control : Git, GitHub, Google Slides
 - Communication Tool : Notion, Figma, Slack, Zep
 
 ## Requirements
@@ -24,7 +24,7 @@
 - Matplotlib : 데이터 시각화를 위한 파이썬 라이브러리, 음정을 사용자에게 보여주는 시각화를 위한 그래프 라이브러리 채택
 
 ## Deployment
-프로젝트 배포 링크
+whateversong.com
 
 ## Installation
 1. 깃허브 클론
@@ -50,7 +50,7 @@ redis-server
 ```
 
 ## API Documentation
-api 명세서
+https://dear-cricket-a7e.notion.site/whatever-song-API-Documentation-51e39d8170c94be991f9abf306cd8c50?pvs=4
 
 ## Apps Description
 ### 1. Coach
