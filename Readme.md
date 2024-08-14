@@ -50,7 +50,7 @@ redis-server
 ```
 
 ## API Documentation
-https://dear-cricket-a7e.notion.site/whatever-song-API-Documentation-51e39d8170c94be991f9abf306cd8c50?pvs=4
+https://yeonnan.hashnode.dev/whatever-song-api-documentation
 
 ## Apps Description
 ### 1. Coach
